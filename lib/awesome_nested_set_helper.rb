@@ -15,26 +15,15 @@ module CollectiveIdea
       # You can tweak this by passing your parameters, or better, pass a block that will receive
       # an item from your nested set tree and that should return the line with the link.
       #
-      # == Examples
-      #
-      #   nested_set_options_for_select(Category)
-      #
-      #   # show only a part of the tree, and exclude a category and its subtree
-      #   nested_set_options_for_select(selected_category, :exclude => category)
-      #
-      #   # add a custom string
-      #   nested_set_options_for_select(Category, :exclude => category) { |item| "#{'&nbsp;' * item.level}#{item.name} (#{item.url})" }
+      #   nested_set_options_for_select(Category) {|i| "#{'–' * i.level} #{i.name}" }
       #
       # == Params
-      #  * +class_or_item+ - Class name or item to start the display with
-      #  * +text_column+ - the title column, defaults to the first string column of the model
-      #  * +&block+ - a block { |item| ... item.name }
-      #    If no block passed, uses {|item| "#{'··' * item.level}#{item[text_column]}"}
-      def nested_set_options_for_select(item)
-        # find class
-        item = item.root if item.is_a?(Class)
-        raise 'Not a nested set model !' if !item.respond_to? :acts_as_nested_set_options
-        item.self_and_descendants.map {|i| [yield(i), i.id] }
+      #  * +class_or_item+ - Class name or top level times
+      #  * +&block+ - a block that will be used to display: { |item| ... item.name }
+      def nested_set_options_for_select(class_or_item)
+        class_or_item = class_or_item.roots if class_or_item.is_a?(Class)
+        items = Array(class_or_item)
+        items.sum {|i| i.self_and_descendants.map {|i| [yield(i), i.id] } }
       end  
     end
   end  

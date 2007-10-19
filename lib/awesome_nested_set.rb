@@ -2,7 +2,7 @@ module CollectiveIdea
   module Acts #:nodoc:
     module NestedSet #:nodoc:
       def self.included(base)
-        base.extend(ClassMethods)
+        base.extend(SingletonMethods)
       end
 
       # better_nested_set ehances the core nested_set tree functionality provided in ruby_on_rails.
@@ -57,7 +57,7 @@ module CollectiveIdea
       # Don't name your left and right columns 'left' and 'right': these names are reserved on most of dbs.
       # Usage is to name them 'lft' and 'rgt' for instance.
       #
-      module ClassMethods
+      module SingletonMethods
         # Configuration options are:
         #
         # * +parent_column+ - specifies the column name to use for keeping the position integer (default: parent_id)
@@ -102,6 +102,10 @@ module CollectiveIdea
           include Comparable
           extend ClassMethods
         end
+        
+      end
+      
+      module ClassMethods
         
         def roots(multiplicity = :all, *args)
           with_scope(:find => {
