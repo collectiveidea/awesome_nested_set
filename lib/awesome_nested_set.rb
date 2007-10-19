@@ -253,6 +253,7 @@ module CollectiveIdea
         end
 
         # Returns the number of nested children of this object.
+        # FIXME: rename to descendants.count
         def children_count
           (right - left - 1) / 2
         end
@@ -280,11 +281,11 @@ module CollectiveIdea
           end
         end
 
-        def is_or_descends_from?(other)
+        def is_or_is_descendant_of?(other)
           other.left <= self.left && self.left < other.right
         end
 
-        def is_or_is_descendant_of?(other)
+        def is_or_is_ancestor_of?(other)
           self.left <= other.left && other.left < self.right
         end
 
@@ -295,7 +296,8 @@ module CollectiveIdea
           else
             with_nested_set_scope do
               self.class.find(:first, :conditions => "#{left_column_name} < #{left}
-                AND #{parent_column_name} = #{parent_id}")
+                  AND #{parent_column_name} = #{parent_id}",
+                :order => "#{left_column_name} DESC")
             end
           end
         end
@@ -351,14 +353,11 @@ module CollectiveIdea
         end
       
         def with_nested_set_scope
+          scope = {:order => left_column_name}
           if scope_column = acts_as_nested_set_options[:scope]
-            self.class.send(:with_scope, :find => {
-              :conditions => {scope_column => self[scope_column]},
-              :order => left_column_name
-            }) { yield }
-          else
-            yield
+            scope[:conditions] = {scope_column => self[scope_column]}
           end
+          self.class.send(:with_scope, :find => scope) { yield }
         end
       
         # on creation, set automatically lft and rgt to the end of the tree

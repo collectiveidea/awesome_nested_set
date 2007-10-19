@@ -1,0 +1,3 @@
+sqlite3:
+  adapter: sqlite3
+  dbfile: awesome_nested_set.sqlite3.db
