@@ -23,7 +23,9 @@ module CollectiveIdea
       def nested_set_options_for_select(class_or_item)
         class_or_item = class_or_item.roots if class_or_item.is_a?(Class)
         items = Array(class_or_item)
-        items.sum {|i| i.self_and_descendants.map {|i| [yield(i), i.id] } }
+        result = []
+        items.each {|i| result += i.self_and_descendants.map {|i| [yield(i), i.id] } }
+        result
       end  
     end
   end  
