@@ -7,6 +7,12 @@ module CollectiveIdea
 
       # better_nested_set ehances the core nested_set tree functionality provided in ruby_on_rails.
       #
+      # awesome_nested_set goes further, first with a major refactoring
+      # Features:
+      # * almost API-compatible (some broken bits had to be changed)
+      # * allow it to work with a tree that spans across STI classes 
+      # * removed roots instance method, which was an impossible method.
+      #
       # This acts provides Nested Set functionality. Nested Set is a smart way to implement
       # an _ordered_ tree, with the added feature that you can select the children and all of their
       # descendants with a single query. The drawback is that insertion or move need some complex
@@ -195,9 +201,9 @@ module CollectiveIdea
               child[left_column_name] = right_bound
               child[right_column_name] = right_bound + 1
               self[right_column_name] += 2
-              self.class.transaction {
-                self.class.update_all( "#{left_column_name} = (#{left_column_name} + 2)",  "#{acts_as_nested_set_options[:scope]} AND #{left_column_name} >= #{right_bound}" )
-                self.class.update_all( "#{right_column_name} = (#{right_column_name} + 2)",  "#{acts_as_nested_set_options[:scope]} AND #{right_column_name} >= #{right_bound}" )
+              self.class.base_class.transaction {
+                self.class.base_class.update_all( "#{left_column_name} = (#{left_column_name} + 2)",  "#{acts_as_nested_set_options[:scope]} AND #{left_column_name} >= #{right_bound}" )
+                self.class.base_class.update_all( "#{right_column_name} = (#{right_column_name} + 2)",  "#{acts_as_nested_set_options[:scope]} AND #{right_column_name} >= #{right_bound}" )
                 self.save
                 child.save
               }
@@ -212,13 +218,13 @@ module CollectiveIdea
 
         # Returns the parent
         def parent
-          self.class.find(parent_id) if parent_id
+          self.class.base_class.find(parent_id) if parent_id
         end
 
         # Returns the array of all parents and self
         def self_and_ancestors(multiplicity = :all, *args)
           with_nested_set_scope do
-            with_find_scope(:conditions => "#{left_column_name} <= #{left} AND #{right_column_name} >= #{right}") { self.class.find(multiplicity, *args) }
+            with_find_scope(:conditions => "#{left_column_name} <= #{left} AND #{right_column_name} >= #{right}") { self.class.base_class.find(multiplicity, *args) }
           end
         end
 
@@ -231,11 +237,11 @@ module CollectiveIdea
         def self_and_siblings(multiplicity = :all, *args)
           with_nested_set_scope do
             scope = if parent_id.nil?
-              {self.class.primary_key => self}
+              {self.class.base_class.primary_key => self}
             else
               {parent_column_name => parent_id}
             end
-            with_find_scope(:conditions => scope) { self.class.find(multiplicity, *args) }
+            with_find_scope(:conditions => scope) { self.class.base_class.find(multiplicity, *args) }
           end
         end
 
@@ -251,7 +257,7 @@ module CollectiveIdea
             0 
           else
             with_nested_set_scope do
-              self.class.count(:conditions => "(#{left_column_name} < #{left} AND #{right_column_name} > #{right})")
+              self.class.base_class.count(:conditions => "(#{left_column_name} < #{left} AND #{right_column_name} > #{right})")
             end
           end
         end
@@ -267,7 +273,7 @@ module CollectiveIdea
           with_nested_set_scope do
             with_find_scope(:conditions => "#{left_column_name} >= #{left}
                 AND #{right_column_name} <= #{right}"
-            ) { self.class.find(multiplicity, *args) }
+            ) { self.class.base_class.find(multiplicity, *args) }
           end
         end
 
@@ -280,7 +286,7 @@ module CollectiveIdea
         def children(multiplicity = :all, *args)
           with_nested_set_scope do
             with_find_scope(:conditions => {parent_column_name => self}) do
-              self.class.find(multiplicity, *args)
+              self.class.base_class.find(multiplicity, *args)
             end
           end
         end
@@ -299,7 +305,7 @@ module CollectiveIdea
             nil
           else
             with_nested_set_scope do
-              self.class.find(:first, :conditions => "#{left_column_name} < #{left}
+              self.class.base_class.find(:first, :conditions => "#{left_column_name} < #{left}
                   AND #{parent_column_name} = #{parent_id}",
                 :order => "#{left_column_name} DESC")
             end
@@ -312,7 +318,7 @@ module CollectiveIdea
             nil
           else
             with_nested_set_scope do
-              self.class.find(:first, :conditions => "#{left_column_name} > #{left}
+              self.class.base_class.find(:first, :conditions => "#{left_column_name} > #{left}
                   AND #{parent_column_name} = #{parent_id}"
               )
             end
@@ -347,13 +353,13 @@ module CollectiveIdea
       protected
       
         def without_self
-          with_find_scope(:conditions => ["#{self.class.primary_key} != ?", self]) do
+          with_find_scope(:conditions => ["#{self.class.base_class.primary_key} != ?", self]) do
             yield
           end
         end
         
         def with_find_scope(scope)
-          self.class.send(:with_scope, :find => scope) { yield }
+          self.class.base_class.send(:with_scope, :find => scope) { yield }
         end
       
         def with_nested_set_scope
@@ -361,12 +367,12 @@ module CollectiveIdea
           if scope_column = acts_as_nested_set_options[:scope]
             scope[:conditions] = {scope_column => self[scope_column]}
           end
-          self.class.send(:with_scope, :find => scope) { yield }
+          self.class.base_class.send(:with_scope, :find => scope) { yield }
         end
       
         # on creation, set automatically lft and rgt to the end of the tree
         def before_create
-          maxright = with_nested_set_scope { self.class.maximum(right_column_name) } || 0
+          maxright = with_nested_set_scope { self.class.base_class.maximum(right_column_name) } || 0
           # adds the new node to the right of all existing nodes
           self[left_column_name] = maxright + 1
           self[right_column_name] = maxright + 2
@@ -379,11 +385,11 @@ module CollectiveIdea
           diff = right - left + 1
 
           with_nested_set_scope do
-            self.class.transaction do
-              self.class.delete_all("#{left_column_name} > #{left} AND #{right_column_name} < #{right}")
-              self.class.update_all("#{left_column_name} = (#{left_column_name} - #{diff})",
+            self.class.base_class.transaction do
+              self.class.base_class.delete_all("#{left_column_name} > #{left} AND #{right_column_name} < #{right}")
+              self.class.base_class.update_all("#{left_column_name} = (#{left_column_name} - #{diff})",
                 "#{left_column_name} >= #{right}")
-              self.class.update_all("#{right_column_name} = (#{right_column_name} - #{diff} )",
+              self.class.base_class.update_all("#{right_column_name} = (#{right_column_name} - #{diff} )",
                 "#{right_column_name} >= #{right}" )
             end
           end
@@ -396,7 +402,7 @@ module CollectiveIdea
           extent = right - left + 1
 
           # load object if node is not an object
-          target = self.class.find(target) if !(self.class === target)
+          target = self.class.base_class.find(target) if !(self.class === target)
 
           # detect impossible move
           if (left <= target.left && target.left <= right) or (left <= target.right && target.right <= right)
@@ -449,7 +455,7 @@ module CollectiveIdea
           end
 
           # update and that rules
-          self.class.update_all( "#{left_column_name} = CASE \
+          self.class.base_class.update_all( "#{left_column_name} = CASE \
                 WHEN #{left_column_name} BETWEEN #{left} AND #{right} \
                   THEN #{left_column_name} + #{shift} \
                 WHEN #{left_column_name} BETWEEN #{b_left} AND #{b_right} \
@@ -462,7 +468,7 @@ module CollectiveIdea
                   THEN #{right_column_name} + #{updown} \
                 ELSE #{right_column_name} END, \
             #{acts_as_nested_set_options[:parent_column]} = CASE \
-                WHEN #{self.class.primary_key} = #{self.id} \
+                WHEN #{self.class.base_class.primary_key} = #{self.id} \
                   THEN #{new_parent} \
                 ELSE #{acts_as_nested_set_options[:parent_column]} END",
             acts_as_nested_set_options[:scope] )

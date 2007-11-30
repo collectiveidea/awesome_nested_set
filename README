@@ -1,7 +1,7 @@
 AwesomeNestedSet
 ================
 
-Introduction goes here.
+29-Nov-2007 - Use base_class so that it properly works when a tree spans multiple STI classes.
 
 
 Example
