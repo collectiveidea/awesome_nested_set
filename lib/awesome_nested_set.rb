@@ -125,7 +125,7 @@ module CollectiveIdea
         def root
           roots(:first)
         end
-
+        
       end
 
       module InstanceMethods
@@ -349,6 +349,16 @@ module CollectiveIdea
         def move_to_child_of(node)
             self.move_to node, :child
         end
+        
+        
+        def to_text
+          returning "" do |string|
+            self.recurse do |node, block|
+              string << "#{'*'*(node.level+1)} #{node.id} #{node.name} (#{node.parent_id}, #{node.left}, #{node.right})\n"
+              block.call
+            end
+          end
+        end
 
       protected
       
@@ -396,13 +406,13 @@ module CollectiveIdea
         end
         
         def move_to(target, position)
-          raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.id.nil?
+          raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.new_record?
 
           # extent is the width of the tree self and children
           extent = right - left + 1
 
           # load object if node is not an object
-          target = self.class.base_class.find(target) if !(self.class === target)
+          target = self.class.base_class.find(target) if !(self.class.base_class === target)
 
           # detect impossible move
           if (left <= target.left && target.left <= right) or (left <= target.right && target.right <= right)
@@ -435,7 +445,7 @@ module CollectiveIdea
               new_right = target.right
             end
           else
-            raise ActiveRecord::ActiveRecordError, "Position should be either left or right ('#{position}' received)."
+            raise ActiveRecord::ActiveRecordError, "Position should be either left, right or child ('#{position}' received)."
           end
 
           # boundaries of update action

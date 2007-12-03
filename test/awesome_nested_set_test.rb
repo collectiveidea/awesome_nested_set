@@ -167,12 +167,14 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     categories(:child_2).move_left
     assert_nil categories(:child_2).left_sibling
     assert_equal categories(:child_1), categories(:child_2).right_sibling
+    assert Category.valid?
   end
 
   def test_move_right
     categories(:child_2).move_right
     assert_nil categories(:child_2).right_sibling
     assert_equal categories(:child_3), categories(:child_2).left_sibling
+    assert Category.valid?
   end
 
   def test_move_to_left_of
@@ -180,6 +182,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_nil categories(:child_3).left_sibling
     categories(:child_1).reload
     assert_equal categories(:child_1), categories(:child_3).right_sibling
+    assert Category.valid?
   end
 
   def test_move_to_right_of
@@ -187,10 +190,70 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_nil categories(:child_1).right_sibling
     categories(:child_3).reload
     assert_equal categories(:child_3), categories(:child_1).left_sibling
+    assert Category.valid?
   end
 
   def test_move_to_child_of
     categories(:child_1).move_to_child_of(categories(:child_3))
     assert_equal categories(:child_3).id, categories(:child_1).parent_id
+    assert Category.valid?
+  end
+
+  def test_subtree_move_to_child_of
+    assert_equal 4, categories(:child_2).left
+    assert_equal 7, categories(:child_2).right
+    
+    assert_equal 2, categories(:child_1).left
+    assert_equal 3, categories(:child_1).right
+    
+    categories(:child_2).move_to_child_of(categories(:child_1))
+      categories(:child_1).reload
+    assert_equal categories(:child_1).id, categories(:child_2).parent_id
+    
+    assert_equal 3, categories(:child_2).left
+    assert_equal 6, categories(:child_2).right
+    assert_equal 2, categories(:child_1).left
+    assert_equal 7, categories(:child_1).right    
+  end
+  
+  def test_slightly_difficult_move_to_child_of
+    assert_equal 11, categories(:top_level_2).left
+    assert_equal 12, categories(:top_level_2).right
+    
+    # create a new top-level node and move single-node top-level tree inside it.
+    new_top = Category.create(:name => 'New Top')
+    assert_equal 13, new_top.left
+    assert_equal 14, new_top.right
+    
+    categories(:top_level_2).move_to_child_of(new_top)
+      new_top.reload
+    
+    assert_equal new_top.id, categories(:top_level_2).parent_id
+    
+    assert_equal 12, categories(:top_level_2).left
+    assert_equal 13, categories(:top_level_2).right
+    assert_equal 11, new_top.left
+    assert_equal 14, new_top.right    
+  end
+  
+  def test_difficult_move_to_child_of
+    assert_equal 1, categories(:top_level).left
+    assert_equal 10, categories(:top_level).right
+    assert_equal 5, categories(:child_2_1).left
+    assert_equal 6, categories(:child_2_1).right
+    
+    # create a new top-level node and move an entire top-level tree inside it.
+    new_top = Category.create(:name => 'New Top')
+    categories(:top_level).move_to_child_of(new_top)
+      new_top.reload
+      categories(:top_level).reload
+      categories(:child_2_1).reload
+      
+    assert_equal new_top.id, categories(:top_level).parent_id
+    
+    assert_equal 4, categories(:top_level).left
+    assert_equal 13, categories(:top_level).right
+    assert_equal 8, categories(:child_2_1).left
+    assert_equal 9, categories(:child_2_1).right    
   end
 end
