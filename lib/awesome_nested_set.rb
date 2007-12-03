@@ -126,6 +126,24 @@ module CollectiveIdea
           roots(:first)
         end
         
+        def valid?
+          left = right = 0
+          
+          find(:all, :include => :parent, :conditions => 'left <= parent.left ||
+            right >= parent.right || left <= right || left IS NULL || right IS NULL').empty? &&
+          # No duplicates
+          find(:all, "count('lft') as count", :group => :lft,
+            :conditions => 'count > 1').empty? &&
+          find(:all, "count('rgt') as count", :group => :rgt,
+            :conditions => 'count > 1').empty? &&
+          roots.all? do |root|
+            returnning(root.left > left && root.right > right && root.valid?) do
+              left = root.left
+              right = root.right
+            end
+          end
+        end
+
       end
 
       module InstanceMethods
@@ -350,7 +368,6 @@ module CollectiveIdea
             self.move_to node, :child
         end
         
-        
         def to_text
           returning "" do |string|
             self.recurse do |node, block|
@@ -420,7 +437,8 @@ module CollectiveIdea
           end
 
           # compute new left/right for self
-          if position == :child
+          case position
+          when :child
             if target.left < left
               new_left  = target.left + 1
               new_right = target.left + extent
@@ -428,7 +446,7 @@ module CollectiveIdea
               new_left  = target.left - extent + 1
               new_right = target.left
             end
-          elsif position == :left
+          when :left
             if target.left < left
               new_left  = target.left
               new_right = target.left + extent - 1
@@ -436,7 +454,7 @@ module CollectiveIdea
               new_left  = target.left - extent
               new_right = target.left - 1
             end
-          elsif position == :right
+          when :right
             if target.right < right
               new_left  = target.right + 1
               new_right = target.right + extent
@@ -486,7 +504,7 @@ module CollectiveIdea
         end
 
       end
-
+      
     end
   end
 end

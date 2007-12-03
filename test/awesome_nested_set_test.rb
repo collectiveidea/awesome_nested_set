@@ -198,7 +198,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal categories(:child_3).id, categories(:child_1).parent_id
     assert Category.valid?
   end
-
+  
   def test_subtree_move_to_child_of
     assert_equal 4, categories(:child_2).left
     assert_equal 7, categories(:child_2).right
@@ -256,4 +256,11 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal 8, categories(:child_2_1).left
     assert_equal 9, categories(:child_2_1).right    
   end
+
+  def test_valid_with_null_lefts_and_rights
+    assert Category.valid?
+    Category.update_all('lft = null, rgt = null')
+    assert !Category.valid?
+  end
+  
 end
