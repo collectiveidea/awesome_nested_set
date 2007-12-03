@@ -106,6 +106,8 @@ module CollectiveIdea
 
           include InstanceMethods
           include Comparable
+          include Helpers
+          extend Helpers
           extend ClassMethods
         end
         
@@ -128,26 +130,61 @@ module CollectiveIdea
         
         def valid?
           left = right = 0
+          scope_string = "#{quoted_scope_column_name+', ' if acts_as_nested_set_options[:scope]}"
           
-          find(:all, :include => :parent, :conditions => 'left <= parent.left ||
-            right >= parent.right || left <= right || left IS NULL || right IS NULL').empty? &&
+          !find(:all).any? do |node|
+            node.left.blank? ||
+            node.right.blank? ||
+            node.left >= node.right ||
+            (!node.parent.blank? &&
+              (node.parent.left.blank? || node.parent.right.blank? || 
+              node.left <= node.parent.left ||
+              node.right >= node.parent.right))
+          end && 
+          
+          # No invalid left/right values  
+          # find(:first, :select => "#{quoted_table_name}.*", 
+          #   :joins => "JOIN #{quoted_table_name} AS parent ON #{quoted_table_name}.#{quoted_parent_column_name} = parent.#{primary_key}", 
+          #   :conditions => "#{quoted_table_name}.#{quoted_left_column_name} IS NULL OR #{quoted_table_name}.#{quoted_right_column_name} IS NULL OR #{quoted_table_name}.#{quoted_left_column_name} <= parent.#{quoted_left_column_name} OR
+          #   #{quoted_table_name}.#{quoted_right_column_name} >= parent.#{quoted_right_column_name} OR #{quoted_table_name}.#{quoted_left_column_name} <= #{quoted_table_name}.#{quoted_right_column_name}").nil? &&
+                                                          
           # No duplicates
-          find(:all, "count('lft') as count", :group => :lft,
-            :conditions => 'count > 1').empty? &&
-          find(:all, "count('rgt') as count", :group => :rgt,
-            :conditions => 'count > 1').empty? &&
+          find(:first, 
+            :select => "#{scope_string}#{quoted_left_column_name}, COUNT(#{quoted_left_column_name})", 
+            :group => "#{scope_string}#{quoted_left_column_name} 
+              HAVING COUNT(#{quoted_left_column_name}) > 1").nil? &&
+          find(:first, 
+            :select => "#{scope_string}#{quoted_right_column_name}, COUNT(#{quoted_right_column_name})", 
+            :group => "#{scope_string}#{quoted_right_column_name} 
+              HAVING COUNT(#{quoted_right_column_name}) > 1").nil? &&
+          # each tree valid?
           roots.all? do |root|
-            returnning(root.left > left && root.right > right && root.valid?) do
+            returning(root.left > left && root.right > right) do
               left = root.left
               right = root.right
             end
           end
         end
-
-      end
-
-      module InstanceMethods
         
+        def quoted_left_column_name
+          connection.quote_column_name(left_column_name)
+        end
+        
+        def quoted_right_column_name
+          connection.quote_column_name(right_column_name)
+        end
+        
+        def quoted_parent_column_name
+          connection.quote_column_name(parent_column_name)
+        end
+        
+        def quoted_scope_column_name
+          connection.quote_column_name(scope_column_name)
+        end
+      end
+      
+      # Mixed into both classes and instances
+      module Helpers
         def left_column_name
           acts_as_nested_set_options[:left_column]
         end
@@ -158,6 +195,25 @@ module CollectiveIdea
         
         def parent_column_name
           acts_as_nested_set_options[:parent_column]
+        end
+        
+        def scope_column_name
+          acts_as_nested_set_options[:scope]
+        end
+      end
+
+      module InstanceMethods
+        
+        def quoted_left_column_name
+          self.class.connection.quote_column_name(left_column_name)
+        end
+        
+        def quoted_right_column_name
+          self.class.connection.quote_column_name(right_column_name)
+        end
+        
+        def quoted_parent_column_name
+          self.class.connection.quote_column_name(parent_column_name)
         end
         
         def parent_id
@@ -236,7 +292,7 @@ module CollectiveIdea
 
         # Returns the parent
         def parent
-          self.class.base_class.find(parent_id) if parent_id
+          self.class.base_class.find_by_id(parent_id) if parent_id
         end
 
         # Returns the array of all parents and self

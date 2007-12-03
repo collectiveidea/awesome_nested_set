@@ -208,6 +208,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     
     categories(:child_2).move_to_child_of(categories(:child_1))
       categories(:child_1).reload
+    assert Category.valid?
     assert_equal categories(:child_1).id, categories(:child_2).parent_id
     
     assert_equal 3, categories(:child_2).left
@@ -228,6 +229,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     categories(:top_level_2).move_to_child_of(new_top)
       new_top.reload
     
+    assert Category.valid?
     assert_equal new_top.id, categories(:top_level_2).parent_id
     
     assert_equal 12, categories(:top_level_2).left
@@ -248,7 +250,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
       new_top.reload
       categories(:top_level).reload
       categories(:child_2_1).reload
-      
+    assert Category.valid?  
     assert_equal new_top.id, categories(:top_level).parent_id
     
     assert_equal 4, categories(:top_level).left
@@ -260,6 +262,19 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   def test_valid_with_null_lefts_and_rights
     assert Category.valid?
     Category.update_all('lft = null, rgt = null')
+    assert !Category.valid?
+  end
+  
+  def test_valid_with_missing_intermediate_node
+    # Even though child_2_1 will still exist, it is a sign of a sloppy delete, not an invalid tree.
+    assert Category.valid?
+    Category.delete(categories(:child_2).id)
+    assert Category.valid?
+  end
+  
+  def test_valid_with_overlapping_and_rights
+    assert Category.valid?
+    Category.update_all("lft = 0 WHERE id = #{categories(:top_level_2).id}")
     assert !Category.valid?
   end
   
