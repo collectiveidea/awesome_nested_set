@@ -278,4 +278,13 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert !Category.valid?
   end
   
+  def test_rebuild
+    assert Category.valid?
+    before_text = Category.root.to_text
+    Category.update_all('lft = null, rgt = null')
+    Category.rebuild!
+    assert Category.valid?
+    assert_equal before_text, Category.root.to_text
+  end
+  
 end

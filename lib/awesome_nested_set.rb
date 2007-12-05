@@ -166,6 +166,39 @@ module CollectiveIdea
           end
         end
         
+        # Rebuilds the left & rights if unset or invalid.  Also very useful for converting from acts_as_tree.
+        def rebuild!
+          # Don't rebuild a valid tree.
+          return true if valid?
+          
+          scope = lambda{}
+          if acts_as_nested_set_options[:scope]
+            scope = lambda{|node| "AND #{node.scope_column_name} = #{node.send(:scope_column_name)}"}
+          end
+          indices = {}
+          
+          set_left_and_rights = lambda do |node|
+            # set left
+            node[left_column_name] = indices[scope.call(node)] += 1
+            # find
+            find(:all, :conditions => ["parent_id = ? #{scope.call(node)}", node], :order => "#{left_column_name}, #{right_column_name}").each{|n| set_left_and_rights.call(n) }
+            # set right
+            node[right_column_name] = indices[scope.call(node)] += 1    
+            node.save!    
+          end
+                              
+          # Find root node(s)
+          root_nodes = find(:all, :conditions => "parent_id IS NULL", :order => "#{left_column_name}, #{right_column_name}").each do |root_node|
+            # setup index for this scope
+            indices[scope.call(root_node)] ||= 0
+            set_left_and_rights.call(root_node)
+          end
+        end
+        
+        def scope_for(node)
+          node.send(:scope_column_name)
+        end
+        
         def quoted_left_column_name
           connection.quote_column_name(left_column_name)
         end
