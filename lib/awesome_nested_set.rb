@@ -129,9 +129,13 @@ module CollectiveIdea
         end
         
         def valid?
-          left = right = 0
-          scope_string = "#{quoted_scope_column_name+', ' if acts_as_nested_set_options[:scope]}"
-          
+          left_and_rights_valid? && 
+          no_duplicates_for_column?(quoted_left_column_name) &&
+          no_duplicates_for_column?(quoted_right_column_name) &&                                                        
+          all_roots_valid?
+        end
+        
+        def left_and_rights_valid?
           !find(:all).any? do |node|
             node.left.blank? ||
             node.right.blank? ||
@@ -140,32 +144,46 @@ module CollectiveIdea
               (node.parent.left.blank? || node.parent.right.blank? || 
               node.left <= node.parent.left ||
               node.right >= node.parent.right))
-          end && 
+          end
           
           # No invalid left/right values  
           # find(:first, :select => "#{quoted_table_name}.*", 
           #   :joins => "JOIN #{quoted_table_name} AS parent ON #{quoted_table_name}.#{quoted_parent_column_name} = parent.#{primary_key}", 
           #   :conditions => "#{quoted_table_name}.#{quoted_left_column_name} IS NULL OR #{quoted_table_name}.#{quoted_right_column_name} IS NULL OR #{quoted_table_name}.#{quoted_left_column_name} <= parent.#{quoted_left_column_name} OR
           #   #{quoted_table_name}.#{quoted_right_column_name} >= parent.#{quoted_right_column_name} OR #{quoted_table_name}.#{quoted_left_column_name} <= #{quoted_table_name}.#{quoted_right_column_name}").nil? &&
-                                                          
+        end
+        
+        # pass in quoted_left_column_name or quoted_right_column_name
+        def no_duplicates_for_column?(column)
+          scope_string = "#{quoted_scope_column_name+', ' if acts_as_nested_set_options[:scope]}"
           # No duplicates
           find(:first, 
-            :select => "#{scope_string}#{quoted_left_column_name}, COUNT(#{quoted_left_column_name})", 
-            :group => "#{scope_string}#{quoted_left_column_name} 
-              HAVING COUNT(#{quoted_left_column_name}) > 1").nil? &&
-          find(:first, 
-            :select => "#{scope_string}#{quoted_right_column_name}, COUNT(#{quoted_right_column_name})", 
-            :group => "#{scope_string}#{quoted_right_column_name} 
-              HAVING COUNT(#{quoted_right_column_name}) > 1").nil? &&
-          # each tree valid?
-          roots.all? do |root|
+            :select => "#{scope_string}#{column}, COUNT(#{column})", 
+            :group => "#{scope_string}#{column} 
+              HAVING COUNT(#{column}) > 1").nil?
+        end
+        
+        # Wrapper for each_root_valid? that can deal with scope.
+        def all_roots_valid?
+          if acts_as_nested_set_options[:scope]
+            roots.group_by(&scope_column_name.to_sym).all? do |scope, grouped_roots|
+              each_root_valid?(grouped_roots)
+            end
+          else
+            each_root_valid?(roots)
+          end
+        end
+        
+        def each_root_valid?(roots_to_validate)
+          left = right = 0
+          roots_to_validate.all? do |root|
             returning(root.left > left && root.right > right) do
               left = root.left
               right = root.right
             end
           end
         end
-        
+                
         # Rebuilds the left & rights if unset or invalid.  Also very useful for converting from acts_as_tree.
         def rebuild!
           # Don't rebuild a valid tree.
