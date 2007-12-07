@@ -475,6 +475,15 @@ module CollectiveIdea
             self.move_to node, :child
         end
         
+        def move_possible?(target)
+          # Can't target self
+          self != target && 
+          # can't be in different scopes
+          (!acts_as_nested_set_options[:scope] || self.send(scope_column_name) == target.send(scope_column_name)) && 
+          # detect impossible move
+          !((left <= target.left && target.left <= right) or (left <= target.right && target.right <= right))
+        end
+        
         def to_text
           returning "" do |string|
             self.recurse do |node, block|
@@ -537,12 +546,11 @@ module CollectiveIdea
 
           # load object if node is not an object
           target = self.class.base_class.find(target) if !(self.class.base_class === target)
-
-          # detect impossible move
-          if (left <= target.left && target.left <= right) or (left <= target.right && target.right <= right)
+          
+          unless move_possible?(target)
             raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
           end
-
+          
           # compute new left/right for self
           case position
           when :child

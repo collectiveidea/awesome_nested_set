@@ -287,4 +287,14 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal before_text, Category.root.to_text
   end
   
+  def test_move_possible
+    assert categories(:child_2).move_possible?(categories(:child_1))
+    assert !categories(:top_level).move_possible?(categories(:top_level))
+
+    categories(:top_level).descendants.each do |descendant|
+      assert !categories(:top_level).move_possible?(descendant)
+      assert descendant.move_possible?(categories(:top_level))
+    end
+  end
+  
 end
