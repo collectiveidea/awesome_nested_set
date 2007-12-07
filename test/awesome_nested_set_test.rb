@@ -297,4 +297,11 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     end
   end
   
+  def test_is_or_is_ancestor_of?
+    [:child_1, :child_2, :child_2_1, :child_3].each do |c|
+      assert categories(:top_level).is_or_is_ancestor_of?(categories(c))
+    end
+    assert !categories(:top_level).is_or_is_ancestor_of?(categories(:top_level_2))
+  end
+  
 end
