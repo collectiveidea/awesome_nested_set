@@ -32,16 +32,11 @@ module CollectiveIdea
       # This variation of nested_set_options_for_select takes a mover node and won't show
       # any nodes that the mover can't move to.
       def nested_set_options_for_select_without_impossible_moves(class_or_item, mover)
-        # If mover is a new record, we'll get a blank list, so let's call the basic helper instead.
-        if mover.new_record?
-          nested_set_options_for_select(class_or_item)
-        else
-          class_or_item = class_or_item.roots if class_or_item.is_a?(Class)
-          items = Array(class_or_item)
-          result = []
-          items.each {|i| result += i.self_and_descendants.map {|i| [yield(i), i.id] if mover.move_possible?(i)}.compact }
-          result
-        end
+        class_or_item = class_or_item.roots if class_or_item.is_a?(Class)
+        items = Array(class_or_item)
+        result = []
+        items.each {|i| result += i.self_and_descendants.map {|i| [yield(i), i.id] if mover.new_record || mover.move_possible?(i)}.compact }
+        result
       end
     end
   end  
