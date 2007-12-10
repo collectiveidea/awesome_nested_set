@@ -35,7 +35,7 @@ module CollectiveIdea
         class_or_item = class_or_item.roots if class_or_item.is_a?(Class)
         items = Array(class_or_item)
         result = []
-        items.each {|i| result += i.self_and_descendants.map {|i| [yield(i), i.id] if mover.new_record || mover.move_possible?(i)}.compact }
+        items.each {|i| result += i.self_and_descendants.map {|i| [yield(i), i.id] if mover.new_record? || mover.move_possible?(i)}.compact }
         result
       end
     end
