@@ -6,9 +6,11 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
 
   class Default < ActiveRecord::Base
     acts_as_nested_set
+    set_table_name 'categories'
   end
   class Scoped < ActiveRecord::Base
     acts_as_nested_set :scope => :organization
+    set_table_name 'categories'
   end
   
   def test_left_column_default
@@ -26,6 +28,33 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   def test_scope_default
     assert_nil Default.acts_as_nested_set_options[:scope]
   end
+  
+  def test_left_column_name
+    assert_equal 'lft', Default.left_column_name
+    assert_equal 'lft', Default.new.left_column_name
+  end
+
+  def test_right_column_name
+    assert_equal 'rgt', Default.right_column_name
+    assert_equal 'rgt', Default.new.right_column_name
+  end
+
+  def test_parent_column_name
+    assert_equal 'parent_id', Default.parent_column_name
+    assert_equal 'parent_id', Default.new.parent_column_name
+  end
+  
+  def test_quoted_left_column_name
+    quoted = Default.connection.quote_column_name('lft')
+    assert_equal quoted, Default.quoted_left_column_name
+    assert_equal quoted, Default.new.quoted_left_column_name
+  end
+
+  def test_quoted_right_column_name
+    quoted = Default.connection.quote_column_name('rgt')
+    assert_equal quoted, Default.quoted_right_column_name
+    assert_equal quoted, Default.new.quoted_right_column_name
+  end
 
   def test_left_column_protected_from_assignment
     assert_raises(ActiveRecord::ActiveRecordError) { Category.new.lft = 1 }
@@ -37,6 +66,13 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   
   def test_parent_column_protected_from_assignment
     assert_raises(ActiveRecord::ActiveRecordError) { Category.new.parent_id = 1 }
+  end
+  
+  def test_colums_prtoected_on_initialize
+    c = Category.new(:lft => 1, :rgt => 2, :parent_id => 3)
+    assert_nil c.lft
+    assert_nil c.rgt
+    assert_nil c.parent_id
   end
   
   def test_scoped_appends_id

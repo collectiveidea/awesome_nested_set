@@ -84,31 +84,32 @@ module CollectiveIdea
             options[:scope] = "#{options[:scope]}_id".intern
           end
 
-          write_inheritable_attribute(:acts_as_nested_set_options, options)
+          write_inheritable_attribute :acts_as_nested_set_options, options
           class_inheritable_reader :acts_as_nested_set_options
-
-          # no bulk assignment
-          attr_protected  acts_as_nested_set_options[:left_column].intern,
-                          acts_as_nested_set_options[:right_column].intern,
-                          acts_as_nested_set_options[:parent_column].intern
-          # no assignment to structure fields
-          module_eval <<-"end_eval", __FILE__, __LINE__
-            def #{acts_as_nested_set_options[:left_column]}=(x)
-              raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{acts_as_nested_set_options[:left_column]}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
-            end
-            def #{acts_as_nested_set_options[:right_column]}=(x)
-              raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{acts_as_nested_set_options[:right_column]}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
-            end
-            def #{acts_as_nested_set_options[:parent_column]}=(x)
-              raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{acts_as_nested_set_options[:parent_column]}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
-            end
-          end_eval
-
+          
           include InstanceMethods
           include Comparable
           include Helpers
           extend Helpers
           extend ClassMethods
+
+          # no bulk assignment
+          attr_protected  left_column_name.intern,
+                          right_column_name.intern, 
+                          parent_column_name.intern
+                          
+          before_create :set_default_left_and_right
+          before_destroy :prune_from_tree
+                          
+          # no assignment to structure fields
+          [left_column_name, right_column_name, parent_column_name].each do |column|
+            module_eval <<-"end_eval", __FILE__, __LINE__
+              def #{column}=(x)
+                raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{column}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
+              end
+            end_eval
+          end
+
         end
         
       end
@@ -116,9 +117,8 @@ module CollectiveIdea
       module ClassMethods
         
         def roots(multiplicity = :all, *args)
-          with_scope(:find => {
-              :conditions => {acts_as_nested_set_options[:parent_column] => nil},
-              :order => acts_as_nested_set_options[:left_column] }) do
+          with_scope(:find => {:conditions => {parent_column_name => nil},
+              :order => left_column_name }) do
             find(multiplicity, *args)
           end
         end
@@ -212,26 +212,6 @@ module CollectiveIdea
             set_left_and_rights.call(root_node)
           end
         end
-        
-        def scope_for(node)
-          node.send(:scope_column_name)
-        end
-        
-        def quoted_left_column_name
-          connection.quote_column_name(left_column_name)
-        end
-        
-        def quoted_right_column_name
-          connection.quote_column_name(right_column_name)
-        end
-        
-        def quoted_parent_column_name
-          connection.quote_column_name(parent_column_name)
-        end
-        
-        def quoted_scope_column_name
-          connection.quote_column_name(scope_column_name)
-        end
       end
       
       # Mixed into both classes and instances
@@ -251,21 +231,25 @@ module CollectiveIdea
         def scope_column_name
           acts_as_nested_set_options[:scope]
         end
-      end
-
-      module InstanceMethods
         
         def quoted_left_column_name
-          self.class.connection.quote_column_name(left_column_name)
+          connection.quote_column_name(left_column_name)
         end
         
         def quoted_right_column_name
-          self.class.connection.quote_column_name(right_column_name)
+          connection.quote_column_name(right_column_name)
         end
         
         def quoted_parent_column_name
-          self.class.connection.quote_column_name(parent_column_name)
+          connection.quote_column_name(parent_column_name)
         end
+        
+        def quoted_scope_column_name
+          connection.quote_column_name(scope_column_name)
+        end
+      end
+
+      module InstanceMethods
         
         def parent_id
           self[parent_column_name]
@@ -358,7 +342,7 @@ module CollectiveIdea
           without_self { self_and_ancestors(*args) }
         end
 
-        # Returns the array of all children of the parent, included self
+        # Returns the array of all children of the parent, including self
         def self_and_siblings(multiplicity = :all, *args)
           with_nested_set_scope do
             scope = if parent_id.nil?
@@ -430,8 +414,9 @@ module CollectiveIdea
             nil
           else
             with_nested_set_scope do
-              self.class.base_class.find(:first, :conditions => "#{left_column_name} < #{left}
-                  AND #{parent_column_name} = #{parent_id}",
+              self.class.base_class.find(:first,
+                :conditions => ["#{quoted_left_column_name} < ? " +
+                  "AND #{quoted_parent_column_name} = ?", left, parent_id],
                 :order => "#{left_column_name} DESC")
             end
           end
@@ -443,8 +428,10 @@ module CollectiveIdea
             nil
           else
             with_nested_set_scope do
-              self.class.base_class.find(:first, :conditions => "#{left_column_name} > #{left}
-                  AND #{parent_column_name} = #{parent_id}"
+              self.class.base_class.find(:first,
+                :conditions => ["#{quoted_left_column_name} > ? " +
+                  "AND #{quoted_parent_column_name} = ?", left, parent_id],
+                :order => left_column_name
               )
             end
           end
@@ -452,27 +439,27 @@ module CollectiveIdea
 
         # Shorthand method for finding the left sibling and moving to the left of it.
         def move_left
-          self.move_to_left_of(self.left_sibling)
+          move_to_left_of(left_sibling)
         end
 
         # Shorthand method for finding the right sibling and moving to the right of it.
         def move_right
-          self.move_to_right_of(self.right_sibling)
+          move_to_right_of(right_sibling)
         end
 
         # Move the node to the left of another node (you can pass id only)
         def move_to_left_of(node)
-            self.move_to node, :left
+          move_to node, :left
         end
 
         # Move the node to the left of another node (you can pass id only)
         def move_to_right_of(node)
-            self.move_to node, :right
+          move_to node, :right
         end
 
         # Move the node to the child of another node (you can pass id only)
         def move_to_child_of(node)
-            self.move_to node, :child
+          move_to node, :child
         end
         
         def move_possible?(target)
@@ -481,22 +468,20 @@ module CollectiveIdea
           # can't be in different scopes
           (!acts_as_nested_set_options[:scope] || self.send(scope_column_name) == target.send(scope_column_name)) && 
           # detect impossible move
-          !((left <= target.left && target.left <= right) or (left <= target.right && target.right <= right))
+          # !(left..right).include?(target.left..target.right) # this needs tested more
+          !((left <= target.left && right >= target.left) or (left <= target.right && right >= target.right))
         end
         
         def to_text
-          returning "" do |string|
-            self.recurse do |node, block|
-              string << "#{'*'*(node.level+1)} #{node.id} #{node.name} (#{node.parent_id}, #{node.left}, #{node.right})\n"
-              block.call
-            end
-          end
+          self_and_descendants.map do |node|
+            "#{'*'*(node.level+1)} #{node.id} #{node.to_s} (#{node.parent_id}, #{node.left}, #{node.right})"
+          end.join("\n")
         end
-
+        
       protected
       
         def without_self
-          with_find_scope(:conditions => ["#{self.class.base_class.primary_key} != ?", self]) do
+          with_find_scope(:conditions => ["#{self.class.primary_key} != ?", self]) do
             yield
           end
         end
@@ -514,7 +499,7 @@ module CollectiveIdea
         end
       
         # on creation, set automatically lft and rgt to the end of the tree
-        def before_create
+        def set_default_left_and_right
           maxright = with_nested_set_scope { self.class.base_class.maximum(right_column_name) } || 0
           # adds the new node to the right of all existing nodes
           self[left_column_name] = maxright + 1
@@ -523,7 +508,7 @@ module CollectiveIdea
       
         # Prunes a branch off of the tree, shifting all of the elements on the right
         # back to the left so the counts still work.
-        def before_destroy
+        def prune_from_tree
           return if right.nil? || left.nil?
           diff = right - left + 1
 
