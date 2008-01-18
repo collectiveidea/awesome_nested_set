@@ -401,11 +401,15 @@ module CollectiveIdea
         end
 
         def is_or_is_descendant_of?(other)
-          other.left <= self.left && self.left < other.right
+          other.left <= self.left && self.left < other.right && is_same_scope?(other)
         end
 
         def is_or_is_ancestor_of?(other)
-          self.left <= other.left && other.left < self.right
+          self.left <= other.left && other.left < self.right && is_same_scope?(other)
+        end
+        
+        def is_same_scope?(other)
+          !acts_as_nested_set_options[:scope] || self.send(scope_column_name) == other.send(scope_column_name)
         end
 
         # Find the first sibling to the right

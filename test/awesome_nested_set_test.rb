@@ -156,13 +156,37 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert !categories(:child_2_1).is_or_is_ancestor_of?(categories(:child_2))
     assert !categories(:child_1).is_or_is_ancestor_of?(categories(:child_2))
   end
-  
+
+  def test_is_or_is_ancestor_of_with_scope
+    root = Scoped.root
+    child = root.children.first
+    assert root.is_or_is_ancestor_of?(child)
+    child.update_attribute :organization_id, 'different'
+    assert !root.is_or_is_ancestor_of?(child)
+  end
+
   def test_is_or_is_descendant_of?
     assert categories(:child_1).is_or_is_descendant_of?(categories(:top_level))
     assert categories(:child_2_1).is_or_is_descendant_of?(categories(:top_level))
     assert categories(:child_2_1).is_or_is_descendant_of?(categories(:child_2))
     assert !categories(:child_2).is_or_is_descendant_of?(categories(:child_2_1))
     assert !categories(:child_2).is_or_is_descendant_of?(categories(:child_1))
+  end
+  
+  def test_is_or_is_descendant_of_with_scope
+    root = Scoped.root
+    child = root.children.first
+    assert child.is_or_is_descendant_of?(root)
+    child.update_attribute :organization_id, 'different'
+    assert !child.is_or_is_descendant_of?(root)
+  end
+  
+  def test_is_same_scope?
+    root = Scoped.root
+    child = root.children.first
+    assert child.is_same_scope?(root)
+    child.update_attribute :organization_id, 'different'
+    assert !child.is_same_scope?(root)
   end
   
   def test_left_sibling
