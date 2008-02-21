@@ -376,6 +376,10 @@ module CollectiveIdea
         def children_count
           (right - left - 1) / 2
         end
+        
+        def has_children?
+          !children_count.zero?
+        end
 
         # Returns a set of itself and all of its nested children
         def self_and_descendants(multiplicity = :all, *args)
