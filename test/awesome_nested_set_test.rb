@@ -130,6 +130,12 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal categories(:top_level).descendants.size, categories(:top_level).children_count
   end
   
+  def test_has_children?
+    assert !categories(:child_2_1).has_children?
+    assert categories(:child_2).has_children?
+    assert categories(:top_level).has_children?    
+  end
+  
   def test_self_and_descendents
     parent = categories(:top_level)
     self_and_descendants = [parent, categories(:child_1), categories(:child_2),
