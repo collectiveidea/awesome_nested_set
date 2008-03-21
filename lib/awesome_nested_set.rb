@@ -404,10 +404,18 @@ module CollectiveIdea
           end
         end
 
+        def is_descendant_of?(other)
+          other.left < self.left && self.left < other.right && is_same_scope?(other)
+        end
+        
         def is_or_is_descendant_of?(other)
           other.left <= self.left && self.left < other.right && is_same_scope?(other)
         end
 
+        def is_ancestor_of?(other)
+          self.left < other.left && other.left < self.right && is_same_scope?(other)
+        end
+        
         def is_or_is_ancestor_of?(other)
           self.left <= other.left && other.left < self.right && is_same_scope?(other)
         end

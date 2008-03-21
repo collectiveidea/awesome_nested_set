@@ -161,6 +161,16 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert categories(:child_2).is_or_is_ancestor_of?(categories(:child_2_1))
     assert !categories(:child_2_1).is_or_is_ancestor_of?(categories(:child_2))
     assert !categories(:child_1).is_or_is_ancestor_of?(categories(:child_2))
+    assert categories(:child_1).is_or_is_ancestor_of?(categories(:child_1))
+  end
+  
+  def test_is_ancestor_of?
+    assert categories(:top_level).is_ancestor_of?(categories(:child_1))
+    assert categories(:top_level).is_ancestor_of?(categories(:child_2_1))
+    assert categories(:child_2).is_ancestor_of?(categories(:child_2_1))
+    assert !categories(:child_2_1).is_ancestor_of?(categories(:child_2))
+    assert !categories(:child_1).is_ancestor_of?(categories(:child_2))
+    assert !categories(:child_1).is_ancestor_of?(categories(:child_1))
   end
 
   def test_is_or_is_ancestor_of_with_scope
@@ -177,6 +187,16 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert categories(:child_2_1).is_or_is_descendant_of?(categories(:child_2))
     assert !categories(:child_2).is_or_is_descendant_of?(categories(:child_2_1))
     assert !categories(:child_2).is_or_is_descendant_of?(categories(:child_1))
+    assert categories(:child_1).is_or_is_descendant_of?(categories(:child_1))
+  end
+  
+  def test_is_descendant_of?
+    assert categories(:child_1).is_descendant_of?(categories(:top_level))
+    assert categories(:child_2_1).is_descendant_of?(categories(:top_level))
+    assert categories(:child_2_1).is_descendant_of?(categories(:child_2))
+    assert !categories(:child_2).is_descendant_of?(categories(:child_2_1))
+    assert !categories(:child_2).is_descendant_of?(categories(:child_1))
+    assert !categories(:child_1).is_descendant_of?(categories(:child_1))
   end
   
   def test_is_or_is_descendant_of_with_scope
