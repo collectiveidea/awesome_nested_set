@@ -1,13 +1,6 @@
 = AwesomeNestedSet
 
-Awesome Nested Set is a complete replacement for acts_as_nested_set and betternestedset .
-
-You can learn more about nested sets at:
-
-  http://www.dbmsmag.com/9603d06.html
-  http://threebit.net/tutorials/nestedset/tutorial1.html
-  http://api.rubyonrails.com/classes/ActiveRecord/Acts/NestedSet/ClassMethods.html
-  http://opensource.symetrie.com/trac/better_nested_set/
+Awesome Nested Set is a complete replacement for acts_as_nested_set and betternestedset, but awesomer.
 
 == Installation
 
@@ -18,6 +11,10 @@ If you are on edge rails:
 If you are not on edge rails:
 
   git clone git://github.com/collectiveidea/awesome_nested_set.git vendor/plugins/awesome_nested_set
+
+== What makes this so awesome?
+
+This is a new implementation of nested set based off of better nested set.  It fixes some bugs, removes tons of duplication, adds a few useful methods, adds STI support and adds 2 very helpful view helpers for select boxes.
 
 == ActiveRecord
 
@@ -116,5 +113,15 @@ and pass them an id or an object.
 
 * <tt>nested_set_options_for_select</tt> - returns an array of objects suitable for select helpers
 * <tt>nested_set_options_for_select_without_impossible_moves</tt> - similar to nested_set_options_for_select, but contains only items that are possible to move to
+
+== References
+
+You can learn more about nested sets at:
+
+  http://www.dbmsmag.com/9603d06.html
+  http://threebit.net/tutorials/nestedset/tutorial1.html
+  http://api.rubyonrails.com/classes/ActiveRecord/Acts/NestedSet/ClassMethods.html
+  http://opensource.symetrie.com/trac/better_nested_set/
+
 
 Copyright (c) 2008 Collective Idea, released under the MIT license
