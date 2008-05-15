@@ -1,0 +1,120 @@
+= AwesomeNestedSet
+
+Awesome Nested Set is a complete replacement for acts_as_nested_set and betternestedset .
+
+You can learn more about nested sets at:
+
+  http://www.dbmsmag.com/9603d06.html
+  http://threebit.net/tutorials/nestedset/tutorial1.html
+  http://api.rubyonrails.com/classes/ActiveRecord/Acts/NestedSet/ClassMethods.html
+  http://opensource.symetrie.com/trac/better_nested_set/
+
+== Installation
+
+If you are on edge rails:
+
+  script/plugin install git://github.com/collectiveidea/awesome_nested_set.git
+  
+If you are not on edge rails:
+
+  git clone git://github.com/collectiveidea/awesome_nested_set.git vendor/plugins/awesome_nested_set
+
+== ActiveRecord
+
+Create a migration like:
+
+  class CreateCategories < ActiveRecord::Migration
+    def self.up
+      create_table :categories do |t|
+        t.string :name
+        t.integer :parent_id
+        t.integer :lft
+        t.integer :rgt
+      end
+    end
+
+    def self.down
+      drop_table :categories
+    end
+  end
+
+Then create a model like:
+
+  class Category < ActiveRecord::Base
+    acts_as_nested_set
+  end
+
+Methods names are aligned on Tree's ones as much as possible, to make replacment from one
+by another easier, except for the creation:
+
+in acts_as_tree:
+
+  item.children.create(:name => "child1")
+
+in acts_as_nested_set:
+
+  # adds a new item at the "end" of the tree, i.e. with child.left = max(tree.right)+1
+  child = MyClass.new(:name => "child1")
+  child.save
+  # now move the item to its right place
+  child.move_to_child_of my_item
+
+You can use:
+* move_to_child_of
+* move_to_right_of
+* move_to_left_of
+and pass them an id or an object.
+
+== Class Methods
+
+* +root+ - Returns the first root
+* +roots+ - root items, in case of multiple roots (the ones that have a nil parent)
+* +valid?+ - 
+* +left_and_rights_valid?+ - 
+* +def no_duplicates_for_column?+ - pass in quoted_left_column_name or quoted_right_column_name
+* +all_roots_valid?+ - Wrapper for each_root_valid? that can deal with scope.
+* +each_root_valid?+ - 
+* +rebuild!+ - Rebuilds the left & rights if unset or invalid.  Also very useful for converting from acts_as_tree.
+
+== Instance Methods
+
+* +parent_id+ -
+* +left+ - 
+* +right+ -
+* +root?+ -  Returns true if this is a root node.
+* +child?+ -  Returns true is this is a child node
+* +<=>(x)+ -  order by left column
+* +add_child( child )+ -  Deprecated, will be removed in next versions
+* +root+ -  Returns root
+* +parent+ -  Returns the parent
+* +self_and_ancestors(multiplicity = :all, *args)+ -  Returns the array of all parents and self
+* +ancestors(*args)+ -  Returns an array of all parents
+* +self_and_siblings(multiplicity = :all, *args)+  -  Returns the array of all children of the parent, including self
+* +siblings(*args)+ -  Returns the array of all children of the parent, except self
+* +level+  Returns the level of this object in the tree - root level is 0
+* +children_count+ -  Returns the number of nested children of this object.
+* +has_children?+
+* +self_and_descendants(multiplicity = :all, *args)+ -  Returns a set of itself and all of its nested children
+* +descendants(*args)+ -  Returns a set of all of its children and nested children
+* +children(multiplicity = :all, *args)+ -  Returns a set of only this entry's immediate children
+* +is_descendant_of?(other)+
+* +is_or_is_descendant_of?(other)+
+* +is_ancestor_of?(other)+
+* +is_or_is_ancestor_of?(other)+
+* +is_same_scope?(other)+
+* +left_sibling+ -  Find the first sibling to the right
+* +right_sibling+ -  Find the first sibling to the right
+* +move_left+ -  Shorthand method for finding the left sibling and moving to the left of it.
+* +move_right+ -  Shorthand method for finding the right sibling and moving to the right of it.
+* +move_to_left_of(node)+ -  Move the node to the left of another node (you can pass id only)
+* +move_to_right_of(node)+ -  Move the node to the left of another node (you can pass id only)
+* +move_to_child_of(node)+ -  Move the node to the child of another node (you can pass id only)
+* +move_possible?(target)+
+* +to_text+
+
+== View Helpers
+
+* +nested_set_options_for_select+ - returns an array of objects suitable for select helpers
+* +nested_set_options_for_select_without_impossible_moves+ - similar to nested_set_options_for_select, but contains only items that are possible to move to
+
+Copyright (c) 2008 Collective Idea, released under the MIT license
