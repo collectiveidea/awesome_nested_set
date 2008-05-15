@@ -24,7 +24,7 @@ module CollectiveIdea
         class_or_item = class_or_item.roots if class_or_item.is_a?(Class)
         items = Array(class_or_item)
         returning [] do |result|
-          items.each {|i| result += i.self_and_descendants.map {|i| [yield(i), i.id] } }
+          items.each {|i| result << i.self_and_descendants.map {|i| [yield(i), i.id] } }
         end
       end  
 
