@@ -53,7 +53,7 @@ in acts_as_tree:
 
 in acts_as_nested_set:
 
-  # adds a new item at the "end" of the tree, i.e. with child.left = max(tree.right)+1
+  # adds a new item at the "end" of the tree, i.e. with child.left = max(tree.right)</tt>1
   child = MyClass.new(:name => "child1")
   child.save
   # now move the item to its right place
@@ -67,54 +67,54 @@ and pass them an id or an object.
 
 == Class Methods
 
-* +root+ - Returns the first root
-* +roots+ - root items, in case of multiple roots (the ones that have a nil parent)
-* +valid?+ - 
-* +left_and_rights_valid?+ - 
-* +def no_duplicates_for_column?+ - pass in quoted_left_column_name or quoted_right_column_name
-* +all_roots_valid?+ - Wrapper for each_root_valid? that can deal with scope.
-* +each_root_valid?+ - 
-* +rebuild!+ - Rebuilds the left & rights if unset or invalid.  Also very useful for converting from acts_as_tree.
+* <tt>root</tt> - Returns the first root
+* <tt>roots</tt> - root items, in case of multiple roots (the ones that have a nil parent)
+* <tt>valid?</tt> - 
+* <tt>left_and_rights_valid?</tt> - 
+* <tt>def no_duplicates_for_column?</tt> - pass in quoted_left_column_name or quoted_right_column_name
+* <tt>all_roots_valid?</tt> - Wrapper for each_root_valid? that can deal with scope.
+* <tt>each_root_valid?</tt> - 
+* <tt>rebuild!</tt> - Rebuilds the left & rights if unset or invalid.  Also very useful for converting from acts_as_tree.
 
 == Instance Methods
 
-* +parent_id+ -
-* +left+ - 
-* +right+ -
-* +root?+ -  Returns true if this is a root node.
-* +child?+ -  Returns true is this is a child node
-* +<=>(x)+ -  order by left column
-* +add_child( child )+ -  Deprecated, will be removed in next versions
-* +root+ -  Returns root
-* +parent+ -  Returns the parent
-* +self_and_ancestors(multiplicity = :all, *args)+ -  Returns the array of all parents and self
-* +ancestors(*args)+ -  Returns an array of all parents
-* +self_and_siblings(multiplicity = :all, *args)+  -  Returns the array of all children of the parent, including self
-* +siblings(*args)+ -  Returns the array of all children of the parent, except self
-* +level+  Returns the level of this object in the tree - root level is 0
-* +children_count+ -  Returns the number of nested children of this object.
-* +has_children?+
-* +self_and_descendants(multiplicity = :all, *args)+ -  Returns a set of itself and all of its nested children
-* +descendants(*args)+ -  Returns a set of all of its children and nested children
-* +children(multiplicity = :all, *args)+ -  Returns a set of only this entry's immediate children
-* +is_descendant_of?(other)+
-* +is_or_is_descendant_of?(other)+
-* +is_ancestor_of?(other)+
-* +is_or_is_ancestor_of?(other)+
-* +is_same_scope?(other)+
-* +left_sibling+ -  Find the first sibling to the right
-* +right_sibling+ -  Find the first sibling to the right
-* +move_left+ -  Shorthand method for finding the left sibling and moving to the left of it.
-* +move_right+ -  Shorthand method for finding the right sibling and moving to the right of it.
-* +move_to_left_of(node)+ -  Move the node to the left of another node (you can pass id only)
-* +move_to_right_of(node)+ -  Move the node to the left of another node (you can pass id only)
-* +move_to_child_of(node)+ -  Move the node to the child of another node (you can pass id only)
-* +move_possible?(target)+
-* +to_text+
+* <tt>parent_id</tt> -
+* <tt>left</tt> - 
+* <tt>right</tt> -
+* <tt>root?</tt> -  Returns true if this is a root node.
+* <tt>child?</tt> -  Returns true is this is a child node
+* <tt><=>(x)</tt> -  order by left column
+* <tt>add_child( child )</tt> -  Deprecated, will be removed in next versions
+* <tt>root</tt> -  Returns root
+* <tt>parent</tt> -  Returns the parent
+* <tt>self_and_ancestors(multiplicity = :all, *args)</tt> -  Returns the array of all parents and self
+* <tt>ancestors(*args)</tt> -  Returns an array of all parents
+* <tt>self_and_siblings(multiplicity = :all, *args)</tt>  -  Returns the array of all children of the parent, including self
+* <tt>siblings(*args)</tt> -  Returns the array of all children of the parent, except self
+* <tt>level</tt>  Returns the level of this object in the tree - root level is 0
+* <tt>children_count</tt> -  Returns the number of nested children of this object.
+* <tt>has_children?</tt>
+* <tt>self_and_descendants(multiplicity = :all, *args)</tt> -  Returns a set of itself and all of its nested children
+* <tt>descendants(*args)</tt> -  Returns a set of all of its children and nested children
+* <tt>children(multiplicity = :all, *args)</tt> -  Returns a set of only this entry's immediate children
+* <tt>is_descendant_of?(other)</tt>
+* <tt>is_or_is_descendant_of?(other)</tt>
+* <tt>is_ancestor_of?(other)</tt>
+* <tt>is_or_is_ancestor_of?(other)</tt>
+* <tt>is_same_scope?(other)</tt>
+* <tt>left_sibling</tt> -  Find the first sibling to the right
+* <tt>right_sibling</tt> -  Find the first sibling to the right
+* <tt>move_left</tt> -  Shorthand method for finding the left sibling and moving to the left of it.
+* <tt>move_right</tt> -  Shorthand method for finding the right sibling and moving to the right of it.
+* <tt>move_to_left_of(node)</tt> -  Move the node to the left of another node (you can pass id only)
+* <tt>move_to_right_of(node)</tt> -  Move the node to the left of another node (you can pass id only)
+* <tt>move_to_child_of(node)</tt> -  Move the node to the child of another node (you can pass id only)
+* <tt>move_possible?(target)</tt>
+* <tt>to_text</tt>
 
 == View Helpers
 
-* +nested_set_options_for_select+ - returns an array of objects suitable for select helpers
-* +nested_set_options_for_select_without_impossible_moves+ - similar to nested_set_options_for_select, but contains only items that are possible to move to
+* <tt>nested_set_options_for_select</tt> - returns an array of objects suitable for select helpers
+* <tt>nested_set_options_for_select_without_impossible_moves</tt> - similar to nested_set_options_for_select, but contains only items that are possible to move to
 
 Copyright (c) 2008 Collective Idea, released under the MIT license
