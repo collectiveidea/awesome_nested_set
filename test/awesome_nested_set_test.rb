@@ -126,14 +126,10 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal 2, categories(:child_2_1).level
   end
   
-  def test_child_count
-    assert_equal categories(:top_level).descendants.size, categories(:top_level).children_count
-  end
-  
   def test_has_children?
-    assert !categories(:child_2_1).has_children?
-    assert categories(:child_2).has_children?
-    assert categories(:top_level).has_children?    
+    assert categories(:child_2_1).children.empty?
+    assert !categories(:child_2).children.empty?
+    assert !categories(:top_level).children.empty?
   end
   
   def test_self_and_descendents
@@ -207,12 +203,12 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert !child.is_or_is_descendant_of?(root)
   end
   
-  def test_is_same_scope?
+  def test_same_scope?
     root = Scoped.root
     child = root.children.first
-    assert child.is_same_scope?(root)
+    assert child.same_scope?(root)
     child.update_attribute :organization_id, 'different'
-    assert !child.is_same_scope?(root)
+    assert !child.same_scope?(root)
   end
   
   def test_left_sibling
