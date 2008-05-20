@@ -123,7 +123,7 @@ module CollectiveIdea
         
         # pass in quoted_left_column_name or quoted_right_column_name
         def no_duplicates_for_column?(column)
-          scope_string = acts_as_nested_set_options[:scope] ? '' : "#{quoted_scope_column_name}, "
+          scope_string = acts_as_nested_set_options[:scope] ?  "#{quoted_scope_column_name}, " : ''
           # No duplicates
           find(:first, 
             :select => "#{scope_string}#{column}, COUNT(#{column})", 
