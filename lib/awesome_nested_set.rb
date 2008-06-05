@@ -85,6 +85,8 @@ module CollectiveIdea
           end
           
           named_scope :roots, :conditions => {parent_column_name => nil}, :order => left_column_name
+          named_scope :leaves, :conditions => "#{self.right_column_name} - #{self.left_column_name} = 1", :order => left_column_name
+          
         end
         
       end
@@ -243,6 +245,10 @@ module CollectiveIdea
         # Returns true if this is a root node.
         def root?
           parent_id.nil? && left == 1
+        end
+        
+        def leaf?
+          right - left == 1
         end
 
         # Returns true is this is a child node

@@ -82,7 +82,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   def test_roots_class_method
     assert_equal Category.find_all_by_parent_id(nil), Category.roots
   end
-  
+    
   def test_root_class_method
     assert_equal categories(:top_level), Category.root
   end
@@ -91,6 +91,25 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal categories(:top_level), categories(:child_3).root
   end
   
+  def test_leaves_class_method
+    assert_equal Category.all(:conditions => "#{Category.right_column_name} - #{Category.left_column_name} = 1"), Category.leaves
+    assert_equal Category.leaves.count, 4
+    assert (Category.leaves.include? categories(:child_1))
+    assert (Category.leaves.include? categories(:child_2_1))
+    assert (Category.leaves.include? categories(:child_3))
+    assert (Category.leaves.include? categories(:top_level_2))
+  end
+  
+  def test_leaf
+    assert categories(:child_1).leaf?
+    assert categories(:child_2_1).leaf?
+    assert categories(:child_3).leaf?
+    assert categories(:top_level_2).leaf?
+    
+    assert !categories(:top_level).leaf?
+    assert !categories(:child_2).leaf?
+  end
+    
   def test_parent
     @fixture_cache = {}
     assert_equal categories(:child_2), categories(:child_2_1).parent
