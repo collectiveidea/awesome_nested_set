@@ -139,6 +139,11 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal siblings, child.siblings
   end
   
+  def test_leaves
+    leaves = [categories(:child_1), categories(:child_2_1), categories(:child_3), categories(:top_level_2)]
+    assert categories(:top_level).leaves, leaves
+  end
+  
   def test_level
     assert_equal 0, categories(:top_level).level
     assert_equal 1, categories(:child_1).level

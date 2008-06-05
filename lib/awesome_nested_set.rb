@@ -333,6 +333,11 @@ module CollectiveIdea
           without_self self_and_siblings
         end
 
+        # Returns a set of all of its nested children which do not have children  
+        def leaves
+          Scope.new(descendants, :conditions => "#{right_column_name} - #{left_column_name} = 1")
+        end    
+
         # Returns the level of this object in the tree
         # root level is 0
         def level
