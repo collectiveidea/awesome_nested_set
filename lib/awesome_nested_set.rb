@@ -85,7 +85,7 @@ module CollectiveIdea
           end
           
           named_scope :roots, :conditions => {parent_column_name => nil}, :order => left_column_name
-          named_scope :leaves, :conditions => "#{self.right_column_name} - #{self.left_column_name} = 1", :order => left_column_name
+          named_scope :leaves, :conditions => "#{right_column_name} - #{left_column_name} = 1", :order => left_column_name
           
         end
         
