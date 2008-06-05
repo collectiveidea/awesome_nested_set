@@ -244,7 +244,7 @@ module CollectiveIdea
 
         # Returns true if this is a root node.
         def root?
-          parent_id.nil? && left == 1
+          parent_id.nil?
         end
         
         def leaf?
