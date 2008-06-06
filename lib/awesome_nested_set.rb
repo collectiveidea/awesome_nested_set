@@ -169,14 +169,14 @@ module CollectiveIdea
             # set left
             node[left_column_name] = indices[scope.call(node)] += 1
             # find
-            find(:all, :conditions => ["parent_id = ? #{scope.call(node)}", node], :order => "#{left_column_name}, #{right_column_name}").each{|n| set_left_and_rights.call(n) }
+            find(:all, :conditions => ["parent_id = ? #{scope.call(node)}", node], :order => "#{left_column_name}, #{right_column_name}, id").each{|n| set_left_and_rights.call(n) }
             # set right
             node[right_column_name] = indices[scope.call(node)] += 1    
             node.save!    
           end
                               
           # Find root node(s)
-          root_nodes = find(:all, :conditions => "parent_id IS NULL", :order => "#{left_column_name}, #{right_column_name}").each do |root_node|
+          root_nodes = find(:all, :conditions => "parent_id IS NULL", :order => "#{left_column_name}, #{right_column_name}, id").each do |root_node|
             # setup index for this scope
             indices[scope.call(root_node)] ||= 0
             set_left_and_rights.call(root_node)
