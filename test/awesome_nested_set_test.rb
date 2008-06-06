@@ -370,6 +370,42 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal 9, categories(:child_2_1).right    
   end
 
+  #FAILING - rebuild swaps the position of the 2 children when added using move_to_child twice onto same parent
+  def test_move_to_child_more_than_once_per_parent_rebuild
+    root1 = Category.create(:name => 'Root1')
+    root2 = Category.create(:name => 'Root2')
+    root3 = Category.create(:name => 'Root3')
+    
+    root3.move_to_child_of root1
+    root2.reload # ADDING OUTER ROOT TO FIRST ROOT PUSHES MIDDLE ROOT LEFT AND RIGHT'S OUT TO EDGE 
+    
+    root2.move_to_child_of root1
+      
+    output = Category.roots.last.to_text
+    Category.update_all('lft = null, rgt = null')
+    Category.rebuild!
+    
+    assert_equal Category.roots.last.to_text, output
+  end
+  
+  #FAILING - doing move_to_child twice onto same parent from the furthest right first
+  def test_move_to_child_more_than_once_per_parent_outside_in
+    node1 = Category.create(:name => 'Node-1')
+    node2 = Category.create(:name => 'Node-2')
+    node3 = Category.create(:name => 'Node-3')
+    
+    node3.move_to_child_of node1    
+    node2.reload
+    node2.move_to_child_of node1
+      
+    output = Category.roots.last.to_text
+    Category.update_all('lft = null, rgt = null')
+    Category.rebuild!
+    
+    assert_equal Category.roots.last.to_text, output
+  end
+
+
   def test_valid_with_null_lefts_and_rights
     assert Category.valid?
     Category.update_all('lft = null, rgt = null')
