@@ -370,7 +370,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal 9, categories(:child_2_1).right    
   end
 
-  #FAILING - rebuild swaps the position of the 2 children when added using move_to_child twice onto same parent
+  #rebuild swaps the position of the 2 children when added using move_to_child twice onto same parent
   def test_move_to_child_more_than_once_per_parent_rebuild
     root1 = Category.create(:name => 'Root1')
     root2 = Category.create(:name => 'Root2')
