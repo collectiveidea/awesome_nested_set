@@ -136,6 +136,10 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     child = categories(:child_2)
     self_and_siblings = [categories(:child_1), child, categories(:child_3)]
     assert_equal self_and_siblings, child.self_and_siblings
+    assert_nothing_raised do
+      tops = [categories(:top_level), categories(:top_level_2)]
+      assert_equal tops, categories(:top_level).self_and_siblings
+    end
   end
 
   def test_siblings

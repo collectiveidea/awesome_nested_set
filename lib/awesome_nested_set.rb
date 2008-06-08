@@ -325,7 +325,7 @@ module CollectiveIdea
 
         # Returns the array of all children of the parent, including self
         def self_and_siblings
-          parent.children
+          Scope.new(nested_set_scope, :conditions => {parent_column_name => parent_id})
         end
 
         # Returns the array of all children of the parent, except self
