@@ -106,21 +106,18 @@ module CollectiveIdea
         end
         
         def left_and_rights_valid?
-          !find(:all).any? do |node|
-            node.left.blank? ||
-            node.right.blank? ||
-            node.left >= node.right ||
-            (!node.parent.blank? &&
-              (node.parent.left.blank? || node.parent.right.blank? || 
-              node.left <= node.parent.left ||
-              node.right >= node.parent.right))
-          end
-          
-          # No invalid left/right values  
-          # find(:first, :select => "#{quoted_table_name}.*", 
-          #   :joins => "JOIN #{quoted_table_name} AS parent ON #{quoted_table_name}.#{quoted_parent_column_name} = parent.#{primary_key}", 
-          #   :conditions => "#{quoted_table_name}.#{quoted_left_column_name} IS NULL OR #{quoted_table_name}.#{quoted_right_column_name} IS NULL OR #{quoted_table_name}.#{quoted_left_column_name} <= parent.#{quoted_left_column_name} OR
-          #   #{quoted_table_name}.#{quoted_right_column_name} >= parent.#{quoted_right_column_name} OR #{quoted_table_name}.#{quoted_left_column_name} <= #{quoted_table_name}.#{quoted_right_column_name}").nil? &&
+          count(
+            :joins => "LEFT OUTER JOIN #{quoted_table_name} AS parent ON " +
+              "#{quoted_table_name}.#{quoted_parent_column_name} = parent.#{primary_key}",
+            :conditions =>
+              "#{quoted_table_name}.#{quoted_left_column_name} IS NULL OR " +
+              "#{quoted_table_name}.#{quoted_right_column_name} IS NULL OR " +
+              "#{quoted_table_name}.#{quoted_left_column_name} >= " +
+                "#{quoted_table_name}.#{quoted_right_column_name} OR " +
+              "(#{quoted_table_name}.#{quoted_parent_column_name} IS NOT NULL AND " +
+                "(#{quoted_table_name}.#{quoted_left_column_name} <= parent.#{quoted_left_column_name} OR " +
+                "#{quoted_table_name}.#{quoted_right_column_name} >= parent.#{quoted_right_column_name}))"
+          ) == 0
         end
         
         # pass in quoted_left_column_name or quoted_right_column_name

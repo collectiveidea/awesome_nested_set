@@ -466,4 +466,39 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal [note3], note3.self_and_siblings
   end
   
+  def test_left_and_rights_valid_with_blank_left
+    assert Category.left_and_rights_valid?
+    categories(:child_2)[:lft] = nil
+    categories(:child_2).save(false)
+    assert !Category.left_and_rights_valid?
+  end
+
+  def test_left_and_rights_valid_with_blank_right
+    assert Category.left_and_rights_valid?
+    categories(:child_2)[:rgt] = nil
+    categories(:child_2).save(false)
+    assert !Category.left_and_rights_valid?
+  end
+
+  def test_left_and_rights_valid_with_equal
+    assert Category.left_and_rights_valid?
+    categories(:top_level_2)[:lft] = categories(:top_level_2)[:rgt]
+    categories(:top_level_2).save(false)
+    assert !Category.left_and_rights_valid?
+  end
+
+  def test_left_and_rights_valid_with_left_equal_to_parent
+    assert Category.left_and_rights_valid?
+    categories(:child_2)[:lft] = categories(:top_level)[:lft]
+    categories(:child_2).save(false)
+    assert !Category.left_and_rights_valid?
+  end
+
+  def test_left_and_rights_valid_with_right_equal_to_parent
+    assert Category.left_and_rights_valid?
+    categories(:child_2)[:rgt] = categories(:top_level)[:rgt]
+    categories(:child_2).save(false)
+    assert !Category.left_and_rights_valid?
+  end
+  
 end
