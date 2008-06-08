@@ -84,8 +84,8 @@ module CollectiveIdea
             end_eval
           end
           
-          named_scope :roots, :conditions => {parent_column_name => nil}, :order => left_column_name
-          named_scope :leaves, :conditions => "#{right_column_name} - #{left_column_name} = 1", :order => left_column_name
+          named_scope :roots, :conditions => {parent_column_name => nil}, :order => quoted_left_column_name
+          named_scope :leaves, :conditions => "#{quoted_right_column_name} - #{quoted_left_column_name} = 1", :order => quoted_left_column_name
           
         end
         
@@ -166,14 +166,14 @@ module CollectiveIdea
             # set left
             node[left_column_name] = indices[scope.call(node)] += 1
             # find
-            find(:all, :conditions => ["parent_id = ? #{scope.call(node)}", node], :order => "#{left_column_name}, #{right_column_name}, id").each{|n| set_left_and_rights.call(n) }
+            find(:all, :conditions => ["parent_id = ? #{scope.call(node)}", node], :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each{|n| set_left_and_rights.call(n) }
             # set right
             node[right_column_name] = indices[scope.call(node)] += 1    
             node.save!    
           end
                               
           # Find root node(s)
-          root_nodes = find(:all, :conditions => "parent_id IS NULL", :order => "#{left_column_name}, #{right_column_name}, id").each do |root_node|
+          root_nodes = find(:all, :conditions => "parent_id IS NULL", :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each do |root_node|
             # setup index for this scope
             indices[scope.call(root_node)] ||= 0
             set_left_and_rights.call(root_node)
@@ -279,13 +279,13 @@ module CollectiveIdea
               # What do to do about validation?
               return nil unless self.save
 
-              child[acts_as_nested_set_options[:parent_column]] = self.id
+              child[parent_column_name] = self.id
               child[left_column_name] = 2
               child[right_column_name]= 3
               return child.save
             else
               # OK, we need to add and shift everything else to the right
-              child[acts_as_nested_set_options[:parent_column]] = self.id
+              child[parent_column_name] = self.id
               right_bound = right
               child[left_column_name] = right_bound
               child[right_column_name] = right_bound + 1
@@ -312,7 +312,9 @@ module CollectiveIdea
 
         # Returns the array of all parents and self
         def self_and_ancestors
-          Scope.new(nested_set_scope, :conditions => "#{left_column_name} <= #{left} AND #{right_column_name} >= #{right}")
+          Scope.new(nested_set_scope, :conditions => [
+            "#{quoted_left_column_name} <= ? AND #{quoted_right_column_name} >= ?", left, right
+          ])
         end
 
         # Returns an array of all parents
@@ -332,23 +334,20 @@ module CollectiveIdea
 
         # Returns a set of all of its nested children which do not have children  
         def leaves
-          Scope.new(descendants, :conditions => "#{right_column_name} - #{left_column_name} = 1")
+          Scope.new(descendants, :conditions => "#{quoted_right_column_name} - #{quoted_left_column_name} = 1")
         end    
 
         # Returns the level of this object in the tree
         # root level is 0
         def level
-          if parent_id.nil?
-            0 
-          else
-            nested_set_scope.count(:conditions => "(#{left_column_name} < #{left} AND #{right_column_name} > #{right})")
-          end
+          parent_id.nil? ? 0 : ancestors.count
         end
 
         # Returns a set of itself and all of its nested children
         def self_and_descendants
-          Scope.new(nested_set_scope,
-            :conditions => "#{left_column_name} >= #{left} AND #{right_column_name} <= #{right}")
+          Scope.new(nested_set_scope, :conditions => [
+            "#{quoted_left_column_name} >= ? AND #{quoted_right_column_name} <= ?", left, right
+          ])
         end
 
         # Returns a set of all of its children and nested children
@@ -388,7 +387,7 @@ module CollectiveIdea
           nested_set_scope.find(:first,
             :conditions => ["#{quoted_left_column_name} < ? AND #{quoted_parent_column_name} = ?",
               left, parent_id],
-            :order => "#{left_column_name} DESC"
+            :order => "#{quoted_left_column_name} DESC"
           )
         end
 
@@ -397,7 +396,7 @@ module CollectiveIdea
           nested_set_scope.find(:first,
             :conditions => ["#{quoted_left_column_name} > ? AND #{quoted_parent_column_name} = ?",
               left, parent_id],
-            :order => left_column_name
+            :order => quoted_left_column_name
           )
         end
 
@@ -452,7 +451,7 @@ module CollectiveIdea
         # the base ActiveRecord class, using the :scope declared in the acts_as_nested_set
         # declaration.
         def nested_set_scope
-          options = {:order => left_column_name}
+          options = {:order => quoted_left_column_name}
           scope = acts_as_nested_set_options[:scope]
           options[:conditions] = if Array === scope
             scope.inject({}) {|conditions,attr| conditions.merge attr => self[attr] }
@@ -477,11 +476,17 @@ module CollectiveIdea
           diff = right - left + 1
 
           self.class.base_class.transaction do
-            nested_set_scope.delete_all("#{left_column_name} > #{left} AND #{right_column_name} < #{right}")
-            nested_set_scope.update_all("#{left_column_name} = (#{left_column_name} - #{diff})",
-              "#{left_column_name} >= #{right}")
-            nested_set_scope.update_all("#{right_column_name} = (#{right_column_name} - #{diff} )",
-              "#{right_column_name} >= #{right}" )
+            nested_set_scope.delete_all(
+              ["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?", left, right]
+            )
+            nested_set_scope.update_all(
+              ["#{quoted_left_column_name} = (#{quoted_left_column_name} - ?)", diff],
+              ["#{quoted_left_column_name} >= ?", right]
+            )
+            nested_set_scope.update_all(
+              ["#{quoted_right_column_name} = (#{quoted_right_column_name} - ?)", diff],
+              ["#{quoted_right_column_name} >= ?", right]
+            )
           end
         end
         
@@ -541,27 +546,29 @@ module CollectiveIdea
           if position == :child
             new_parent = target.id
           else
-            new_parent = target[acts_as_nested_set_options[:parent_column]].nil? ? 'NULL' : target[acts_as_nested_set_options[:parent_column]]
+            new_parent = target[parent_column_name].nil? ? 'NULL' : target[parent_column_name]
           end
 
           # update and that rules
-          self.class.base_class.update_all( "#{left_column_name} = CASE \
-                WHEN #{left_column_name} BETWEEN #{left} AND #{right} \
-                  THEN #{left_column_name} + #{shift} \
-                WHEN #{left_column_name} BETWEEN #{b_left} AND #{b_right} \
-                  THEN #{left_column_name} + #{updown} \
-                ELSE #{left_column_name} END, \
-            #{right_column_name} = CASE \
-                WHEN #{right_column_name} BETWEEN #{left} AND #{right} \
-                  THEN #{right_column_name} + #{shift} \
-                WHEN #{right_column_name} BETWEEN #{b_left} AND #{b_right} \
-                  THEN #{right_column_name} + #{updown} \
-                ELSE #{right_column_name} END, \
-            #{acts_as_nested_set_options[:parent_column]} = CASE \
-                WHEN #{self.class.base_class.primary_key} = #{self.id} \
-                  THEN #{new_parent} \
-                ELSE #{acts_as_nested_set_options[:parent_column]} END",
-            acts_as_nested_set_options[:scope] )
+          self.class.base_class.update_all(
+            "#{quoted_left_column_name} = CASE " +
+              "WHEN #{quoted_left_column_name} BETWEEN #{left} AND #{right} " +
+                "THEN #{quoted_left_column_name} + #{shift} " +
+              "WHEN #{quoted_left_column_name} BETWEEN #{b_left} AND #{b_right} " +
+                "THEN #{quoted_left_column_name} + #{updown} " +
+              "ELSE #{quoted_left_column_name} END, " +
+            "#{quoted_right_column_name} = CASE " +
+              "WHEN #{quoted_right_column_name} BETWEEN #{left} AND #{right} " +
+                "THEN #{quoted_right_column_name} + #{shift} " +
+              "WHEN #{quoted_right_column_name} BETWEEN #{b_left} AND #{b_right} " +
+                "THEN #{quoted_right_column_name} + #{updown} " +
+              "ELSE #{quoted_right_column_name} END, " +
+            "#{quoted_parent_column_name} = CASE " +
+              "WHEN #{self.class.base_class.primary_key} = #{self.id} " +
+                "THEN #{new_parent} " +
+              "ELSE #{quoted_parent_column_name} END",
+            acts_as_nested_set_options[:scope] # FIXME: use nested_set_scope
+          )
           self.reload
         end
 
