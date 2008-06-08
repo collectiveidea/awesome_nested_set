@@ -1,9 +1,11 @@
 # Taken from Rails 2.1
-module ActiveRecord
+module CollectiveIdea
   module NamedScope
     # All subclasses of ActiveRecord::Base have two named_scopes:
     # * <tt>all</tt>, which is similar to a <tt>find(:all)</tt> query, and
-    # * <tt>scoped</tt>, which allows for the creation of anonymous scopes, on the fly: <tt>Shirt.scoped(:conditions => {:color => 'red'}).scoped(:include => :washing_instructions)</tt>
+    # * <tt>scoped</tt>, which allows for the creation of anonymous scopes, on the fly:
+    #
+    #   Shirt.scoped(:conditions => {:color => 'red'}).scoped(:include => :washing_instructions)
     #
     # These anonymous scopes tend to be useful when procedurally generating complex queries, where passing
     # intermediate values (scopes) around as first-class objects is convenient.
@@ -40,7 +42,7 @@ module ActiveRecord
       # Nested finds and calculations also work with these compositions: <tt>Shirt.red.dry_clean_only.count</tt> returns the number of garments
       # for which these criteria obtain. Similarly with <tt>Shirt.red.dry_clean_only.average(:thread_count)</tt>.
       #
-      # All scopes are available as class methods on the ActiveRecord::Base descendent upon which the scopes were defined. But they are also available to
+      # All scopes are available as class methods on the ActiveRecord descendent upon which the scopes were defined. But they are also available to
       # <tt>has_many</tt> associations. If,
       #
       #   class Person < ActiveRecord::Base
@@ -98,16 +100,10 @@ module ActiveRecord
         end
       end
     end
-    
+
     class Scope
       attr_reader :proxy_scope, :proxy_options
-
-      [].methods.each do |m|
-        unless m =~ /(^__|^nil\?|^send|^object_id$|class|extend|find|count|sum|average|maximum|minimum|paginate|first|last|empty?)/
-          delegate m, :to => :proxy_found
-        end
-      end
-
+      [].methods.each { |m| delegate m, :to => :proxy_found unless m =~ /(^__|^nil\?|^send|class|extend|find|count|sum|average|maximum|minimum|paginate)/ }
       delegate :scopes, :with_scope, :to => :proxy_scope
 
       def initialize(proxy_scope, options, &block)
@@ -118,26 +114,6 @@ module ActiveRecord
 
       def reload
         load_found; self
-      end
-
-      def first(*args)
-        if args.first.kind_of?(Integer) || (@found && !args.first.kind_of?(Hash))
-          proxy_found.first(*args)
-        else
-          find(:first, *args)
-        end
-      end
-
-      def last(*args)
-        if args.first.kind_of?(Integer) || (@found && !args.first.kind_of?(Hash))
-          proxy_found.last(*args)
-        else
-          find(:last, *args)
-        end
-      end
-
-      def empty?
-        @found ? @found.empty? : count.zero?
       end
 
       protected

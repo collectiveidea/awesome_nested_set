@@ -1,7 +1,7 @@
 unless defined? ActiveRecord::NamedScope
   require 'awesome_nested_set/named_scope'
   ActiveRecord::Base.class_eval do
-    include ActiveRecord::NamedScope
+    include CollectiveIdea::NamedScope
   end
 end
 
