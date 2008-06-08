@@ -40,9 +40,9 @@ module CollectiveIdea
         # * +left_column+ - column name for left boundry data, default "lft"
         # * +right_column+ - column name for right boundry data, default "rgt"
         # * +scope+ - restricts what is to be considered a list. Given a symbol, it'll attach "_id"
-        #   (if that hasn't been already) and use that as the foreign key restriction. It's also possible
-        #   to give it an entire string that is interpolated if you need a tighter scope than just a foreign key.
-        #   Example: <tt>acts_as_nested_set :scope => 'todo_list_id = #{todo_list_id} AND completed = 0'</tt>
+        #   (if it hasn't been already) and use that as the foreign key restriction. You
+        #   can also pass an array to scope by multiple attributes.
+        #   Example: <tt>acts_as_nested_set :scope => [:notable_id, :notable_type]</tt>
         #
         # See CollectiveIdea::Acts::NestedSet::ClassMethods for a list of class methods and
         # CollectiveIdea::Acts::NestedSet::InstanceMethods for a list of instance methods added 
@@ -456,8 +456,11 @@ module CollectiveIdea
         # declaration.
         def nested_set_scope
           options = {:order => left_column_name}
-          if scope_column = acts_as_nested_set_options[:scope]
-            options[:conditions] = {scope_column => self[scope_column]}
+          scope = acts_as_nested_set_options[:scope]
+          options[:conditions] = if Array === scope
+            scope.inject({}) {|conditions,attr| conditions.merge attr => self[attr] }
+          elsif scope
+            {scope => self[scope]}
           end
           Scope.new(self.class.base_class, options)
         end

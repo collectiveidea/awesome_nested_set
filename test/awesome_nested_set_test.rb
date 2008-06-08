@@ -1,5 +1,4 @@
 require File.dirname(__FILE__) + '/test_helper'
-require 'ruby-debug'
 
 class AwesomeNestedSetTest < Test::Unit::TestCase
   fixtures :categories
@@ -11,6 +10,9 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   class Scoped < ActiveRecord::Base
     acts_as_nested_set :scope => :organization
     set_table_name 'categories'
+  end
+  class Note < ActiveRecord::Base
+    acts_as_nested_set :scope => [:notable_id, :notable_type]
   end
   
   def test_left_column_default
@@ -453,6 +455,15 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
       assert categories(:top_level).is_or_is_ancestor_of?(categories(c))
     end
     assert !categories(:top_level).is_or_is_ancestor_of?(categories(:top_level_2))
+  end
+  
+  def test_multi_scoped
+    note1 = Note.create!(:body => "A", :notable_id => 1, :notable_type => 'Category')
+    note2 = Note.create!(:body => "B", :notable_id => 1, :notable_type => 'Category')
+    note3 = Note.create!(:body => "C", :notable_id => 1, :notable_type => 'Default')
+    
+    assert_equal [note1, note2], note1.self_and_siblings
+    assert_equal [note3], note3.self_and_siblings
   end
   
 end
