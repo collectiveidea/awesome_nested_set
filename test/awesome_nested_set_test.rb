@@ -97,7 +97,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   end
   
   def test_leaves_class_method
-    assert_equal Category.all(:conditions => "#{Category.right_column_name} - #{Category.left_column_name} = 1"), Category.leaves
+    assert_equal Category.find(:all, :conditions => "#{Category.right_column_name} - #{Category.left_column_name} = 1"), Category.leaves
     assert_equal Category.leaves.count, 4
     assert (Category.leaves.include? categories(:child_1))
     assert (Category.leaves.include? categories(:child_2_1))
