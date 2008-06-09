@@ -269,7 +269,8 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   end
 
   def test_right_sibling_of_root
-    assert_nil categories(:top_level).right_sibling
+    assert_equal categories(:top_level_2), categories(:top_level).right_sibling
+    assert_nil categories(:top_level_2).right_sibling
   end
 
   def test_right_sibling_without_siblings

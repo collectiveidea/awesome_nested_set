@@ -379,22 +379,16 @@ module CollectiveIdea
             self.send(scope_column_name) == other.send(scope_column_name)
         end
 
-        # Find the first sibling to the right
+        # Find the first sibling to the left
         def left_sibling
-          nested_set_scope.find(:first,
-            :conditions => ["#{quoted_left_column_name} < ? AND #{quoted_parent_column_name} = ?",
-              left, parent_id],
-            :order => "#{quoted_left_column_name} DESC"
-          )
+          siblings.find(:first, :conditions => ["#{quoted_left_column_name} < ?", left],
+            :order => "#{quoted_left_column_name} DESC")
         end
 
         # Find the first sibling to the right
         def right_sibling
-          nested_set_scope.find(:first,
-            :conditions => ["#{quoted_left_column_name} > ? AND #{quoted_parent_column_name} = ?",
-              left, parent_id],
-            :order => quoted_left_column_name
-          )
+          siblings.find(:first, :conditions => ["#{quoted_left_column_name} > ?", left],
+            :order => quoted_left_column_name)
         end
 
         # Shorthand method for finding the left sibling and moving to the left of it.
