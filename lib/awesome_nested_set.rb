@@ -221,9 +221,6 @@ module CollectiveIdea
       #   category.self_and_descendants.count
       #   category.ancestors.find(:all, :conditions => "name like '%foo%'")
       module InstanceMethods
-        # alias ActiveRecord::Base::Scope so we don't always have to refer to it with the long name
-        Scope = ActiveRecord::Base::Scope
-        
         # Value of the parent column
         def parent_id
           self[parent_column_name]
@@ -312,9 +309,9 @@ module CollectiveIdea
 
         # Returns the array of all parents and self
         def self_and_ancestors
-          Scope.new(nested_set_scope, :conditions => [
+          nested_set_scope.scoped :conditions => [
             "#{quoted_left_column_name} <= ? AND #{quoted_right_column_name} >= ?", left, right
-          ])
+          ]
         end
 
         # Returns an array of all parents
@@ -324,7 +321,7 @@ module CollectiveIdea
 
         # Returns the array of all children of the parent, including self
         def self_and_siblings
-          Scope.new(nested_set_scope, :conditions => {parent_column_name => parent_id})
+          nested_set_scope.scoped :conditions => {parent_column_name => parent_id}
         end
 
         # Returns the array of all children of the parent, except self
@@ -334,7 +331,7 @@ module CollectiveIdea
 
         # Returns a set of all of its nested children which do not have children  
         def leaves
-          Scope.new(descendants, :conditions => "#{quoted_right_column_name} - #{quoted_left_column_name} = 1")
+          descendants.scoped :conditions => "#{quoted_right_column_name} - #{quoted_left_column_name} = 1"
         end    
 
         # Returns the level of this object in the tree
@@ -345,9 +342,9 @@ module CollectiveIdea
 
         # Returns a set of itself and all of its nested children
         def self_and_descendants
-          Scope.new(nested_set_scope, :conditions => [
+          nested_set_scope.scoped :conditions => [
             "#{quoted_left_column_name} >= ? AND #{quoted_right_column_name} <= ?", left, right
-          ])
+          ]
         end
 
         # Returns a set of all of its children and nested children
@@ -357,7 +354,7 @@ module CollectiveIdea
 
         # Returns a set of only this entry's immediate children
         def children
-          Scope.new(nested_set_scope, :conditions => {parent_column_name => self})
+          nested_set_scope.scoped :conditions => {parent_column_name => self}
         end
 
         def is_descendant_of?(other)
@@ -444,7 +441,7 @@ module CollectiveIdea
       protected
       
         def without_self(scope)
-          Scope.new(scope, :conditions => ["#{self.class.primary_key} != ?", self])
+          scope.scoped :conditions => ["#{self.class.primary_key} != ?", self]
         end
         
         # All nested set queries should use this nested_set_scope, which performs finds on
@@ -458,7 +455,7 @@ module CollectiveIdea
           elsif scope
             {scope => self[scope]}
           end
-          Scope.new(self.class.base_class, options)
+          self.class.base_class.scoped options
         end
         
         # on creation, set automatically lft and rgt to the end of the tree
