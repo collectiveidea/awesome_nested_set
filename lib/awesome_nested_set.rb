@@ -467,7 +467,7 @@ module CollectiveIdea
           diff = right - left + 1
 
           self.class.base_class.transaction do
-            nested_set_scope.delete_all(
+            nested_set_scope.destroy_all(
               ["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?", left, right]
             )
             nested_set_scope.update_all(
