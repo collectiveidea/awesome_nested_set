@@ -551,6 +551,11 @@ module CollectiveIdea
             new_parent = target[parent_column_name].nil? ? 'NULL' : target[parent_column_name]
           end
 
+          scope_string =
+            if acts_as_nested_set_options[:scope]
+              "#{scope_column_name} = #{target.send(scope_column_name)}"
+            end
+            
           # update and that rules
           self.class.base_class.update_all(
             "#{quoted_left_column_name} = CASE " +
@@ -569,7 +574,7 @@ module CollectiveIdea
               "WHEN #{self.class.base_class.primary_key} = #{self.id} " +
                 "THEN #{new_parent} " +
               "ELSE #{quoted_parent_column_name} END",
-            acts_as_nested_set_options[:scope] # FIXME: use nested_set_scope
+            scope_string
           )
           self.reload
         end
