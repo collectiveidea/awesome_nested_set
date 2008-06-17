@@ -416,6 +416,11 @@ module CollectiveIdea
           move_to node, :child
         end
         
+        # Move the node to root nodes
+        def move_to_root
+          move_to nil, :root
+        end
+        
         def move_possible?(target)
           # Can't target self
           self != target && 
@@ -488,9 +493,9 @@ module CollectiveIdea
           extent = right - left + 1
 
           # load object if node is not an object
-          target = self.class.base_class.find(target) if !(self.class.base_class === target)
+          target = self.class.base_class.find(target) unless position == :root || self.class.base_class === target
           
-          unless move_possible?(target)
+          unless position == :root || move_possible?(target)
             raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
           end
           
@@ -520,6 +525,9 @@ module CollectiveIdea
               new_left  = target.right - extent + 1
               new_right = target.right
             end
+          when :root
+            new_left  = 1
+            new_right = extent
           else
             raise ActiveRecord::ActiveRecordError, "Position should be either left, right or child ('#{position}' received)."
           end
@@ -534,8 +542,11 @@ module CollectiveIdea
           updown = (shift > 0) ? -extent : extent
 
           # change nil to NULL for new parent
-          if position == :child
+          case position
+          when :child
             new_parent = target.id
+          when :root
+            new_parent = 'NULL'
           else
             new_parent = target[parent_column_name].nil? ? 'NULL' : target[parent_column_name]
           end
