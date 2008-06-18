@@ -310,6 +310,14 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal categories(:child_3), categories(:child_1).left_sibling
     assert Category.valid?
   end
+  
+  def test_move_to_root
+    categories(:child_2).move_to_root
+    assert_nil categories(:child_2).parent
+    assert_equal 0, categories(:child_2).level
+    assert_equal 1, categories(:child_2_1).level
+    assert Category.valid?
+  end
 
   def test_move_to_child_of
     categories(:child_1).move_to_child_of(categories(:child_3))

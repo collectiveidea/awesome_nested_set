@@ -166,14 +166,14 @@ module CollectiveIdea
             # set left
             node[left_column_name] = indices[scope.call(node)] += 1
             # find
-            find(:all, :conditions => ["parent_id = ? #{scope.call(node)}", node], :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each{|n| set_left_and_rights.call(n) }
+            find(:all, :conditions => ["#{quoted_parent_column_name} = ? #{scope.call(node)}", node], :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each{|n| set_left_and_rights.call(n) }
             # set right
             node[right_column_name] = indices[scope.call(node)] += 1    
             node.save!    
           end
                               
           # Find root node(s)
-          root_nodes = find(:all, :conditions => "parent_id IS NULL", :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each do |root_node|
+          root_nodes = find(:all, :conditions => "#{quoted_parent_column_name} IS NULL", :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each do |root_node|
             # setup index for this scope
             indices[scope.call(root_node)] ||= 0
             set_left_and_rights.call(root_node)
@@ -416,6 +416,11 @@ module CollectiveIdea
           move_to node, :child
         end
         
+        # Move the node to root nodes
+        def move_to_root
+          move_to nil, :root
+        end
+        
         def move_possible?(target)
           # Can't target self
           self != target && 
@@ -488,9 +493,9 @@ module CollectiveIdea
           extent = right - left + 1
 
           # load object if node is not an object
-          target = self.class.base_class.find(target) if !(self.class.base_class === target)
+          target = self.class.base_class.find(target) unless position == :root || self.class.base_class === target
           
-          unless move_possible?(target)
+          unless position == :root || move_possible?(target)
             raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
           end
           
@@ -520,6 +525,9 @@ module CollectiveIdea
               new_left  = target.right - extent + 1
               new_right = target.right
             end
+          when :root
+            new_left  = 1
+            new_right = extent
           else
             raise ActiveRecord::ActiveRecordError, "Position should be either left, right or child ('#{position}' received)."
           end
@@ -534,12 +542,20 @@ module CollectiveIdea
           updown = (shift > 0) ? -extent : extent
 
           # change nil to NULL for new parent
-          if position == :child
+          case position
+          when :child
             new_parent = target.id
+          when :root
+            new_parent = 'NULL'
           else
             new_parent = target[parent_column_name].nil? ? 'NULL' : target[parent_column_name]
           end
 
+          scope_string =
+            if acts_as_nested_set_options[:scope]
+              "#{scope_column_name} = #{target.send(scope_column_name)}"
+            end
+            
           # update and that rules
           self.class.base_class.update_all(
             "#{quoted_left_column_name} = CASE " +
@@ -558,7 +574,7 @@ module CollectiveIdea
               "WHEN #{self.class.base_class.primary_key} = #{self.id} " +
                 "THEN #{new_parent} " +
               "ELSE #{quoted_parent_column_name} END",
-            acts_as_nested_set_options[:scope] # FIXME: use nested_set_scope
+            scope_string
           )
           self.reload
         end
