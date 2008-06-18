@@ -493,7 +493,8 @@ module CollectiveIdea
           extent = right - left + 1
 
           # load object if node is not an object
-          target = self.class.base_class.find(target) unless position == :root || self.class.base_class === target
+          target = nested_set_scope.find(target) unless position == :root ||
+            self.class.base_class === target
           
           unless position == :root || move_possible?(target)
             raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
@@ -546,36 +547,32 @@ module CollectiveIdea
           when :child
             new_parent = target.id
           when :root
-            new_parent = 'NULL'
+            new_parent = nil
           else
-            new_parent = target[parent_column_name].nil? ? 'NULL' : target[parent_column_name]
+            new_parent = target[parent_column_name]
           end
 
-          scope_string =
-            if acts_as_nested_set_options[:scope]
-              "#{scope_column_name} = #{target.send(scope_column_name)}"
-            end
-            
-          # update and that rules
-          self.class.base_class.update_all(
+          self.class.base_class.update_all([
             "#{quoted_left_column_name} = CASE " +
-              "WHEN #{quoted_left_column_name} BETWEEN #{left} AND #{right} " +
-                "THEN #{quoted_left_column_name} + #{shift} " +
-              "WHEN #{quoted_left_column_name} BETWEEN #{b_left} AND #{b_right} " +
-                "THEN #{quoted_left_column_name} + #{updown} " +
+              "WHEN #{quoted_left_column_name} BETWEEN :left AND :right " +
+                "THEN #{quoted_left_column_name} + :shift " +
+              "WHEN #{quoted_left_column_name} BETWEEN :b_left AND :b_right " +
+                "THEN #{quoted_left_column_name} + :updown " +
               "ELSE #{quoted_left_column_name} END, " +
             "#{quoted_right_column_name} = CASE " +
-              "WHEN #{quoted_right_column_name} BETWEEN #{left} AND #{right} " +
-                "THEN #{quoted_right_column_name} + #{shift} " +
-              "WHEN #{quoted_right_column_name} BETWEEN #{b_left} AND #{b_right} " +
-                "THEN #{quoted_right_column_name} + #{updown} " +
+              "WHEN #{quoted_right_column_name} BETWEEN :left AND :right " +
+                "THEN #{quoted_right_column_name} + :shift " +
+              "WHEN #{quoted_right_column_name} BETWEEN :b_left AND :b_right " +
+                "THEN #{quoted_right_column_name} + :updown " +
               "ELSE #{quoted_right_column_name} END, " +
             "#{quoted_parent_column_name} = CASE " +
-              "WHEN #{self.class.base_class.primary_key} = #{self.id} " +
-                "THEN #{new_parent} " +
+              "WHEN #{self.class.base_class.primary_key} = :id " +
+                "THEN :new_parent " +
               "ELSE #{quoted_parent_column_name} END",
-            scope_string
-          )
+            {:left => left, :right => right, :b_left => b_left, :b_right => b_right,
+              :shift => shift, :updown => updown, :id => self.id,
+              :new_parent => new_parent}
+          ], nested_set_scope.proxy_options[:conditions])
           self.reload
         end
 
