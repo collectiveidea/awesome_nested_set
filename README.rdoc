@@ -35,7 +35,7 @@ To make use of awesome_nested_set, your model needs to have 3 fields: lft, rgt, 
     end
   end
 
-Enable the nested set functionality by declaring acts_as_ferret on your model
+Enable the nested set functionality by declaring acts_as_nested_set on your model
 
   class Category < ActiveRecord::Base
     acts_as_nested_set
