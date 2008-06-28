@@ -6,12 +6,14 @@ unless defined? ActiveRecord::NamedScope
 end
 
 require 'awesome_nested_set'
-require 'awesome_nested_set/helper'
 
 ActiveRecord::Base.class_eval do
   include CollectiveIdea::Acts::NestedSet
 end
 
-ActionView::Base.class_eval do
-  include CollectiveIdea::Acts::NestedSet::Helper
+if defined?(ActionView)
+  require 'awesome_nested_set/helper'
+  ActionView::Base.class_eval do
+    include CollectiveIdea::Acts::NestedSet::Helper
+  end
 end
