@@ -172,6 +172,20 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     self_and_descendants = [parent, categories(:child_1), categories(:child_2),
       categories(:child_2_1), categories(:child_3)]
     assert_equal self_and_descendants, parent.self_and_descendants
+    assert_equal self_and_descendants, parent.self_and_descendants.count
+  end
+  
+  def test_descendents
+    lawyers = Category.create!(:name => "lawyers")
+    us = Category.create!(:name => "United States")
+    us.move_to_child_of(lawyers)
+    patent = Category.create!(:name => "Patent Law")
+    patent.move_to_child_of(us)
+    lawyers.reload
+
+    assert_equal 1, lawyers.children.size
+    assert_equal 1, us.children.size
+    assert_equal 2, lawyers.descendants.size
   end
   
   def test_self_and_descendents
