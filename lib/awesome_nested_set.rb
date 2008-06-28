@@ -36,13 +36,17 @@ module CollectiveIdea
       module SingletonMethods
         # Configuration options are:
         #
-        # * +parent_column+ - specifies the column name to use for keeping the position integer (default: parent_id)
-        # * +left_column+ - column name for left boundry data, default "lft"
-        # * +right_column+ - column name for right boundry data, default "rgt"
-        # * +scope+ - restricts what is to be considered a list. Given a symbol, it'll attach "_id"
+        # * +:parent_column+ - specifies the column name to use for keeping the position integer (default: parent_id)
+        # * +:left_column+ - column name for left boundry data, default "lft"
+        # * +:right_column+ - column name for right boundry data, default "rgt"
+        # * +:scope+ - restricts what is to be considered a list. Given a symbol, it'll attach "_id"
         #   (if it hasn't been already) and use that as the foreign key restriction. You
         #   can also pass an array to scope by multiple attributes.
         #   Example: <tt>acts_as_nested_set :scope => [:notable_id, :notable_type]</tt>
+        # * +:dependent+ - behavior for cascading destroy. If set to :destroy, all the
+        #   child objects are destroyed alongside this object by calling their destroy
+        #   method. If set to :delete_all (default), all the child objects are deleted
+        #   without calling their destroy method.
         #
         # See CollectiveIdea::Acts::NestedSet::ClassMethods for a list of class methods and
         # CollectiveIdea::Acts::NestedSet::InstanceMethods for a list of instance methods added 
@@ -51,7 +55,8 @@ module CollectiveIdea
           options = {
             :parent_column => 'parent_id',
             :left_column => 'lft',
-            :right_column => 'rgt'
+            :right_column => 'rgt',
+            :dependent => :delete_all, # or :destroy
           }.merge(options)
           
           if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
@@ -471,9 +476,13 @@ module CollectiveIdea
           return if right.nil? || left.nil?
           diff = right - left + 1
 
+          delete_method = acts_as_nested_set_options[:dependent] == :destroy ?
+            :destroy_all : :delete_all
+
           self.class.base_class.transaction do
-            nested_set_scope.destroy_all(
-              ["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?", left, right]
+            nested_set_scope.send(delete_method,
+              ["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?",
+                left, right]
             )
             nested_set_scope.update_all(
               ["#{quoted_left_column_name} = (#{quoted_left_column_name} - ?)", diff],
