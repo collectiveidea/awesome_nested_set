@@ -524,4 +524,21 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert !Category.left_and_rights_valid?
   end
   
+  def test_moving_dirty_objects_doesnt_invalidate_tree
+    r1 = Category.create
+    r2 = Category.create
+    r3 = Category.create
+    r4 = Category.create
+    nodes = [r1, r2, r3, r4]
+    
+    r2.move_to_child_of(r1)
+    assert Category.valid?
+    
+    r3.move_to_child_of(r1)
+    assert Category.valid?
+    
+    r4.move_to_child_of(r2)
+    assert Category.valid?
+  end
+  
 end

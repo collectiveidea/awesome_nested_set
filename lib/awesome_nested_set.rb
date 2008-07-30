@@ -494,6 +494,12 @@ module CollectiveIdea
             )
           end
         end
+
+        # reload left, right, and parent
+        def reload_nested_set
+          reload(:select => "#{quoted_left_column_name}, " +
+            "#{quoted_right_column_name}, #{quoted_parent_column_name}")
+        end
         
         def move_to(target, position)
           raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.new_record?
@@ -501,9 +507,13 @@ module CollectiveIdea
           # extent is the width of the tree self and children
           extent = right - left + 1
 
-          # load object if node is not an object
-          target = nested_set_scope.find(target) unless position == :root ||
-            self.class.base_class === target
+          if target.is_a? self.class.base_class
+            target.reload_nested_set
+          elsif position != :root
+            # load object if node is not an object
+            target = nested_set_scope.find(target)
+          end
+          self.reload_nested_set
           
           unless position == :root || move_possible?(target)
             raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
