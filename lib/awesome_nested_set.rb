@@ -592,7 +592,8 @@ module CollectiveIdea
               :shift => shift, :updown => updown, :id => self.id,
               :new_parent => new_parent}
           ], nested_set_scope.proxy_options[:conditions])
-          self.reload
+          target.reload_nested_set if target
+          self.reload_nested_set
         end
 
       end

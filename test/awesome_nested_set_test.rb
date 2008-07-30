@@ -312,7 +312,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   def test_move_to_left_of
     categories(:child_3).move_to_left_of(categories(:child_1))
     assert_nil categories(:child_3).left_sibling
-    categories(:child_1).reload
     assert_equal categories(:child_1), categories(:child_3).right_sibling
     assert Category.valid?
   end
@@ -320,7 +319,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   def test_move_to_right_of
     categories(:child_1).move_to_right_of(categories(:child_3))
     assert_nil categories(:child_1).right_sibling
-    categories(:child_3).reload
     assert_equal categories(:child_3), categories(:child_1).left_sibling
     assert Category.valid?
   end
@@ -347,7 +345,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal 3, categories(:child_1).right
     
     categories(:child_2).move_to_child_of(categories(:child_1))
-      categories(:child_1).reload
     assert Category.valid?
     assert_equal categories(:child_1).id, categories(:child_2).parent_id
     
@@ -367,7 +364,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal 14, new_top.right
     
     categories(:top_level_2).move_to_child_of(new_top)
-      new_top.reload
     
     assert Category.valid?
     assert_equal new_top.id, categories(:top_level_2).parent_id
@@ -387,9 +383,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     # create a new top-level node and move an entire top-level tree inside it.
     new_top = Category.create(:name => 'New Top')
     categories(:top_level).move_to_child_of(new_top)
-      new_top.reload
-      categories(:top_level).reload
-      categories(:child_2_1).reload
+    categories(:child_2_1).reload
     assert Category.valid?  
     assert_equal new_top.id, categories(:top_level).parent_id
     
@@ -406,7 +400,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     root3 = Category.create(:name => 'Root3')
     
     root3.move_to_child_of root1
-    root2.reload # ADDING OUTER ROOT TO FIRST ROOT PUSHES MIDDLE ROOT LEFT AND RIGHT'S OUT TO EDGE 
     
     root2.move_to_child_of root1
       
@@ -424,7 +417,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     node3 = Category.create(:name => 'Node-3')
     
     node3.move_to_child_of node1    
-    node2.reload
     node2.move_to_child_of node1
       
     output = Category.roots.last.to_text
