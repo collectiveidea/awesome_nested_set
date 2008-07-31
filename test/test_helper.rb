@@ -3,7 +3,8 @@ plugin_test_dir = File.dirname(__FILE__)
 
 require 'rubygems'
 require 'test/unit'
-gem 'activerecord', '>= 2.0'
+require 'multi_rails_init'
+# gem 'activerecord', '>= 2.0'
 require 'active_record' 
 require 'action_controller'
 require 'action_view'
