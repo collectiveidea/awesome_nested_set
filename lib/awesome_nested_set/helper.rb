@@ -10,33 +10,31 @@ module CollectiveIdea
         # You can exclude some items from the tree.
         # You can pass a block receiving an item and returning the string displayed in the select.
         #
-        # == Usage
-        # Default is to use the whole tree and to print the first string column of your model.
-        # You can tweak this by passing your parameters, or better, pass a block that will receive
-        # an item from your nested set tree and that should return the line with the link.
-        #
-        #   nested_set_options_for_select(Category) {|i| "#{'–' * i.level} #{i.name}" }
-        #
         # == Params
         #  * +class_or_item+ - Class name or top level times
+        #  * +mover+ - The item that is being move, used to exlude impossible moves
         #  * +&block+ - a block that will be used to display: { |item| ... item.name }
-        def nested_set_options_for_select(class_or_item)
+        #
+        # == Usage
+        #
+        #   <%= f.select :parent_id, nested_set_options(Category, @category) {|i|
+        #       "#{'–' * i.level} #{i.name}"
+        #     }) %>
+        #
+        def nested_set_options(class_or_item, mover = nil)
           class_or_item = class_or_item.roots if class_or_item.is_a?(Class)
           items = Array(class_or_item)
           result = []
-          items.each {|i| result += i.self_and_descendants.map {|i| [yield(i), i.id] } }
+          items.each do |root|
+            result += root.self_and_descendants.map do |i|
+              if mover.nil? || mover.new_record? || mover.move_possible?(i)
+                [yield(i), i.id]
+              end
+            end.compact
+          end
           result
         end  
-
-        # This variation of nested_set_options_for_select takes a mover node and won't show
-        # any nodes that the mover can't move to.
-        def nested_set_options_for_select_without_impossible_moves(class_or_item, mover)
-          class_or_item = class_or_item.roots if class_or_item.is_a?(Class)
-          items = Array(class_or_item)
-          result = []
-          items.each {|i| result += i.self_and_descendants.map {|i| [yield(i), i.id] if mover.new_record? || mover.move_possible?(i)}.compact }
-          result
-        end
+        
       end
     end  
   end
