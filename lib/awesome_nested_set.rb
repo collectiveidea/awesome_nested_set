@@ -427,12 +427,10 @@ module CollectiveIdea
         end
         
         def move_possible?(target)
-          # Can't target self
-          self != target && 
-          # can't be in different scopes
-          same_scope?(target) &&
-          # detect impossible move
+          self != target && # Can't target self
+          same_scope?(target) && # can't be in different scopes
           # !(left..right).include?(target.left..target.right) # this needs tested more
+          # detect impossible move
           !((left <= target.left && right >= target.left) or (left <= target.right && right >= target.right))
         end
         
@@ -507,91 +505,93 @@ module CollectiveIdea
           # extent is the width of the tree self and children
           extent = right - left + 1
 
-          if target.is_a? self.class.base_class
-            target.reload_nested_set
-          elsif position != :root
-            # load object if node is not an object
-            target = nested_set_scope.find(target)
-          end
-          self.reload_nested_set
+          transaction do
+            if target.is_a? self.class.base_class
+              target.reload_nested_set
+            elsif position != :root
+              # load object if node is not an object
+              target = nested_set_scope.find(target)
+            end
+            self.reload_nested_set
           
-          unless position == :root || move_possible?(target)
-            raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
-          end
+            unless position == :root || move_possible?(target)
+              raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
+            end
           
-          # compute new left/right for self
-          case position
-          when :child
-            if target.left < left
-              new_left  = target.left + 1
-              new_right = target.left + extent
+            # compute new left/right for self
+            case position
+            when :child
+              if target.left < left
+                new_left  = target.left + 1
+                new_right = target.left + extent
+              else
+                new_left  = target.left - extent + 1
+                new_right = target.left
+              end
+            when :left
+              if target.left < left
+                new_left  = target.left
+                new_right = target.left + extent - 1
+              else
+                new_left  = target.left - extent
+                new_right = target.left - 1
+              end
+            when :right
+              if target.right < right
+                new_left  = target.right + 1
+                new_right = target.right + extent
+              else
+                new_left  = target.right - extent + 1
+                new_right = target.right
+              end
+            when :root
+              new_left  = 1
+              new_right = extent
             else
-              new_left  = target.left - extent + 1
-              new_right = target.left
+              raise ActiveRecord::ActiveRecordError, "Position should be either left, right or child ('#{position}' received)."
             end
-          when :left
-            if target.left < left
-              new_left  = target.left
-              new_right = target.left + extent - 1
+
+            # boundaries of update action
+            b_left, b_right = [left, new_left].min, [right, new_right].max
+
+            # Shift value to move self to new position
+            shift = new_left - left
+
+            # Shift value to move nodes inside boundaries but not under self_and_children
+            updown = (shift > 0) ? -extent : extent
+
+            # change nil to NULL for new parent
+            case position
+            when :child
+              new_parent = target.id
+            when :root
+              new_parent = nil
             else
-              new_left  = target.left - extent
-              new_right = target.left - 1
+              new_parent = target[parent_column_name]
             end
-          when :right
-            if target.right < right
-              new_left  = target.right + 1
-              new_right = target.right + extent
-            else
-              new_left  = target.right - extent + 1
-              new_right = target.right
-            end
-          when :root
-            new_left  = 1
-            new_right = extent
-          else
-            raise ActiveRecord::ActiveRecordError, "Position should be either left, right or child ('#{position}' received)."
+
+            self.class.base_class.update_all([
+              "#{quoted_left_column_name} = CASE " +
+                "WHEN #{quoted_left_column_name} BETWEEN :left AND :right " +
+                  "THEN #{quoted_left_column_name} + :shift " +
+                "WHEN #{quoted_left_column_name} BETWEEN :b_left AND :b_right " +
+                  "THEN #{quoted_left_column_name} + :updown " +
+                "ELSE #{quoted_left_column_name} END, " +
+              "#{quoted_right_column_name} = CASE " +
+                "WHEN #{quoted_right_column_name} BETWEEN :left AND :right " +
+                  "THEN #{quoted_right_column_name} + :shift " +
+                "WHEN #{quoted_right_column_name} BETWEEN :b_left AND :b_right " +
+                  "THEN #{quoted_right_column_name} + :updown " +
+                "ELSE #{quoted_right_column_name} END, " +
+              "#{quoted_parent_column_name} = CASE " +
+                "WHEN #{self.class.base_class.primary_key} = :id " +
+                  "THEN :new_parent " +
+                "ELSE #{quoted_parent_column_name} END",
+              {:left => left, :right => right, :b_left => b_left, :b_right => b_right,
+                :shift => shift, :updown => updown, :id => self.id,
+                :new_parent => new_parent}
+            ], nested_set_scope.proxy_options[:conditions])
           end
-
-          # boundaries of update action
-          b_left, b_right = [left, new_left].min, [right, new_right].max
-
-          # Shift value to move self to new position
-          shift = new_left - left
-
-          # Shift value to move nodes inside boundaries but not under self_and_children
-          updown = (shift > 0) ? -extent : extent
-
-          # change nil to NULL for new parent
-          case position
-          when :child
-            new_parent = target.id
-          when :root
-            new_parent = nil
-          else
-            new_parent = target[parent_column_name]
-          end
-
-          self.class.base_class.update_all([
-            "#{quoted_left_column_name} = CASE " +
-              "WHEN #{quoted_left_column_name} BETWEEN :left AND :right " +
-                "THEN #{quoted_left_column_name} + :shift " +
-              "WHEN #{quoted_left_column_name} BETWEEN :b_left AND :b_right " +
-                "THEN #{quoted_left_column_name} + :updown " +
-              "ELSE #{quoted_left_column_name} END, " +
-            "#{quoted_right_column_name} = CASE " +
-              "WHEN #{quoted_right_column_name} BETWEEN :left AND :right " +
-                "THEN #{quoted_right_column_name} + :shift " +
-              "WHEN #{quoted_right_column_name} BETWEEN :b_left AND :b_right " +
-                "THEN #{quoted_right_column_name} + :updown " +
-              "ELSE #{quoted_right_column_name} END, " +
-            "#{quoted_parent_column_name} = CASE " +
-              "WHEN #{self.class.base_class.primary_key} = :id " +
-                "THEN :new_parent " +
-              "ELSE #{quoted_parent_column_name} END",
-            {:left => left, :right => right, :b_left => b_left, :b_right => b_right,
-              :shift => shift, :updown => updown, :id => self.id,
-              :new_parent => new_parent}
-          ], nested_set_scope.proxy_options[:conditions])
           target.reload_nested_set if target
           self.reload_nested_set
         end

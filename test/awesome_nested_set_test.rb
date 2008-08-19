@@ -427,9 +427,15 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   end
 
 
-  def test_valid_with_null_lefts_and_rights
+  def test_valid_with_null_lefts
     assert Category.valid?
-    Category.update_all('lft = null, rgt = null')
+    Category.update_all('lft = null')
+    assert !Category.valid?
+  end
+
+  def test_valid_with_null_rights
+    assert Category.valid?
+    Category.update_all('rgt = null')
     assert !Category.valid?
   end
   
@@ -455,10 +461,15 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal before_text, Category.root.to_text
   end
   
-  def test_move_possible
+  def test_move_possible_for_sibling
     assert categories(:child_2).move_possible?(categories(:child_1))
+  end
+  
+  def test_move_not_possible_to_self
     assert !categories(:top_level).move_possible?(categories(:top_level))
-
+  end
+  
+  def test_move_not_possible_to_parent
     categories(:top_level).descendants.each do |descendant|
       assert !categories(:top_level).move_possible?(descendant)
       assert descendant.move_possible?(categories(:top_level))
