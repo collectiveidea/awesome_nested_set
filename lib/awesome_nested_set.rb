@@ -104,10 +104,7 @@ module CollectiveIdea
         end
         
         def valid?
-          left_and_rights_valid? && 
-            no_duplicates_for_column?(quoted_left_column_name) &&
-            no_duplicates_for_column?(quoted_right_column_name) &&                                                        
-            all_roots_valid?
+          left_and_rights_valid? && no_duplicates_for_columns? && all_roots_valid?
         end
         
         def left_and_rights_valid?
@@ -125,20 +122,24 @@ module CollectiveIdea
           ) == 0
         end
         
-        # pass in quoted_left_column_name or quoted_right_column_name
-        def no_duplicates_for_column?(column)
-          scope_string = acts_as_nested_set_options[:scope] ?  "#{quoted_scope_column_name}, " : ''
-          # No duplicates
-          find(:first, 
-            :select => "#{scope_string}#{column}, COUNT(#{column})", 
-            :group => "#{scope_string}#{column} 
-              HAVING COUNT(#{column}) > 1").nil?
+        def no_duplicates_for_columns?
+          scope_string = Array(acts_as_nested_set_options[:scope]).map do |c|
+            connection.quote_column_name(c)
+          end.push(nil).join(", ")
+          [quoted_left_column_name, quoted_right_column_name].all? do |column|
+            # No duplicates
+            find(:first, 
+              :select => "#{scope_string}#{column}, COUNT(#{column})", 
+              :group => "#{scope_string}#{column} 
+                HAVING COUNT(#{column}) > 1").nil?
+          end
         end
         
         # Wrapper for each_root_valid? that can deal with scope.
+        # FIXME: make compatible with multiple scopes
         def all_roots_valid?
           if acts_as_nested_set_options[:scope]
-            roots.group_by(&scope_column_name.to_sym).all? do |scope, grouped_roots|
+            roots(:group => scope_columns).group_by(&scope_column_name.to_sym).all? do |scope, grouped_roots|
               each_root_valid?(grouped_roots)
             end
           else
@@ -157,6 +158,7 @@ module CollectiveIdea
         end
                 
         # Rebuilds the left & rights if unset or invalid.  Also very useful for converting from acts_as_tree.
+        # FIXME: make compatible with multiple scopes
         def rebuild!
           # Don't rebuild a valid tree.
           return true if valid?
@@ -380,8 +382,9 @@ module CollectiveIdea
         
         # Check if other model is in the same scope
         def same_scope?(other)
-          !acts_as_nested_set_options[:scope] ||
-            self.send(scope_column_name) == other.send(scope_column_name)
+          Array(acts_as_nested_set_options[:scope]).all? do |attr|
+            self.send(attr) == other.send(attr)
+          end
         end
 
         # Find the first sibling to the left
@@ -451,11 +454,8 @@ module CollectiveIdea
         # declaration.
         def nested_set_scope
           options = {:order => quoted_left_column_name}
-          scope = acts_as_nested_set_options[:scope]
-          options[:conditions] = if Array === scope
-            scope.inject({}) {|conditions,attr| conditions.merge attr => self[attr] }
-          elsif scope
-            {scope => self[scope]}
+          options[:conditions] = Array(acts_as_nested_set_options[:scope]).inject({}) do |conditions,attr|
+            conditions.merge attr => self[attr]
           end
           self.class.base_class.scoped options
         end

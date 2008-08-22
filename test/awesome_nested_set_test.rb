@@ -1,7 +1,10 @@
 require File.dirname(__FILE__) + '/test_helper'
 
+class Note < ActiveRecord::Base
+  acts_as_nested_set :scope => [:notable_id, :notable_type]
+end
+
 class AwesomeNestedSetTest < Test::Unit::TestCase
-  fixtures :categories
 
   class Default < ActiveRecord::Base
     acts_as_nested_set
@@ -11,10 +14,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     acts_as_nested_set :scope => :organization
     set_table_name 'categories'
   end
-  class Note < ActiveRecord::Base
-    acts_as_nested_set :scope => [:notable_id, :notable_type]
-  end
-  
+
   def test_left_column_default
     assert_equal 'lft', Default.acts_as_nested_set_options[:left_column]
   end
@@ -70,7 +70,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_raises(ActiveRecord::ActiveRecordError) { Category.new.parent_id = 1 }
   end
   
-  def test_colums_prtoected_on_initialize
+  def test_colums_protected_on_initialize
     c = Category.new(:lft => 1, :rgt => 2, :parent_id => 3)
     assert_nil c.lft
     assert_nil c.rgt
@@ -118,7 +118,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   end
     
   def test_parent
-    @fixture_cache = {}
     assert_equal categories(:child_2), categories(:child_2_1).parent
   end
   
@@ -448,7 +447,8 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
   
   def test_valid_with_overlapping_and_rights
     assert Category.valid?
-    Category.update_all("lft = 0 WHERE id = #{categories(:top_level_2).id}")
+    categories(:top_level_2)['lft'] = 0
+    categories(:top_level_2).save
     assert !Category.valid?
   end
   
@@ -481,15 +481,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
       assert categories(:top_level).is_or_is_ancestor_of?(categories(c))
     end
     assert !categories(:top_level).is_or_is_ancestor_of?(categories(:top_level_2))
-  end
-  
-  def test_multi_scoped
-    note1 = Note.create!(:body => "A", :notable_id => 1, :notable_type => 'Category')
-    note2 = Note.create!(:body => "B", :notable_id => 1, :notable_type => 'Category')
-    note3 = Note.create!(:body => "C", :notable_id => 1, :notable_type => 'Default')
-    
-    assert_equal [note1, note2], note1.self_and_siblings
-    assert_equal [note3], note3.self_and_siblings
   end
   
   def test_left_and_rights_valid_with_blank_left
@@ -542,6 +533,37 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     
     r4.move_to_child_of(r2)
     assert Category.valid?
+  end
+  
+  def test_multi_scoped_no_duplicates_for_columns?
+    assert_nothing_raised do
+      Note.no_duplicates_for_columns?
+    end
+  end
+
+  def test_multi_scoped_all_roots_valid?
+    assert_nothing_raised do
+      Note.all_roots_valid?
+    end
+  end
+  
+  def test_multi_scoped
+    note1 = Note.create!(:body => "A", :notable_id => 2, :notable_type => 'Category')
+    note2 = Note.create!(:body => "B", :notable_id => 2, :notable_type => 'Category')
+    note3 = Note.create!(:body => "C", :notable_id => 2, :notable_type => 'Default')
+    
+    assert_equal [note1, note2], note1.self_and_siblings
+    assert_equal [note3], note3.self_and_siblings
+  end
+  
+  def test_same_scope_with_multi_scopes
+    assert_nothing_raised do
+      notes(:scope1).same_scope?(notes(:child_1))
+    end
+    assert notes(:scope1).same_scope?(notes(:child_1))
+    assert notes(:child_1).same_scope?(notes(:scope1))
+    assert !notes(:scope1).same_scope?(notes(:scope2))
+    
   end
   
 end
