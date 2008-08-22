@@ -262,48 +262,6 @@ module CollectiveIdea
           left <=> x.left
         end
 
-        # Adds a child to this object in the tree.  If this object hasn't been initialized,
-        # it gets set up as a root node.  Otherwise, this method will update all of the
-        # other elements in the tree and shift them to the right, keeping everything
-        # balanced.
-        #
-        # Deprecated, will be removed in next versions
-        def add_child( child )
-          self.reload
-          child.reload
-
-          if child.root?
-            raise ActiveRecord::ActiveRecordError, "Adding sub-tree isn\'t currently supported"
-          else
-            if ( (self[left_column_name] == nil) || (right == nil) )
-              # Looks like we're now the root node!  Woo
-              self[left_column_name] = 1
-              self[right_column_name] = 4
-
-              # What do to do about validation?
-              return nil unless self.save
-
-              child[parent_column_name] = self.id
-              child[left_column_name] = 2
-              child[right_column_name]= 3
-              return child.save
-            else
-              # OK, we need to add and shift everything else to the right
-              child[parent_column_name] = self.id
-              right_bound = right
-              child[left_column_name] = right_bound
-              child[right_column_name] = right_bound + 1
-              self[right_column_name] += 2
-              self.class.base_class.transaction {
-                self.class.base_class.update_all( "#{left_column_name} = (#{left_column_name} + 2)",  "#{acts_as_nested_set_options[:scope]} AND #{left_column_name} >= #{right_bound}" )
-                self.class.base_class.update_all( "#{right_column_name} = (#{right_column_name} + 2)",  "#{acts_as_nested_set_options[:scope]} AND #{right_column_name} >= #{right_bound}" )
-                self.save
-                child.save
-              }
-            end
-          end
-        end
-
         # Returns root
         def root
           self_and_ancestors.find(:first)
