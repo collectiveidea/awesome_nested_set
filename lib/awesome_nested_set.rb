@@ -275,7 +275,7 @@ module CollectiveIdea
         # Returns the array of all parents and self
         def self_and_ancestors
           nested_set_scope.scoped :conditions => [
-            "#{quoted_left_column_name} <= ? AND #{quoted_right_column_name} >= ?", left, right
+            "#{self.class.table_name}.#{quoted_left_column_name} <= ? AND #{self.class.table_name}.#{quoted_right_column_name} >= ?", left, right
           ]
         end
 
@@ -296,7 +296,7 @@ module CollectiveIdea
 
         # Returns a set of all of its nested children which do not have children  
         def leaves
-          descendants.scoped :conditions => "#{quoted_right_column_name} - #{quoted_left_column_name} = 1"
+          descendants.scoped :conditions => "#{self.class.table_name}.#{quoted_right_column_name} - #{self.class.table_name}.#{quoted_left_column_name} = 1"
         end    
 
         # Returns the level of this object in the tree
@@ -308,7 +308,7 @@ module CollectiveIdea
         # Returns a set of itself and all of its nested children
         def self_and_descendants
           nested_set_scope.scoped :conditions => [
-            "#{quoted_left_column_name} >= ? AND #{quoted_right_column_name} <= ?", left, right
+            "#{self.class.table_name}.#{quoted_left_column_name} >= ? AND #{self.class.table_name}.#{quoted_right_column_name} <= ?", left, right
           ]
         end
 
@@ -347,13 +347,13 @@ module CollectiveIdea
 
         # Find the first sibling to the left
         def left_sibling
-          siblings.find(:first, :conditions => ["#{quoted_left_column_name} < ?", left],
-            :order => "#{quoted_left_column_name} DESC")
+          siblings.find(:first, :conditions => ["#{self.class.table_name}.#{quoted_left_column_name} < ?", left],
+            :order => "#{self.class.table_name}.#{quoted_left_column_name} DESC")
         end
 
         # Find the first sibling to the right
         def right_sibling
-          siblings.find(:first, :conditions => ["#{quoted_left_column_name} > ?", left],
+          siblings.find(:first, :conditions => ["#{self.class.table_name}.#{quoted_left_column_name} > ?", left],
             :order => quoted_left_column_name)
         end
 
@@ -404,7 +404,7 @@ module CollectiveIdea
       protected
       
         def without_self(scope)
-          scope.scoped :conditions => ["#{self.class.primary_key} != ?", self]
+          scope.scoped :conditions => ["#{self.class.table_name}.#{self.class.primary_key} != ?", self]
         end
         
         # All nested set queries should use this nested_set_scope, which performs finds on
