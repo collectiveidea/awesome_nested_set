@@ -412,9 +412,10 @@ module CollectiveIdea
         # declaration.
         def nested_set_scope
           options = {:order => quoted_left_column_name}
-          options[:conditions] = Array(acts_as_nested_set_options[:scope]).inject({}) do |conditions,attr|
+          scopes = Array(acts_as_nested_set_options[:scope])
+          options[:conditions] = scopes.inject({}) do |conditions,attr|
             conditions.merge attr => self[attr]
-          end
+          end unless scopes.empty?
           self.class.base_class.scoped options
         end
         
