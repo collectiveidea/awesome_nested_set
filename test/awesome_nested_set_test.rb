@@ -327,6 +327,8 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_nil categories(:child_2).parent
     assert_equal 0, categories(:child_2).level
     assert_equal 1, categories(:child_2_1).level
+    assert_equal 1, categories(:child_2).left
+    assert_equal 4, categories(:child_2).right
     assert Category.valid?
   end
 
@@ -334,6 +336,12 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     categories(:child_1).move_to_child_of(categories(:child_3))
     assert_equal categories(:child_3).id, categories(:child_1).parent_id
     assert Category.valid?
+  end
+  
+  def test_move_to_child_of_appends_to_end
+    child = Category.create! :name => 'New Child'
+    child.move_to_child_of categories(:top_level)
+    assert_equal child, categories(:top_level).children.last
   end
   
   def test_subtree_move_to_child_of
@@ -398,9 +406,8 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     root2 = Category.create(:name => 'Root2')
     root3 = Category.create(:name => 'Root3')
     
-    root3.move_to_child_of root1
-    
     root2.move_to_child_of root1
+    root3.move_to_child_of root1
       
     output = Category.roots.last.to_text
     Category.update_all('lft = null, rgt = null')
@@ -409,14 +416,14 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal Category.roots.last.to_text, output
   end
   
-  #FAILING - doing move_to_child twice onto same parent from the furthest right first
+  # doing move_to_child twice onto same parent from the furthest right first
   def test_move_to_child_more_than_once_per_parent_outside_in
     node1 = Category.create(:name => 'Node-1')
     node2 = Category.create(:name => 'Node-2')
     node3 = Category.create(:name => 'Node-3')
     
-    node3.move_to_child_of node1    
     node2.move_to_child_of node1
+    node3.move_to_child_of node1
       
     output = Category.roots.last.to_text
     Category.update_all('lft = null, rgt = null')
@@ -563,7 +570,6 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert notes(:scope1).same_scope?(notes(:child_1))
     assert notes(:child_1).same_scope?(notes(:scope1))
     assert !notes(:scope1).same_scope?(notes(:scope2))
-    
   end
   
 end
