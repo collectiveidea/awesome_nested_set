@@ -49,11 +49,9 @@ The view helper is called #nested_set_options.
 
 Example usage:
 
-<%= f.select :parent_id, nested_set_options(Category, @category) {|i|
-    "#{'–' * i.level} #{i.name}" }) %>
+  <%= f.select :parent_id, nested_set_options(Category, @category) {|i| "#{'–' * i.level} #{i.name}" }) %>
 
-<%= select_tag 'parent_id', options_for_select(
-    nested_set_options(Category) {|i| "#{'–' * i.level} #{i.name}" } ) %>
+  <%= select_tag 'parent_id', options_for_select(nested_set_options(Category) {|i| "#{'–' * i.level} #{i.name}" } ) %>
 
 See CollectiveIdea::Acts::NestedSet::Helper for more information about the helpers.
 
