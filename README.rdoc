@@ -43,10 +43,17 @@ Enable the nested set functionality by declaring acts_as_nested_set on your mode
   
 Run `rake rdoc` to generate the API docs and see CollectiveIdea::Acts::NestedSet::SingletonMethods for more info.
 
-== View Helpers
+== View Helper
 
-* <tt>#nested_set_options_for_select</tt> - returns an array of objects suitable for select helpers
-* <tt>#nested_set_options_for_select_without_impossible_moves</tt> - similar to nested_set_options_for_select, but contains only items that are possible to move to
+The view helper is called #nested_set_options. 
+
+Example usage:
+
+<%= f.select :parent_id, nested_set_options(Category, @category) {|i|
+    "#{'–' * i.level} #{i.name}" }) %>
+
+<%= select_tag 'parent_id', options_for_select(
+    nested_set_options(Category) {|i| "#{'–' * i.level} #{i.name}" } ) %>
 
 See CollectiveIdea::Acts::NestedSet::Helper for more information about the helpers.
 
