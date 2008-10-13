@@ -1,8 +1,19 @@
 require 'rake'
-require "load_multi_rails_rake_tasks" 
 require 'rake/testtask'
 require 'rake/rdoctask'
+require 'rake/gempackagetask'
 require 'rcov/rcovtask'
+require "load_multi_rails_rake_tasks" 
+
+spec = eval(File.read("#{File.dirname(__FILE__)}/awesome_nested_set.gemspec"))
+PKG_NAME = spec.name
+PKG_VERSION = spec.version
+ 
+Rake::GemPackageTask.new(spec) do |pkg|
+  pkg.need_zip = true
+  pkg.need_tar = true
+end
+
 
 desc 'Default: run unit tests.'
 task :default => :test
