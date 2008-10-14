@@ -6,7 +6,6 @@ Gem::Specification.new do |s|
  
   s.files = %w(init.rb MIT-LICENSE Rakefile README.rdoc lib/awesome_nested_set.rb lib/awesome_nested_set/compatability.rb lib/awesome_nested_set/helper.rb lib/awesome_nested_set/named_scope.rb rails/init.rb test/awesome_nested_set_test.rb test/test_helper.rb test/awesome_nested_set/helper_test.rb test/db/database.yml test/db/schema.rb test/fixtures/categories.yml test/fixtures/category.rb test/fixtures/departments.yml test/fixtures/notes.yml)
  
-  s.add_dependency "multi_rails", ['>= 0.0.4']
   s.add_dependency "activerecord", ['>= 1.2.0']
  
   s.has_rdoc = true
