@@ -136,10 +136,9 @@ module CollectiveIdea
         end
         
         # Wrapper for each_root_valid? that can deal with scope.
-        # FIXME: make compatible with multiple scopes
         def all_roots_valid?
           if acts_as_nested_set_options[:scope]
-            roots(:group => scope_columns).group_by(&scope_column_name.to_sym).all? do |scope, grouped_roots|
+            roots(:group => scope_column_names).group_by{|record| scope_column_names.collect{|col| record.send(col.to_sym)}}.all? do |scope, grouped_roots|
               each_root_valid?(grouped_roots)
             end
           else
@@ -158,14 +157,17 @@ module CollectiveIdea
         end
                 
         # Rebuilds the left & rights if unset or invalid.  Also very useful for converting from acts_as_tree.
-        # FIXME: make compatible with multiple scopes
         def rebuild!
           # Don't rebuild a valid tree.
           return true if valid?
           
           scope = lambda{}
           if acts_as_nested_set_options[:scope]
-            scope = lambda{|node| "AND #{node.scope_column_name} = #{node.send(:scope_column_name)}"}
+            scope = lambda{|node| 
+              scope_column_names.inject(""){|str, column_name|
+                str << "AND #{connection.quote_column_name(column_name)} = #{connection.quote(node.send(column_name.to_sym))} "
+              }
+            }
           end
           indices = {}
           
@@ -202,8 +204,8 @@ module CollectiveIdea
           acts_as_nested_set_options[:parent_column]
         end
         
-        def scope_column_name
-          acts_as_nested_set_options[:scope]
+        def scope_column_names
+          acts_as_nested_set_options[:scope].to_a
         end
         
         def quoted_left_column_name
@@ -218,8 +220,8 @@ module CollectiveIdea
           connection.quote_column_name(parent_column_name)
         end
         
-        def quoted_scope_column_name
-          connection.quote_column_name(scope_column_name)
+        def quoted_scope_column_names
+          scope_column_names.collect {|column_name| connection.quote_column_name(column_name) }
         end
       end
 

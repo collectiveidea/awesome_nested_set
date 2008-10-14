@@ -553,7 +553,7 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
       Note.all_roots_valid?
     end
   end
-  
+
   def test_multi_scoped
     note1 = Note.create!(:body => "A", :notable_id => 2, :notable_type => 'Category')
     note2 = Note.create!(:body => "B", :notable_id => 2, :notable_type => 'Category')
@@ -563,6 +563,21 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal [note3], note3.self_and_siblings
   end
   
+  def test_multi_scoped_rebuild
+    root = Note.create!(:body => "A", :notable_id => 3, :notable_type => 'Category')
+    child1 = Note.create!(:body => "B", :notable_id => 3, :notable_type => 'Category')
+    child2 = Note.create!(:body => "C", :notable_id => 3, :notable_type => 'Category')
+    
+    child1.move_to_child_of root
+    child2.move_to_child_of root
+          
+    Note.update_all('lft = null, rgt = null')
+    Note.rebuild!
+    
+    assert_equal Note.roots.find_by_body('A'), root
+    assert_equal [child1, child2], Note.roots.find_by_body('A').children
+  end
+  
   def test_same_scope_with_multi_scopes
     assert_nothing_raised do
       notes(:scope1).same_scope?(notes(:child_1))
@@ -570,6 +585,10 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert notes(:scope1).same_scope?(notes(:child_1))
     assert notes(:child_1).same_scope?(notes(:scope1))
     assert !notes(:scope1).same_scope?(notes(:scope2))
+  end
+  
+  def test_quoting_of_multi_scope_column_names
+    assert_equal ["\"notable_id\"", "\"notable_type\""], Note.quoted_scope_column_names
   end
   
 end
