@@ -205,7 +205,7 @@ module CollectiveIdea
         end
         
         def scope_column_names
-          acts_as_nested_set_options[:scope].to_a
+          Array(acts_as_nested_set_options[:scope])
         end
         
         def quoted_left_column_name
