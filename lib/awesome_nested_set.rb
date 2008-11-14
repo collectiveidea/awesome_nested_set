@@ -359,8 +359,7 @@ module CollectiveIdea
 
         # Find the first sibling to the right
         def right_sibling
-          siblings.find(:first, :conditions => ["#{self.class.table_name}.#{quoted_left_column_name} > ?", left],
-            :order => quoted_left_column_name)
+          siblings.find(:first, :conditions => ["#{self.class.table_name}.#{quoted_left_column_name} > ?", left])
         end
 
         # Shorthand method for finding the left sibling and moving to the left of it.
