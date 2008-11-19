@@ -1,5 +1,5 @@
 # Rails <2.x doesn't define #except
-class Hash
+class Hash #:nodoc:
   # Returns a new hash without the given keys.
   def except(*keys)
     clone.except!(*keys)
@@ -22,7 +22,7 @@ unless defined? ActiveRecord::NamedScope
 end
 
 # Rails 1.2.x doesn't define #quoted_table_name
-class ActiveRecord::Base
+class ActiveRecord::Base  #:nodoc:
   def self.quoted_table_name
     self.connection.quote_column_name(self.table_name)
   end unless methods.include?('quoted_table_name')

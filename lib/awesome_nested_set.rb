@@ -1,4 +1,4 @@
-module CollectiveIdea
+module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
     module NestedSet #:nodoc:
       def self.included(base)

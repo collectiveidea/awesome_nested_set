@@ -1,9 +1,8 @@
-module CollectiveIdea
+module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
     module NestedSet #:nodoc:
       # This module provides some helpers for the model classes using acts_as_nested_set.
-      # It is included by default in all views. If you need to remove it, edit the last line
-      # of init.rb.
+      # It is included by default in all views.
       #
       module Helper
         # Returns options for select.

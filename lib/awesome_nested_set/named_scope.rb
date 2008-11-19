@@ -1,6 +1,6 @@
 # Taken from Rails 2.1
-module CollectiveIdea
-  module NamedScope
+module CollectiveIdea #:nodoc:
+  module NamedScope #:nodoc:
     # All subclasses of ActiveRecord::Base have two named_scopes:
     # * <tt>all</tt>, which is similar to a <tt>find(:all)</tt> query, and
     # * <tt>scoped</tt>, which allows for the creation of anonymous scopes, on the fly:
