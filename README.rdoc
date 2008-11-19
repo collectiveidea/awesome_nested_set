@@ -4,18 +4,14 @@ Awesome Nested Set is an implementation of the nested set pattern for ActiveReco
 
 == What makes this so awesome?
 
-This is a new implementation of nested set based off of BetterNestedSet that fixes some bugs, removes tons of duplication, adds a few useful methods, adds STI support and adds 2 very helpful view helpers for select boxes.
+This is a new implementation of nested set based off of BetterNestedSet that fixes some bugs, removes tons of duplication, adds a few useful methods, and adds STI support.
 
 == Installation
 
-If you are on edge rails:
+If you are on Rails 2.1 or later:
 
   script/plugin install git://github.com/collectiveidea/awesome_nested_set.git
   
-If you are not on edge rails:
-
-  git clone git://github.com/collectiveidea/awesome_nested_set.git vendor/plugins/awesome_nested_set
-
 == Usage
 
 To make use of awesome_nested_set, your model needs to have 3 fields: lft, rgt, and parent_id:
