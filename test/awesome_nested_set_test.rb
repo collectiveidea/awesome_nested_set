@@ -591,4 +591,13 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_equal ["\"notable_id\"", "\"notable_type\""], Note.quoted_scope_column_names
   end
   
+  def test_equal_in_same_scope
+    assert_equal notes(:scope1), notes(:scope1)
+    assert_not_equal notes(:scope1), notes(:child_1)
+  end
+  
+  def test_equal_in_different_scopes
+    assert_not_equal notes(:scope1), notes(:scope2)
+  end
+  
 end

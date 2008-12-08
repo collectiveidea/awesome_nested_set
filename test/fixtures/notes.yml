@@ -32,7 +32,7 @@ child_3:
 scope2:
   id: 5
   body: Top Level 2
-  lft: 11
-  rgt: 12
+  lft: 1
+  rgt: 2
   notable_id: 1
   notable_type: Departments

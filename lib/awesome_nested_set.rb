@@ -66,9 +66,9 @@ module CollectiveIdea #:nodoc:
           write_inheritable_attribute :acts_as_nested_set_options, options
           class_inheritable_reader :acts_as_nested_set_options
           
-          include InstanceMethods
           include Comparable
           include Columns
+          include InstanceMethods
           extend Columns
           extend ClassMethods
 
@@ -266,6 +266,14 @@ module CollectiveIdea #:nodoc:
         # order by left column
         def <=>(x)
           left <=> x.left
+        end
+        
+        # Redefine to act like active record
+        def ==(comparison_object)
+          comparison_object.equal?(self) ||
+            (comparison_object.instance_of?(self.class) &&
+              comparison_object.id == id &&
+              !comparison_object.new_record?)
         end
 
         # Returns root
