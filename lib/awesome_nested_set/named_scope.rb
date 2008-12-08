@@ -16,7 +16,7 @@ module CollectiveIdea #:nodoc:
       end
     end
 
-    module ClassMethods
+    module ClassMethods #:nodoc:
       def scopes
         read_inheritable_attribute(:scopes) || write_inheritable_attribute(:scopes, {})
       end
@@ -101,7 +101,7 @@ module CollectiveIdea #:nodoc:
       end
     end
 
-    class Scope
+    class Scope #:nodoc:
       attr_reader :proxy_scope, :proxy_options
       [].methods.each { |m| delegate m, :to => :proxy_found unless m =~ /(^__|^nil\?|^send|class|extend|find|count|sum|average|maximum|minimum|paginate)/ }
       delegate :scopes, :with_scope, :to => :proxy_scope
