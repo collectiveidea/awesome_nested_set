@@ -66,35 +66,37 @@ module CollectiveIdea #:nodoc:
           write_inheritable_attribute :acts_as_nested_set_options, options
           class_inheritable_reader :acts_as_nested_set_options
           
-          include Comparable
-          include Columns
-          include InstanceMethods
-          extend Columns
-          extend ClassMethods
+          unless self.is_a?(ClassMethods)
+            include Comparable
+            include Columns
+            include InstanceMethods
+            extend Columns
+            extend ClassMethods
 
-          # no bulk assignment
-          attr_protected  left_column_name.intern,
-                          right_column_name.intern, 
-                          parent_column_name.intern
-                          
-          before_create :set_default_left_and_right
-          before_destroy :prune_from_tree
-                          
-          # no assignment to structure fields
-          [left_column_name, right_column_name, parent_column_name].each do |column|
-            module_eval <<-"end_eval", __FILE__, __LINE__
-              def #{column}=(x)
-                raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{column}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
-              end
-            end_eval
-          end
+            attr_accessor :skip_before_destroy
           
-          named_scope :roots, :conditions => {parent_column_name => nil}, :order => quoted_left_column_name
-          named_scope :leaves, :conditions => "#{quoted_right_column_name} - #{quoted_left_column_name} = 1", :order => quoted_left_column_name
-          if self.respond_to?(:define_callbacks)
-            define_callbacks("before_move", "after_move")              
-          end
+            # no bulk assignment
+            attr_protected  left_column_name.intern,
+                            right_column_name.intern, 
+                            parent_column_name.intern
+                          
+            before_create :set_default_left_and_right
+            before_destroy :destroy_descendants
+                          
+            # no assignment to structure fields
+            [left_column_name, right_column_name, parent_column_name].each do |column|
+              module_eval <<-"end_eval", __FILE__, __LINE__
+                def #{column}=(x)
+                  raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{column}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
+                end
+              end_eval
+            end
+          
+            named_scope :roots, :conditions => {parent_column_name => nil}, :order => quoted_left_column_name
+            named_scope :leaves, :conditions => "#{quoted_right_column_name} - #{quoted_left_column_name} = 1", :order => quoted_left_column_name
 
+            define_callbacks("before_move", "after_move") if self.respond_to?(:define_callbacks)
+          end
           
         end
         
@@ -442,29 +444,38 @@ module CollectiveIdea #:nodoc:
       
         # Prunes a branch off of the tree, shifting all of the elements on the right
         # back to the left so the counts still work.
-        def prune_from_tree
-          return if right.nil? || left.nil?
-          diff = right - left + 1
-
-          delete_method = acts_as_nested_set_options[:dependent] == :destroy ?
-            :destroy_all : :delete_all
-
+        def destroy_descendants
+          return if right.nil? || left.nil? || skip_before_destroy
+          
           self.class.base_class.transaction do
-            nested_set_scope.send(delete_method,
-              ["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?",
-                left, right]
-            )
+            if acts_as_nested_set_options[:dependent] == :destroy
+              descendants.each do |model|
+                model.skip_before_destroy = true
+                model.destroy
+              end
+            else
+              nested_set_scope.delete_all(
+                ["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?",
+                  left, right]
+              )
+            end
+            
+            # update lefts and rights for remaining nodes
+            diff = right - left + 1
             nested_set_scope.update_all(
               ["#{quoted_left_column_name} = (#{quoted_left_column_name} - ?)", diff],
-              ["#{quoted_left_column_name} >= ?", right]
+              ["#{quoted_left_column_name} > ?", right]
             )
             nested_set_scope.update_all(
               ["#{quoted_right_column_name} = (#{quoted_right_column_name} - ?)", diff],
-              ["#{quoted_right_column_name} >= ?", right]
+              ["#{quoted_right_column_name} > ?", right]
             )
+            
+            # Don't allow multiple calls to destroy to corrupt the set
+            self.skip_before_destroy = true
           end
         end
-
+        
         # reload left, right, and parent
         def reload_nested_set
           reload(:select => "#{quoted_left_column_name}, " +

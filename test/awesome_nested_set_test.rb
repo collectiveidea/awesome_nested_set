@@ -600,4 +600,23 @@ class AwesomeNestedSetTest < Test::Unit::TestCase
     assert_not_equal notes(:scope1), notes(:scope2)
   end
   
+  def test_delete_does_not_invalidate
+    Category.acts_as_nested_set_options[:dependent] = :delete
+    categories(:child_2).destroy
+    assert Category.valid?
+  end
+
+  def test_destroy_does_not_invalidate
+    Category.acts_as_nested_set_options[:dependent] = :destroy
+    categories(:child_2).destroy
+    assert Category.valid?
+  end
+
+  def test_destroy_multiple_times_does_not_invalidate
+    Category.acts_as_nested_set_options[:dependent] = :destroy
+    categories(:child_2).destroy
+    categories(:child_2).destroy
+    assert Category.valid?
+  end
+  
 end
