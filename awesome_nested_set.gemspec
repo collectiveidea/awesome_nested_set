@@ -18,6 +18,7 @@ Gem::Specification.new do |s|
      "MIT-LICENSE",
      "README.rdoc",
      "Rakefile",
+     "VERSION.yml",
      "awesome_nested_set.gemspec",
      "init.rb",
      "lib/awesome_nested_set.rb",
