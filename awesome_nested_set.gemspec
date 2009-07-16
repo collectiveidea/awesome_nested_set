@@ -42,18 +42,14 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.3.3}
   s.summary = %q{An awesome nested set implementation for Active Record}
   s.test_files = [
-    "test/awesome_nested_set",
-     "test/awesome_nested_set/helper_test.rb",
-     "test/awesome_nested_set_test.rb",
-     "test/db",
-     "test/db/database.yml",
-     "test/db/schema.rb",
-     "test/debug.log",
-     "test/fixtures",
+    "test/db/database.yml",
      "test/fixtures/categories.yml",
-     "test/fixtures/category.rb",
      "test/fixtures/departments.yml",
      "test/fixtures/notes.yml",
+     "test/awesome_nested_set/helper_test.rb",
+     "test/awesome_nested_set_test.rb",
+     "test/db/schema.rb",
+     "test/fixtures/category.rb",
      "test/test_helper.rb"
   ]
 

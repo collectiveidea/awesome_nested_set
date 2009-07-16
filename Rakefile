@@ -20,7 +20,7 @@ Jeweler::Tasks.new do |s|
   s.has_rdoc = true
   s.extra_rdoc_files = [ "README.rdoc"]
   s.rdoc_options = ["--main", "README.rdoc", "--inline-source", "--line-numbers"]
-  s.test_files = Dir['test/**/*']
+  s.test_files = Dir['test/**/*.{yml,rb}']
 end
 
 desc 'Default: run unit tests.'
