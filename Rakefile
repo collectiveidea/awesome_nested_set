@@ -1,19 +1,27 @@
-require 'rake'
+begin
+  require 'jeweler'
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+  exit 1
+end
 require 'rake/testtask'
 require 'rake/rdoctask'
-require 'rake/gempackagetask'
 require 'rcov/rcovtask'
 require "load_multi_rails_rake_tasks" 
 
-spec = eval(File.read("#{File.dirname(__FILE__)}/awesome_nested_set.gemspec"))
-PKG_NAME = spec.name
-PKG_VERSION = spec.version
- 
-Rake::GemPackageTask.new(spec) do |pkg|
-  pkg.need_zip = true
-  pkg.need_tar = true
+Jeweler::Tasks.new do |s|
+  s.name = "awesome_nested_set"
+  s.summary = "An awesome nested set implementation for Active Record"
+  s.description = s.summary
+  s.email = "info@collectiveidea.com"
+  s.homepage = "http://github.com/collectiveidea/awesome_nested_set"
+  s.authors = ["Brandon Keepers", "Daniel Morrison"]
+  s.add_dependency "activerecord", ['>= 1.1']
+  s.has_rdoc = true
+  s.extra_rdoc_files = [ "README.rdoc"]
+  s.rdoc_options = ["--main", "README.rdoc", "--inline-source", "--line-numbers"]
+  s.test_files = Dir['test/**/*']
 end
-
 
 desc 'Default: run unit tests.'
 task :default => :test
