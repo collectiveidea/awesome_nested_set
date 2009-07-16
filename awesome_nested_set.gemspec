@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{awesome_nested_set}
-  s.version = "0.0.0"
+  s.version = "1.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Brandon Keepers", "Daniel Morrison"]
@@ -18,7 +18,7 @@ Gem::Specification.new do |s|
      "MIT-LICENSE",
      "README.rdoc",
      "Rakefile",
-     "VERSION.yml",
+     "VERSION",
      "awesome_nested_set.gemspec",
      "init.rb",
      "lib/awesome_nested_set.rb",
