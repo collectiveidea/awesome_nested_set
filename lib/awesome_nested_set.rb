@@ -187,6 +187,30 @@ module CollectiveIdea #:nodoc:
             set_left_and_rights.call(root_node)
           end
         end
+
+        # Iterates over tree elements and determines the current level in the tree.
+        # Only accepts default ordering, odering by an other column than lft
+        # does not work. This method is much more efficent than calling level
+        # because it doesn't require any additional database queries.
+        #
+        # Example:
+        #    Category.each_with_level(Category.root.self_and_descendants) do |o, level|
+        #
+        def each_with_level(objects)
+          path = [nil]
+          objects.each do |o|
+            if o.parent_id != path.last
+              # we are on a new level, did we decent or ascent?
+              if path.include?(o.parent_id)
+                # remove wrong wrong tailing paths elements
+                path.pop while path.last != o.parent_id
+              else
+                path << o.parent_id
+              end
+            end
+            yield(o, path.length - 1)
+          end
+        end
       end
       
       # Mixed into both classes and instances to provide easy access to the column names
