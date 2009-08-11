@@ -66,15 +66,10 @@ class AwesomeNestedSetTest < TestCaseClass
     assert_raises(ActiveRecord::ActiveRecordError) { Category.new.rgt = 1 }
   end
   
-  def test_parent_column_protected_from_assignment
-    assert_raises(ActiveRecord::ActiveRecordError) { Category.new.parent_id = 1 }
-  end
-  
   def test_colums_protected_on_initialize
-    c = Category.new(:lft => 1, :rgt => 2, :parent_id => 3)
+    c = Category.new(:lft => 1, :rgt => 2)
     assert_nil c.lft
     assert_nil c.rgt
-    assert_nil c.parent_id
   end
   
   def test_scoped_appends_id
@@ -619,4 +614,58 @@ class AwesomeNestedSetTest < TestCaseClass
     assert Category.valid?
   end
   
+  def test_assigning_parent_id_on_create
+    category = Category.create!(:name => "Child", :parent_id => categories(:child_2).id)
+    assert_equal categories(:child_2), category.parent
+    assert_equal categories(:child_2).id, category.parent_id
+    assert_not_nil category.left
+    assert_not_nil category.right
+    assert Category.valid?
+  end
+
+  def test_assigning_parent_on_create
+    category = Category.create!(:name => "Child", :parent => categories(:child_2))
+    assert_equal categories(:child_2), category.parent
+    assert_equal categories(:child_2).id, category.parent_id
+    assert_not_nil category.left
+    assert_not_nil category.right
+    assert Category.valid?
+  end
+
+  def test_assigning_parent_id_to_nil_on_create
+    category = Category.create!(:name => "New Root", :parent_id => nil)
+    assert_nil category.parent
+    assert_nil category.parent_id
+    assert_not_nil category.left
+    assert_not_nil category.right
+    assert Category.valid?
+  end
+
+  def test_assigning_parent_id_on_update
+    category = categories(:child_2_1)
+    category.parent_id = categories(:child_3).id
+    category.save
+    assert_equal categories(:child_3), category.parent
+    assert_equal categories(:child_3).id, category.parent_id
+    assert Category.valid?
+  end
+
+  def test_assigning_parent_on_update
+    category = categories(:child_2_1)
+    category.parent = categories(:child_3)
+    category.save
+    assert_equal categories(:child_3), category.parent
+    assert_equal categories(:child_3).id, category.parent_id
+    assert Category.valid?
+  end
+
+  def test_assigning_parent_id_to_nil_on_update
+    category = categories(:child_2_1)
+    category.parent_id = nil
+    category.save
+    assert_nil category.parent
+    assert_nil category.parent_id
+    assert Category.valid?
+  end
+
 end

@@ -72,19 +72,23 @@ module CollectiveIdea #:nodoc:
             include InstanceMethods
             extend Columns
             extend ClassMethods
+            
+            belongs_to :parent, :class_name => self.base_class.class_name,
+              :foreign_key => parent_column_name
 
             attr_accessor :skip_before_destroy
           
             # no bulk assignment
             attr_protected  left_column_name.intern,
-                            right_column_name.intern, 
-                            parent_column_name.intern
+                            right_column_name.intern
                           
-            before_create :set_default_left_and_right
+            before_create  :set_default_left_and_right
+            before_save    :store_new_parent
+            after_save     :move_to_new_parent
             before_destroy :destroy_descendants
                           
             # no assignment to structure fields
-            [left_column_name, right_column_name, parent_column_name].each do |column|
+            [left_column_name, right_column_name].each do |column|
               module_eval <<-"end_eval", __FILE__, __LINE__
                 def #{column}=(x)
                   raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{column}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
@@ -283,11 +287,6 @@ module CollectiveIdea #:nodoc:
           self_and_ancestors.find(:first)
         end
 
-        # Returns the immediate parent
-        def parent
-          nested_set_scope.find_by_id(parent_id) if parent_id
-        end
-
         # Returns the array of all parents and self
         def self_and_ancestors
           nested_set_scope.scoped :conditions => [
@@ -432,6 +431,19 @@ module CollectiveIdea #:nodoc:
             conditions.merge attr => self[attr]
           end unless scopes.empty?
           self.class.base_class.scoped options
+        end
+        
+        def store_new_parent
+          @move_to_new_parent_id = parent_id_changed? ? parent_id : false
+          true # force callback to return true
+        end
+        
+        def move_to_new_parent
+          if @move_to_new_parent_id.nil?
+            move_to_root
+          elsif @move_to_new_parent_id
+            move_to_child_of(@move_to_new_parent_id)
+          end
         end
         
         # on creation, set automatically lft and rgt to the end of the tree
