@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 module CollectiveIdea
   module Acts #:nodoc:
     module NestedSet #:nodoc:
-      class AwesomeNestedSetTest < Test::Unit::TestCase
+      class AwesomeNestedSetTest < TestCaseClass
         include Helper
         fixtures :categories
         

@@ -1,15 +1,17 @@
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 plugin_test_dir = File.dirname(__FILE__)
 
+RAILS_ROOT = '.' unless defined? RAILS_ROOT
+
 require 'rubygems'
 require 'test/unit'
 require 'multi_rails_init'
-require 'active_record' 
-require 'action_controller'
-require 'action_view'
-require 'active_record/fixtures'
+# FIXME: Rails 1.x needs application.rb in root.
+require 'test_help'
 
 require plugin_test_dir + '/../init.rb'
+
+TestCaseClass = ActiveSupport::TestCase rescue Test::Unit::TestCase
 
 ActiveRecord::Base.logger = Logger.new(plugin_test_dir + "/debug.log")
 
@@ -21,7 +23,7 @@ load(File.join(plugin_test_dir, "db", "schema.rb"))
 Dir["#{plugin_test_dir}/fixtures/*.rb"].each {|file| require file }
 
 
-class Test::Unit::TestCase #:nodoc:
+class TestCaseClass #:nodoc:
   self.fixture_path = File.dirname(__FILE__) + "/fixtures/"
   self.use_transactional_fixtures = true
   self.use_instantiated_fixtures  = false
