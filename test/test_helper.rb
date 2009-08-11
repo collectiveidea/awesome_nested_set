@@ -1,12 +1,10 @@
 $:.unshift(File.dirname(__FILE__) + '/../lib')
 plugin_test_dir = File.dirname(__FILE__)
-
-RAILS_ROOT = '.' unless defined? RAILS_ROOT
+RAILS_ROOT = plugin_test_dir
 
 require 'rubygems'
 require 'test/unit'
 require 'multi_rails_init'
-# FIXME: Rails 1.x needs application.rb in root.
 require 'test_help'
 
 require plugin_test_dir + '/../init.rb'

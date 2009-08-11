@@ -28,7 +28,7 @@ task :default => :test
 
 desc 'Test the awesome_nested_set plugin.'
 Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
+  t.libs += ['lib', 'test']
   t.pattern = 'test/**/*_test.rb'
   t.verbose = true
 end
@@ -45,7 +45,7 @@ end
 namespace :test do
   desc "just rcov minus html output"
   Rcov::RcovTask.new(:coverage) do |t|
-    # t.libs << 'test'
+    t.libs << 'test'
     t.test_files = FileList['test/**/*_test.rb']
     t.output_dir = 'coverage'
     t.verbose = true
