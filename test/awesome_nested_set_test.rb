@@ -110,7 +110,9 @@ class AwesomeNestedSetTest < TestCaseClass
     
     assert !categories(:top_level).leaf?
     assert !categories(:child_2).leaf?
+    assert !Category.new.leaf?
   end
+  
     
   def test_parent
     assert_equal categories(:child_2), categories(:child_2_1).parent
