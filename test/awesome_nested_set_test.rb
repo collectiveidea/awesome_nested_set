@@ -678,4 +678,49 @@ class AwesomeNestedSetTest < TestCaseClass
     assert Category.valid?
   end
 
+  def check_structure(entries, structure)
+    structure = structure.dup
+    Category.each_with_level(entries) do |category, level|
+      expected_level, expected_name = structure.shift
+      assert_equal expected_name, category.name, "wrong category"
+      assert_equal expected_level, level, "wrong level for #{category.name}"
+    end
+  end
+
+  def test_each_with_level
+    levels = [
+      [0, "Top Level"],
+      [1, "Child 1"],
+      [1, "Child 2"],
+      [2, "Child 2.1"],
+      [1, "Child 3" ]]
+
+    check_structure(Category.root.self_and_descendants, levels)
+
+    # test some deeper structures
+    category = Category.find_by_name("Child 1")
+    c1 = Category.new(:name => "Child 1.1")
+    c2 = Category.new(:name => "Child 1.1.1")
+    c3 = Category.new(:name => "Child 1.1.1.1")
+    c4 = Category.new(:name => "Child 1.2")
+    [c1, c2, c3, c4].each(&:save!)
+
+    c1.move_to_child_of(category)
+    c2.move_to_child_of(c1)
+    c3.move_to_child_of(c2)
+    c4.move_to_child_of(category)
+
+    levels = [
+      [0, "Top Level"],
+      [1, "Child 1"],
+      [2, "Child 1.1"],
+      [3, "Child 1.1.1"],
+      [4, "Child 1.1.1.1"],
+      [2, "Child 1.2"],
+      [1, "Child 2"],
+      [2, "Child 2.1"],
+      [1, "Child 3" ]]
+
+      check_structure(Category.root.self_and_descendants, levels)
+  end
 end
