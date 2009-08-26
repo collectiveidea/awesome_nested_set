@@ -3,17 +3,16 @@ require 'test_helper'
 class Note < ActiveRecord::Base
   acts_as_nested_set :scope => [:notable_id, :notable_type]
 end
+class Default < ActiveRecord::Base
+  acts_as_nested_set
+  set_table_name 'categories'
+end
+class ScopedCategory < ActiveRecord::Base
+  acts_as_nested_set :scope => :organization
+  set_table_name 'categories'
+end
 
 class AwesomeNestedSetTest < TestCaseClass
-
-  class Default < ActiveRecord::Base
-    acts_as_nested_set
-    set_table_name 'categories'
-  end
-  class Scoped < ActiveRecord::Base
-    acts_as_nested_set :scope => :organization
-    set_table_name 'categories'
-  end
 
   def test_left_column_default
     assert_equal 'lft', Default.acts_as_nested_set_options[:left_column]
@@ -73,7 +72,7 @@ class AwesomeNestedSetTest < TestCaseClass
   end
   
   def test_scoped_appends_id
-    assert_equal :organization_id, Scoped.acts_as_nested_set_options[:scope]
+    assert_equal :organization_id, ScopedCategory.acts_as_nested_set_options[:scope]
   end
   
   def test_roots_class_method
@@ -215,7 +214,7 @@ class AwesomeNestedSetTest < TestCaseClass
   end
 
   def test_is_or_is_ancestor_of_with_scope
-    root = Scoped.root
+    root = ScopedCategory.root
     child = root.children.first
     assert root.is_or_is_ancestor_of?(child)
     child.update_attribute :organization_id, 'different'
@@ -241,7 +240,7 @@ class AwesomeNestedSetTest < TestCaseClass
   end
   
   def test_is_or_is_descendant_of_with_scope
-    root = Scoped.root
+    root = ScopedCategory.root
     child = root.children.first
     assert child.is_or_is_descendant_of?(root)
     child.update_attribute :organization_id, 'different'
@@ -249,7 +248,7 @@ class AwesomeNestedSetTest < TestCaseClass
   end
   
   def test_same_scope?
-    root = Scoped.root
+    root = ScopedCategory.root
     child = root.children.first
     assert child.same_scope?(root)
     child.update_attribute :organization_id, 'different'
@@ -667,6 +666,15 @@ class AwesomeNestedSetTest < TestCaseClass
     category.save
     assert_nil category.parent
     assert_nil category.parent_id
+    assert Category.valid?
+  end
+
+  def test_creating_child_from_parent
+    category = categories(:child_2).children.create!(:name => "Child")
+    assert_equal categories(:child_2), category.parent
+    assert_equal categories(:child_2).id, category.parent_id
+    assert_not_nil category.left
+    assert_not_nil category.right
     assert Category.valid?
   end
 

@@ -20,7 +20,6 @@ load(File.join(plugin_test_dir, "db", "schema.rb"))
 
 Dir["#{plugin_test_dir}/fixtures/*.rb"].each {|file| require file }
 
-
 class TestCaseClass #:nodoc:
   self.fixture_path = File.dirname(__FILE__) + "/fixtures/"
   self.use_transactional_fixtures = true

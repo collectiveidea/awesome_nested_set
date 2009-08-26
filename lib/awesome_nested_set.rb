@@ -75,6 +75,8 @@ module CollectiveIdea #:nodoc:
             
             belongs_to :parent, :class_name => self.base_class.class_name,
               :foreign_key => parent_column_name
+            has_many :children, :class_name => self.base_class.class_name,
+              :foreign_key => parent_column_name
 
             attr_accessor :skip_before_destroy
           
@@ -330,11 +332,6 @@ module CollectiveIdea #:nodoc:
         # Returns a set of all of its children and nested children
         def descendants
           without_self self_and_descendants
-        end
-
-        # Returns a set of only this entry's immediate children
-        def children
-          nested_set_scope.scoped :conditions => {parent_column_name => self}
         end
 
         def is_descendant_of?(other)
