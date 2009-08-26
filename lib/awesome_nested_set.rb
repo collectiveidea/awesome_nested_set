@@ -15,23 +15,10 @@ module CollectiveIdea #:nodoc:
       #
       # == API
       #
-      # Methods names are aligned with acts_as_tree as much as possible, to make replacment from one
-      # by another easier, except for the creation:
+      # Methods names are aligned with acts_as_tree as much as possible to make replacment from one
+      # by another easier.
       #
-      # in acts_as_tree:
       #   item.children.create(:name => "child1")
-      #
-      # in acts_as_nested_set:
-      #   # adds a new item at the "end" of the tree, i.e. with child.left = max(tree.right)+1
-      #   child = MyClass.new(:name => "child1")
-      #   child.save
-      #   # now move the item to its right place
-      #   child.move_to_child_of my_item
-      #
-      # You can pass an id or an object to:
-      # * <tt>#move_to_child_of</tt>
-      # * <tt>#move_to_right_of</tt>
-      # * <tt>#move_to_left_of</tt>
       #
       module SingletonMethods
         # Configuration options are:
