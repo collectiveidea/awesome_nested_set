@@ -11,6 +11,9 @@ class ScopedCategory < ActiveRecord::Base
   acts_as_nested_set :scope => :organization
   set_table_name 'categories'
 end
+class RenamedColumns < ActiveRecord::Base
+  acts_as_nested_set :parent_column => 'mother_id', :left_column => 'red', :right_column => 'black'
+end
 
 class AwesomeNestedSetTest < TestCaseClass
 
@@ -33,16 +36,22 @@ class AwesomeNestedSetTest < TestCaseClass
   def test_left_column_name
     assert_equal 'lft', Default.left_column_name
     assert_equal 'lft', Default.new.left_column_name
+    assert_equal 'red', RenamedColumns.left_column_name
+    assert_equal 'red', RenamedColumns.new.left_column_name
   end
-
+  
   def test_right_column_name
     assert_equal 'rgt', Default.right_column_name
     assert_equal 'rgt', Default.new.right_column_name
+    assert_equal 'black', RenamedColumns.right_column_name
+    assert_equal 'black', RenamedColumns.new.right_column_name
   end
 
   def test_parent_column_name
     assert_equal 'parent_id', Default.parent_column_name
     assert_equal 'parent_id', Default.new.parent_column_name
+    assert_equal 'mother_id', RenamedColumns.parent_column_name
+    assert_equal 'mother_id', RenamedColumns.new.parent_column_name
   end
   
   def test_quoted_left_column_name

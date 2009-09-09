@@ -20,4 +20,11 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :notable_id, :integer
     t.column :notable_type, :string
   end
+  
+  create_table :renamed_columns, :force => true do |t|
+    t.column :name, :string
+    t.column :mother_id, :integer
+    t.column :red, :integer
+    t.column :black, :integer
+  end
 end

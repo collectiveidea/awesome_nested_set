@@ -160,7 +160,7 @@ module CollectiveIdea #:nodoc:
           # Don't rebuild a valid tree.
           return true if valid?
           
-          scope = lambda{}
+          scope = lambda{|node|}
           if acts_as_nested_set_options[:scope]
             scope = lambda{|node| 
               scope_column_names.inject(""){|str, column_name|
@@ -183,6 +183,7 @@ module CollectiveIdea #:nodoc:
           # Find root node(s)
           root_nodes = find(:all, :conditions => "#{quoted_parent_column_name} IS NULL", :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each do |root_node|
             # setup index for this scope
+            puts scope.class, scope.arity
             indices[scope.call(root_node)] ||= 0
             set_left_and_rights.call(root_node)
           end
