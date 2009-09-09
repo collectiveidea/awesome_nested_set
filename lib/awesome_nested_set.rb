@@ -183,7 +183,6 @@ module CollectiveIdea #:nodoc:
           # Find root node(s)
           root_nodes = find(:all, :conditions => "#{quoted_parent_column_name} IS NULL", :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each do |root_node|
             # setup index for this scope
-            puts scope.class, scope.arity
             indices[scope.call(root_node)] ||= 0
             set_left_and_rights.call(root_node)
           end
@@ -443,7 +442,7 @@ module CollectiveIdea #:nodoc:
         end
         
         def store_new_parent
-          @move_to_new_parent_id = parent_id_changed? ? parent_id : false
+          @move_to_new_parent_id = send("#{parent_column_name}_changed?") ? parent_id : false
           true # force callback to return true
         end
         

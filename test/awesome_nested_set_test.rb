@@ -54,6 +54,12 @@ class AwesomeNestedSetTest < TestCaseClass
     assert_equal 'mother_id', RenamedColumns.new.parent_column_name
   end
   
+  def test_creation_with_altered_column_names
+    assert_nothing_raised do 
+      RenamedColumns.create!()
+    end
+  end
+  
   def test_quoted_left_column_name
     quoted = Default.connection.quote_column_name('lft')
     assert_equal quoted, Default.quoted_left_column_name
