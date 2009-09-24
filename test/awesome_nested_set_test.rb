@@ -745,4 +745,14 @@ class AwesomeNestedSetTest < TestCaseClass
 
       check_structure(Category.root.self_and_descendants, levels)
   end
+  
+  def test_model_with_attr_accessible
+    model = Class.new(ActiveRecord::Base)
+    model.set_table_name 'categories'
+    model.attr_accessible :name
+    assert_nothing_raised do
+      model.acts_as_nested_set
+      model.new(:name => 'foo')
+    end
+  end
 end
