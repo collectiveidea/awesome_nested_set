@@ -89,7 +89,7 @@ module CollectiveIdea #:nodoc:
             named_scope :roots, :conditions => {parent_column_name => nil}, :order => quoted_left_column_name
             named_scope :leaves, :conditions => "#{quoted_right_column_name} - #{quoted_left_column_name} = 1", :order => quoted_left_column_name
 
-            define_callbacks("before_move", "after_move") if self.respond_to?(:define_callbacks)
+            define_callbacks("before_move", "after_move")
           end
           
         end
@@ -505,7 +505,7 @@ module CollectiveIdea #:nodoc:
         
         def move_to(target, position)
           raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.new_record?
-          return if callback(:before_move) == false
+          return if run_callbacks(:before_move) == false
           transaction do
             if target.is_a? self.class.base_class
               target.reload_nested_set
@@ -568,7 +568,7 @@ module CollectiveIdea #:nodoc:
           end
           target.reload_nested_set if target
           self.reload_nested_set
-          callback(:after_move)
+          run_callbacks(:after_move)
         end
 
       end
