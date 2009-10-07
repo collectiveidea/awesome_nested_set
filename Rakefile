@@ -22,7 +22,8 @@ Jeweler::Tasks.new do |s|
   s.rdoc_options = ["--main", "README.rdoc", "--inline-source", "--line-numbers"]
   s.test_files = Dir['test/**/*.{yml,rb}']
 end
-
+ Jeweler::GemcutterTasks.new
+ 
 desc 'Default: run unit tests.'
 task :default => :test
 
