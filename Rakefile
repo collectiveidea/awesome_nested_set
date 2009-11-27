@@ -1,7 +1,7 @@
 begin
   require 'jeweler'
 rescue LoadError
-  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+  puts "Jeweler not available. Install it with: sudo gem install jeweler"
   exit 1
 end
 require 'rake/testtask'
