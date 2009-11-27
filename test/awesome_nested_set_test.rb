@@ -787,4 +787,15 @@ class AwesomeNestedSetTest < TestCaseClass
     Category.before_move_callback_chain.pop
   end
   
+  def test_calls_after_save_when_moving
+    @called = false
+    Category.after_save do
+      @called = true
+    end
+    categories(:child_3).parent = categories(:child_2)
+    assert categories(:child_3).save
+    assert @called
+  ensure
+    Category.after_save_callback_chain.pop
+  end
 end
