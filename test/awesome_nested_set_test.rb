@@ -755,4 +755,36 @@ class AwesomeNestedSetTest < TestCaseClass
       model.new(:name => 'foo')
     end
   end
+  
+  def test_before_move_callback
+    @called = false
+    Category.before_move do |record|
+      @called = true
+    end
+    categories(:child_2).move_to_root
+    assert @called
+  ensure
+    Category.before_move_callback_chain.pop
+  end
+  
+  def test_before_move_callback_returning_false_stops_move
+    Category.before_move do
+      return false
+    end
+    assert !categories(:child_3).move_to_root
+    assert !categories(:child_3).root?
+  ensure
+    Category.before_move_callback_chain.pop
+  end
+  
+  def test_before_move_callback_returning_false_halts_save
+    Category.before_move do
+      return false
+    end
+    categories(:child_3).parent_id = nil
+    assert !categories(:child_3).save
+  ensure
+    Category.before_move_callback_chain.pop
+  end
+  
 end
