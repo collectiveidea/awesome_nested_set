@@ -39,6 +39,14 @@ Enable the nested set functionality by declaring acts_as_nested_set on your mode
   
 Run `rake rdoc` to generate the API docs and see CollectiveIdea::Acts::NestedSet::SingletonMethods for more info.
 
+== Conversion from other trees
+
+Coming from acts_as_tree or another system where you only have a parent_id? No problem. Simply add the lft & rgt fields as above, and then run
+
+  Category.rebuild!
+  
+Your tree be converted to a valid nested set. Awesome!
+
 == View Helper
 
 The view helper is called #nested_set_options. 
