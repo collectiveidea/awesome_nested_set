@@ -31,6 +31,9 @@ module CollectiveIdea #:nodoc:
       #   child objects are destroyed alongside this object by calling their destroy
       #   method. If set to :delete_all (default), all the child objects are deleted
       #   without calling their destroy method.
+      # * +:counter_cache+ adds a counter cache for the number of children.
+      #   defaults to false.
+      #   Example: <tt>acts_as_nested_set :counter_cache => :children_count</tt>
       #
       # See CollectiveIdea::Acts::NestedSet::Model::ClassMethods for a list of class methods and
       # CollectiveIdea::Acts::NestedSet::Model::InstanceMethods for a list of instance methods added
@@ -41,6 +44,7 @@ module CollectiveIdea #:nodoc:
           :left_column => 'lft',
           :right_column => 'rgt',
           :dependent => :delete_all, # or :destroy
+          :counter_cache => false
         }.merge(options)
 
         if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
@@ -55,7 +59,8 @@ module CollectiveIdea #:nodoc:
         extend Columns
 
         belongs_to :parent, :class_name => self.base_class.to_s,
-          :foreign_key => parent_column_name
+          :foreign_key => parent_column_name,
+          :counter_cache => options[:counter_cache]
         has_many :children, :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name, :order => quoted_left_column_name
 

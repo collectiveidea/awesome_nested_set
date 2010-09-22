@@ -27,4 +27,12 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :red, :integer
     t.column :black, :integer
   end
+
+  create_table :things, :force => true do |t|
+    t.column :body, :text
+    t.column :parent_id, :integer
+    t.column :lft, :integer
+    t.column :rgt, :integer
+    t.column :children_count, :integer
+  end
 end

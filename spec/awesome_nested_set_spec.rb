@@ -8,7 +8,7 @@ include Test::Unit::Assertions
 
 describe "AwesomeNestedSet" do
   before(:all) do
-    self.class.fixtures :categories, :departments, :notes
+    self.class.fixtures :categories, :departments, :notes, :things
   end
 
   describe "defaults" do
@@ -789,6 +789,35 @@ describe "AwesomeNestedSet" do
       Category.test_allows_move = false
       categories(:child_3).parent_id = nil
       categories(:child_3).save.should be_true
+    end
+  end
+
+  describe "counter_cache" do
+
+    it "should allow use of a counter cache for children" do
+      note1 = things(:parent1)
+      assert_equal 2, note1.children.count
+    end
+
+    it "should increment the counter cache on create" do
+      ActiveRecord::Base.logger.info 'FOO'
+      note1 = things(:parent1)
+      assert_equal 2, note1.children.count
+      assert_equal 2, note1[:children_count]
+      note1.children.create :body => 'Child 3'
+      assert_equal 3, note1.children.count
+      note1.reload
+      assert_equal 3, note1[:children_count]
+    end
+
+    it "should decrement the counter cache on destroy" do
+      note1 = things(:parent1)
+      assert_equal 2, note1.children.count
+      assert_equal 2, note1[:children_count]
+      note1.children.last.destroy
+      assert_equal 1, note1.children.count
+      note1.reload
+      assert_equal 1, note1[:children_count]
     end
   end
 end

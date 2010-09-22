@@ -41,3 +41,7 @@ class Category < ActiveRecord::Base
     }
   end
 end
+
+class Thing < ActiveRecord::Base
+  acts_as_nested_set :counter_cache => 'children_count'
+end
