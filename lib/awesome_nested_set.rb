@@ -59,11 +59,20 @@ module CollectiveIdea #:nodoc:
             include InstanceMethods
             extend Columns
             extend ClassMethods
-            
-            belongs_to :parent, :class_name => self.base_class.to_s,
-              :foreign_key => parent_column_name
-            has_many :children, :class_name => self.base_class.to_s,
-              :foreign_key => parent_column_name, :order => quoted_left_column_name
+
+            belongs_to_options = {
+              :class_name => self.base_class.to_s,
+              :foreign_key => parent_column_name,
+            }
+            belongs_to_options[:counter_cache] = 'children_count' if acts_as_nested_set_options[:counter_cache]
+            belongs_to :parent, belongs_to_options
+
+            has_many_options = {
+              :class_name => self.base_class.to_s,
+              :foreign_key => parent_column_name,
+              :order => quoted_left_column_name,
+            }
+            has_many :children, has_many_options
 
             attr_accessor :skip_before_destroy
           

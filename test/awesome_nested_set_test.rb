@@ -14,6 +14,9 @@ end
 class RenamedColumns < ActiveRecord::Base
   acts_as_nested_set :parent_column => 'mother_id', :left_column => 'red', :right_column => 'black'
 end
+class Thing < ActiveRecord::Base
+  acts_as_nested_set :counter_cache => true
+end
 
 class AwesomeNestedSetTest < TestCaseClass
 
@@ -798,4 +801,30 @@ class AwesomeNestedSetTest < TestCaseClass
   ensure
     Category.after_save_callback_chain.pop
   end
+
+
+  def test_cached_column
+    note1 = things(:parent1)
+    assert_equal 2, note1.children.count
+  end
+
+  def test_cached_column_on_create
+    ActiveRecord::Base.logger.info 'FOO'
+    note1 = things(:parent1)
+    assert_equal 2, note1.children.count
+    assert_equal 2, note1[:children_count]
+    note1.children.create :body=>'Child 3'
+    assert_equal 3, note1.children.count
+    note1.reload; assert_equal 3, note1[:children_count]
+  end
+
+  def test_cached_column_on_destroy
+    note1 = things(:parent1)
+    assert_equal 2, note1.children.count
+    assert_equal 2, note1[:children_count]
+    note1.children.last.destroy
+    assert_equal 1, note1.children.count
+    note1.reload; assert_equal 1, note1[:children_count]
+  end
+
 end
