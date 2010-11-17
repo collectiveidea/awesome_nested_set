@@ -298,7 +298,7 @@ module CollectiveIdea #:nodoc:
 
         # Returns root
         def root
-          self_and_ancestors.find(:first)
+          self_and_ancestors.find(:first, :conditions => {parent_column_name => nil})
         end
 
         # Returns the array of all parents and self
