@@ -242,7 +242,7 @@ module CollectiveIdea #:nodoc:
 
           # Returns root
           def root
-            self_and_ancestors.first
+            self_and_ancestors.where(parent_column_name => nil).first
           end
 
           # Returns the array of all parents and self
