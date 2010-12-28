@@ -499,8 +499,21 @@ module CollectiveIdea #:nodoc:
         
         # reload left, right, and parent
         def reload_nested_set
-          reload(:select => "#{quoted_left_column_name}, " +
-            "#{quoted_right_column_name}, #{quoted_parent_column_name}")
+          
+          #reload(:select => "#{quoted_left_column_name}, " +
+          #  "#{quoted_right_column_name}, #{quoted_parent_column_name}")
+
+          # reload clobbers nested attributes, eek, so we are going to work around this
+          klass = self.class.base_class
+          r = klass.find(:first,
+            :select => "#{quoted_left_column_name}, #{quoted_right_column_name}, #{quoted_parent_column_name}", 
+            :conditions => { klass.primary_key => self.send(klass.primary_key) }
+          )
+
+          self[left_column_name] = r[left_column_name]
+          self[right_column_name] = r[right_column_name]
+          self[parent_column_name] = r[parent_column_name]
+          self
         end
         
         def move_to(target, position)
