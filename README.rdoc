@@ -6,6 +6,10 @@ Awesome Nested Set is an implementation of the nested set pattern for ActiveReco
 
 This is a new implementation of nested set based off of BetterNestedSet that fixes some bugs, removes tons of duplication, adds a few useful methods, and adds STI support.
 
+== Quick note
+
+This has been fixed up for use with Rails 3.x for use with Arel and fixed Deprecation warnings
+
 == Installation
 
 Install as a plugin:
