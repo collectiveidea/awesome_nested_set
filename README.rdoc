@@ -14,7 +14,7 @@ This has been fixed up for use with Rails 3.x for use with Arel and fixed Deprec
 
 Install as a plugin:
 
-  script/plugin install git://github.com/collectiveidea/awesome_nested_set.git
+  rails plugin install git://github.com/tommg/awesome_nested_set.git
   
 == Usage
 
