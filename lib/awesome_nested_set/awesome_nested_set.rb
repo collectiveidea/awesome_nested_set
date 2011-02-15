@@ -445,6 +445,28 @@ module CollectiveIdea #:nodoc:
           move_to nil, :root
         end
 
+        # Order children in a nested set by an attribute
+        # Can order by any attribute class that uses the Comparable mixin, for example a string or integer
+        # Usage example when sorting categories alphabetically: @new_category.move_to_ordered_child_of(@root, "name")
+        def move_to_ordered_child_of(parent, order_attribute, ascending = true)
+          self.move_to_root and return unless parent
+          left = nil # This is needed, at least for the tests.
+          parent.children.each do |n| # Find the node immediately to the left of this node.
+            if ascending
+              left = n if n.send(order_attribute) < self.send(order_attribute)
+            else
+              left = n if n.send(order_attribute) > self.send(order_attribute)
+            end
+          end
+          self.move_to_child_of(parent)
+          return unless parent.children.count > 1 # Only need to order if there are multiple children.
+          if left # Self has a left neighbor.
+            self.move_to_right_of(left)
+          else # Self is the left most node.
+            self.move_to_left_of(parent.children[0])
+          end
+        end
+
         def move_possible?(target)
           self != target && # Can't target self
           same_scope?(target) && # can't be in different scopes
@@ -671,7 +693,7 @@ module CollectiveIdea #:nodoc:
         def parent_column_name
           acts_as_nested_set_options[:parent_column]
         end
-        
+
         def order_column
           acts_as_nested_set_options[:order_column] || left_column_name
         end

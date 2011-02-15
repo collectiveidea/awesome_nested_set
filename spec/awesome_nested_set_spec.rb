@@ -567,6 +567,32 @@ describe "AwesomeNestedSet" do
     Category.roots.last.to_text.should == output
   end
 
+  it "should_move_to_ordered_child" do
+    node1 = Category.create(:name => 'Node-1')
+    node2 = Category.create(:name => 'Node-2')
+    node3 = Category.create(:name => 'Node-3')
+
+    node2.move_to_ordered_child_of(node1, "name")
+
+    assert_equal node1, node2.parent
+    assert_equal 1, node1.children.count
+
+    node3.move_to_ordered_child_of(node1, "name", true) # acending
+
+    assert_equal node1, node3.parent
+    assert_equal 2, node1.children.count
+    assert_equal node2.name, node1.children[0].name
+    assert_equal node3.name, node1.children[1].name
+
+    node3.move_to_ordered_child_of(node1, "name", false) # decending
+    node1.reload
+
+    assert_equal node1, node3.parent
+    assert_equal 2, node1.children.count
+    assert_equal node3.name, node1.children[0].name
+    assert_equal node2.name, node1.children[1].name
+  end
+
   it "should be able to rebuild without validating each record" do
     root1 = Category.create(:name => 'Root1')
     root2 = Category.create(:name => 'Root2')
