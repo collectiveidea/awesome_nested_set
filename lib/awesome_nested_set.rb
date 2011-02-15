@@ -409,6 +409,30 @@ module CollectiveIdea #:nodoc:
         def move_to_root
           move_to nil, :root
         end
+
+        # Order the children in a nested set by an attribute that can be compared
+        # Can order by attribute class that uses the Comparable mixin, for example a string or integer
+        # Usage example if sorting categories alphabetically: @new_category.move_to_ordered_child_of(@root, "name")
+        def move_to_ordered_child_of(parent, order_attribute, ascending = true)
+          if parent
+            left = nil
+            parent.children.each do |n|
+              if ascending
+                left = n if n.send(order_attribute) < self.send(order_attribute)
+              else
+                left = n if n.send(order_attribute) > self.send(order_attribute)
+              end
+            end
+            self.move_to_child_of(parent)
+            if left
+              self.move_to_right_of(left)
+            elsif parent.children.count > 1
+              self.move_to_left_of(parent.children[0]) 
+            end
+          else
+            self.move_to_root
+          end
+        end
         
         def move_possible?(target)
           self != target && # Can't target self

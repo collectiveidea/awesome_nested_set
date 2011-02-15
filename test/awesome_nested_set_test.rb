@@ -450,7 +450,28 @@ class AwesomeNestedSetTest < TestCaseClass
     assert_equal Category.roots.last.to_text, output
   end
 
+  def test_move_to_ordered_child
+    node1 = Category.create(:name => 'Node-1')
+    node2 = Category.create(:name => 'Node-2')
+    node3 = Category.create(:name => 'Node-3')
 
+    node2.move_to_ordered_child_of(node1, "name")
+
+    assert_equal node1, node2.parent
+    assert_equal 1, node1.children.count
+
+    node3.move_to_ordered_child_of(node1, "name", true)
+
+    assert_equal node1, node3.parent
+    assert_equal 2, node1.children.count
+    assert_equal node2.id, node1.children[0].id
+    assert_equal node3.id, node1.children[1].id   
+
+    node3.move_to_ordered_child_of(node1, "name", false)
+    assert_equal node3.id, node1.children[0].id
+    assert_equal node2.id, node1.children[1].id
+  end  
+  
   def test_valid_with_null_lefts
     assert Category.valid?
     Category.update_all('lft = null')
