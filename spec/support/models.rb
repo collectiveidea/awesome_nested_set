@@ -18,7 +18,9 @@ end
 
 class Category < ActiveRecord::Base
   acts_as_nested_set
-  
+
+  validates_presence_of :name
+
   # Setup a callback that we can switch to true or false per-test
   set_callback :move, :before, :custom_before_move
   cattr_accessor :test_allows_move

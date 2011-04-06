@@ -446,6 +446,23 @@ describe "AwesomeNestedSet" do
     assert_equal Category.roots.last.to_text, output
   end
 
+  it "should be able to rebuild without validating each record" do
+    root1 = Category.create(:name => 'Root1')
+    root2 = Category.create(:name => 'Root2')
+    root3 = Category.create(:name => 'Root3')
+
+    root2.move_to_child_of root1
+    root3.move_to_child_of root1
+
+    root2.name = nil
+    root2.save!(:validate => false)
+
+    output = Category.roots.last.to_text
+    Category.update_all('lft = null, rgt = null')
+    Category.rebuild!(false)
+
+    assert_equal Category.roots.last.to_text, output
+  end
 
   it "valid_with_null_lefts" do
     assert Category.valid?
@@ -540,10 +557,10 @@ describe "AwesomeNestedSet" do
   end
 
   it "moving_dirty_objects_doesnt_invalidate_tree" do
-    r1 = Category.create
-    r2 = Category.create
-    r3 = Category.create
-    r4 = Category.create
+    r1 = Category.create :name => "Test 1"
+    r2 = Category.create :name => "Test 2"
+    r3 = Category.create :name => "Test 3"
+    r4 = Category.create :name => "Test 4"
     nodes = [r1, r2, r3, r4]
 
     r2.move_to_child_of(r1)
