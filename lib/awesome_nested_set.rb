@@ -157,7 +157,7 @@ module CollectiveIdea #:nodoc:
         end
                 
         # Rebuilds the left & rights if unset or invalid.  Also very useful for converting from acts_as_tree.
-        def rebuild!
+        def rebuild!( validate = true )
           # Don't rebuild a valid tree.
           return true if valid?
           
@@ -177,8 +177,20 @@ module CollectiveIdea #:nodoc:
             # find
             find(:all, :conditions => ["#{quoted_parent_column_name} = ? #{scope.call(node)}", node], :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each{|n| set_left_and_rights.call(n) }
             # set right
-            node[right_column_name] = indices[scope.call(node)] += 1    
-            node.save!    
+            node[right_column_name] = indices[scope.call(node)] += 1  
+
+             
+            rails_major_version = Rails.version.to_i
+            if rails_major_version >= 3
+                node.save!( :validate => validate )
+            else
+                if validate
+                    node.save_with_validation!                    
+                else
+                    node.save_without_validation!
+                end
+            end
+
           end
                               
           # Find root node(s)
