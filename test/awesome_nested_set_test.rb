@@ -450,6 +450,30 @@ class AwesomeNestedSetTest < TestCaseClass
     assert_equal Category.roots.last.to_text, output
   end
 
+  def test_rebuild_save_without_validation
+    root1 = Category.create(:name => 'Root1')
+    root2 = Category.create(:name => 'Root2')
+    root3 = Category.create(:name => 'Root3')
+    
+    root2.move_to_child_of root1
+    root3.move_to_child_of root1
+
+    root2.name = nil
+    
+    major_version = Rails.version.to_i
+    if major_version >= 3
+        root2.save!( :validate => false )
+    else
+        root2.save_without_validation!
+    end    
+      
+    output = Category.roots.last.to_text
+    Category.update_all('lft = null, rgt = null')
+    Category.rebuild!( false )
+    
+    assert_equal Category.roots.last.to_text, output
+  end
+
 
   def test_valid_with_null_lefts
     assert Category.valid?
