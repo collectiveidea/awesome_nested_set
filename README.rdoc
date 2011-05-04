@@ -1,6 +1,8 @@
 = AwesomeNestedSet
 
-Awesome Nested Set is an implementation of the nested set pattern for ActiveRecord models. It is replacement for acts_as_nested_set and BetterNestedSet, but awesomer. It supports Rails 2.1 and later.
+Awesome Nested Set is an implementation of the nested set pattern for ActiveRecord models. It is replacement for acts_as_nested_set and BetterNestedSet, but more awesome. 
+
+Version 2 supports Rails 3. Gem versions prior to 2.0 support Rails 2.
 
 == What makes this so awesome?
 
@@ -8,9 +10,9 @@ This is a new implementation of nested set based off of BetterNestedSet that fix
 
 == Installation
 
-Install as a plugin:
+  Add to your Gemfile:
 
-  script/plugin install git://github.com/collectiveidea/awesome_nested_set.git
+  gem 'awesome_nested_set'
   
 == Usage
 
@@ -37,7 +39,7 @@ Enable the nested set functionality by declaring acts_as_nested_set on your mode
     acts_as_nested_set
   end
   
-Run `rake rdoc` to generate the API docs and see CollectiveIdea::Acts::NestedSet::SingletonMethods for more info.
+Run `rake rdoc` to generate the API docs and see CollectiveIdea::Acts::NestedSet::Model::SingletonMethods for more info.
 
 == Conversion from other trees
 
@@ -45,7 +47,7 @@ Coming from acts_as_tree or another system where you only have a parent_id? No p
 
   Category.rebuild!
   
-Your tree be converted to a valid nested set. Awesome!
+Your tree will be converted to a valid nested set. Awesome!
 
 == View Helper
 
@@ -65,7 +67,6 @@ You can learn more about nested sets at:
 
   http://www.dbmsmag.com/9603d06.html
   http://threebit.net/tutorials/nestedset/tutorial1.html
-  http://api.rubyonrails.com/classes/ActiveRecord/Acts/NestedSet/ClassMethods.html
   http://opensource.symetrie.com/trac/better_nested_set/
 
 == How to contribute
