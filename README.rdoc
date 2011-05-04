@@ -63,11 +63,7 @@ See CollectiveIdea::Acts::NestedSet::Helper for more information about the helpe
 
 == References
 
-You can learn more about nested sets at:
-
-  http://www.dbmsmag.com/9603d06.html
-  http://threebit.net/tutorials/nestedset/tutorial1.html
-  http://opensource.symetrie.com/trac/better_nested_set/
+You can learn more about nested sets at: http://threebit.net/tutorials/nestedset/tutorial1.html
 
 == How to contribute
 
