@@ -1,5 +1,5 @@
 awesome_nested_set.sqlite3.db
-test/debug.log
+spec/debug.log
 rdoc
 coverage
 pkg
