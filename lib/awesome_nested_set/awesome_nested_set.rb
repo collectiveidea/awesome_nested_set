@@ -51,7 +51,6 @@ module CollectiveIdea #:nodoc:
         class_inheritable_reader :acts_as_nested_set_options
         
         include CollectiveIdea::Acts::NestedSet::Model
-        include Comparable
         include Columns
         extend Columns
         
@@ -240,11 +239,6 @@ module CollectiveIdea #:nodoc:
             !parent_id.nil?
           end
 
-          # order by left column
-          def <=>(x)
-            left <=> x.left
-          end
-
           # Returns root
           def root
             self_and_ancestors.first
@@ -321,7 +315,7 @@ module CollectiveIdea #:nodoc:
           # Find the first sibling to the left
           def left_sibling
             siblings.where(["#{self.class.quoted_table_name}.#{quoted_left_column_name} < ?", left]).
-                    order("#{self.class.quoted_table_name}.#{quoted_left_column_name} DESC").first
+                    order("#{self.class.quoted_table_name}.#{quoted_left_column_name} DESC").last
           end
 
           # Find the first sibling to the right

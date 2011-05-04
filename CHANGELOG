@@ -1,3 +1,5 @@
 2.0.0.pre
 * Expect Rails 3
+* Changed how callbacks work. Returning false in a before_move action does not block save operations. Use a validation or exception in the callback if you need that.
 * Switched to RSpec
+* Remove use of Comparable

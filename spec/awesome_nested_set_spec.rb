@@ -768,10 +768,10 @@ describe "AwesomeNestedSet" do
       assert !categories(:child_3).root?
     end
 
-    it "before_move_callback_returning_false_halts_save" do
+    it "should not halt save actions" do
       Category.test_allows_move = false
       categories(:child_3).parent_id = nil
-      categories(:child_3).save.should_not be_true
+      categories(:child_3).save.should be_true
     end
   end
 end
