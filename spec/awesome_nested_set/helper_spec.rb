@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "Helper" do
   include CollectiveIdea::Acts::NestedSet::Helper
-  
+
   before(:all) do
     self.class.fixtures :categories
   end
@@ -22,7 +22,7 @@ describe "Helper" do
       end
       actual.should == expected
     end
-  
+
     def test_nested_set_options_with_mover
       expected = [
         [" Top Level", 1],

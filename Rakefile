@@ -12,7 +12,7 @@ task :default => :spec
 task :build do
   system "gem build awesome_nested_set.gemspec"
 end
- 
+
 task :release => :build do
   system "gem push awesome_nested_set-#{ActsAsGeocodable::VERSION}.gem"
 end

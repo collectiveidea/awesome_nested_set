@@ -10,7 +10,7 @@ describe "AwesomeNestedSet" do
   before(:all) do
     self.class.fixtures :categories, :departments, :notes
   end
-  
+
   describe "defaults" do
     it "should have left_column_default" do
       assert_equal 'lft', Default.acts_as_nested_set_options[:left_column]
@@ -51,7 +51,7 @@ describe "AwesomeNestedSet" do
   end
 
   it "creation_with_altered_column_names" do
-    assert_nothing_raised do 
+    assert_nothing_raised do
       RenamedColumns.create!()
     end
   end
@@ -372,7 +372,7 @@ describe "AwesomeNestedSet" do
     assert_equal 3, categories(:child_2).left
     assert_equal 6, categories(:child_2).right
     assert_equal 2, categories(:child_1).left
-    assert_equal 7, categories(:child_1).right    
+    assert_equal 7, categories(:child_1).right
   end
 
   it "slightly_difficult_move_to_child_of" do
@@ -392,7 +392,7 @@ describe "AwesomeNestedSet" do
     assert_equal 12, categories(:top_level_2).left
     assert_equal 13, categories(:top_level_2).right
     assert_equal 11, new_top.left
-    assert_equal 14, new_top.right    
+    assert_equal 14, new_top.right
   end
 
   it "difficult_move_to_child_of" do
@@ -405,13 +405,13 @@ describe "AwesomeNestedSet" do
     new_top = Category.create(:name => 'New Top')
     categories(:top_level).move_to_child_of(new_top)
     categories(:child_2_1).reload
-    assert Category.valid?  
+    assert Category.valid?
     assert_equal new_top.id, categories(:top_level).parent_id
 
     assert_equal 4, categories(:top_level).left
     assert_equal 13, categories(:top_level).right
     assert_equal 8, categories(:child_2_1).left
-    assert_equal 9, categories(:child_2_1).right    
+    assert_equal 9, categories(:child_2_1).right
   end
 
   #rebuild swaps the position of the 2 children when added using move_to_child twice onto same parent

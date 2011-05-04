@@ -32,9 +32,9 @@ module CollectiveIdea #:nodoc:
             end.compact
           end
           result
-        end  
-        
+        end
+
       end
-    end  
+    end
   end
 end
