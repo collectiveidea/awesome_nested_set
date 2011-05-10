@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    awesome_nested_set (2.0.0.pre)
+    awesome_nested_set (2.0.0)
       activerecord (>= 3.0.0)
 
 GEM
