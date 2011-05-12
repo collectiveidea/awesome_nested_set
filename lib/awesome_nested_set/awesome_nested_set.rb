@@ -88,7 +88,7 @@ module CollectiveIdea #:nodoc:
         scope :roots, where(parent_column_name => nil).order(quoted_left_column_name)
         scope :leaves, where("#{quoted_right_column_name} - #{quoted_left_column_name} = 1").order(quoted_left_column_name)
 
-        define_callbacks :move, :terminator => "result == false"
+        define_model_callbacks :move
       end
 
       module Model
