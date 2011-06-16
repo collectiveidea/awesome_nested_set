@@ -1,3 +1,6 @@
+2.0.1
+* Fixed a bug with move_to not using nested_set_scope [Andreas Sekine]
+
 2.0.0.pre
 * Expect Rails 3
 * Changed how callbacks work. Returning false in a before_move action does not block save operations. Use a validation or exception in the callback if you need that.
