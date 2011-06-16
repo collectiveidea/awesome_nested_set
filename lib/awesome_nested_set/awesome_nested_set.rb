@@ -496,7 +496,7 @@ module CollectiveIdea #:nodoc:
                   else          target[parent_column_name]
                 end
 
-                self.class.base_class.update_all([
+                self.nested_set_scope.update_all([
                   "#{quoted_left_column_name} = CASE " +
                     "WHEN #{quoted_left_column_name} BETWEEN :a AND :b " +
                       "THEN #{quoted_left_column_name} + :d - :b " +
