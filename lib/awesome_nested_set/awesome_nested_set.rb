@@ -60,9 +60,11 @@ module CollectiveIdea #:nodoc:
 
         belongs_to :parent, :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name,
-          :counter_cache => options[:counter_cache]
+          :counter_cache => options[:counter_cache],
+          :inverse_of => :children
         has_many :children, :class_name => self.base_class.to_s,
-          :foreign_key => parent_column_name, :order => quoted_left_column_name
+          :foreign_key => parent_column_name, :order => quoted_left_column_name,
+          :inverse_of => :parent
 
         attr_accessor :skip_before_destroy
 
