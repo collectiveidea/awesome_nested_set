@@ -384,7 +384,8 @@ module CollectiveIdea #:nodoc:
           # All nested set queries should use this nested_set_scope, which performs finds on
           # the base ActiveRecord class, using the :scope declared in the acts_as_nested_set
           # declaration.
-          def nested_set_scope(options = {:order => quoted_left_column_name})
+          def nested_set_scope(options = {})
+            options = {:order => quoted_left_column_name}.merge(options)
             scopes = Array(acts_as_nested_set_options[:scope])
             options[:conditions] = scopes.inject({}) do |conditions,attr|
               conditions.merge attr => self[attr]
@@ -493,10 +494,8 @@ module CollectiveIdea #:nodoc:
                 a, b, c, d = [self[left_column_name], self[right_column_name], bound, other_bound].sort
 
                 # select the rows in the model between a and d, and apply a lock
-                self.class.base_class.find(:all,
-                  :select => "id",
-                  :conditions => ["#{quoted_left_column_name} >= :a and #{quoted_right_column_name} <= :d", {:a => a, :d => d}],
-                  :lock => true
+                self.class.base_class.select('id').lock(true).where(
+                  ["#{quoted_left_column_name} >= :a and #{quoted_right_column_name} <= :d", {:a => a, :d => d}]
                 )
 
                 new_parent = case position
