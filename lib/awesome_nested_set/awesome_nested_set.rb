@@ -382,8 +382,7 @@ module CollectiveIdea #:nodoc:
           # All nested set queries should use this nested_set_scope, which performs finds on
           # the base ActiveRecord class, using the :scope declared in the acts_as_nested_set
           # declaration.
-          def nested_set_scope
-            options = {:order => quoted_left_column_name}
+          def nested_set_scope(options = {:order => quoted_left_column_name})
             scopes = Array(acts_as_nested_set_options[:scope])
             options[:conditions] = scopes.inject({}) do |conditions,attr|
               conditions.merge attr => self[attr]
@@ -406,7 +405,7 @@ module CollectiveIdea #:nodoc:
 
           # on creation, set automatically lft and rgt to the end of the tree
           def set_default_left_and_right
-            highest_right_row = nested_set_scope.find(:first, :order => "#{quoted_right_column_name} desc", :limit => 1,:lock => true )
+            highest_right_row = nested_set_scope(:order => "#{quoted_right_column_name} desc").find(:first, :limit => 1,:lock => true )
             maxright = highest_right_row ? highest_right_row[right_column_name] : 0
             # adds the new node to the right of all existing nodes
             self[left_column_name] = maxright + 1
