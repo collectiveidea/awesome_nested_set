@@ -39,7 +39,7 @@ Enable the nested set functionality by declaring acts_as_nested_set on your mode
     acts_as_nested_set
   end
 
-Run `rake rdoc` to generate the API docs and see CollectiveIdea::Acts::NestedSet::Model::SingletonMethods for more info.
+Run `rake rdoc` to generate the API docs and see CollectiveIdea::Acts::NestedSet for more info.
 
 == Conversion from other trees
 
