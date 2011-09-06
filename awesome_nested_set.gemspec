@@ -6,7 +6,7 @@ require 'awesome_nested_set/version'
 Gem::Specification.new do |s|
   s.name = %q{awesome_nested_set}
   s.version = ::AwesomeNestedSet::VERSION
-  s.authors = ["Brandon Keepers", "Daniel Morrison"]
+  s.authors = ["Brandon Keepers", "Daniel Morrison", "Philip Arndt"]
   s.description = %q{An awesome nested set implementation for Active Record}
   s.email = %q{info@collectiveidea.com}
   s.extra_rdoc_files = [

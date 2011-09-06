@@ -3,3 +3,4 @@ spec/debug.log
 rdoc
 coverage
 pkg
+*.gem
