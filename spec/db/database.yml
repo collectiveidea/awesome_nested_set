@@ -1,8 +1,8 @@
 sqlite3:
-  adapter: sqlite3
+  adapter: <%= "jdbc" if defined? JRUBY_VERSION %>sqlite3
   database: awesome_nested_set.sqlite3.db
 sqlite3mem:
-  adapter: sqlite3
+  adapter: <%= "jdbc" if defined? JRUBY_VERSION %>sqlite3
   database: ":memory:"
 postgresql:
   adapter: postgresql
@@ -11,7 +11,7 @@ postgresql:
   database: awesome_nested_set_plugin_test
   min_messages: ERROR
 mysql:
-  adapter: mysql
+  adapter: mysql2
   host: localhost
   username: root
   password:

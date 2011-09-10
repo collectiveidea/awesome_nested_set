@@ -3,9 +3,8 @@ source 'http://rubygems.org'
 gemspec
 
 gem 'rails'
-gem 'sqlite3'
+gem 'mysql2'
+gem 'pg'
+gem 'sqlite3', :platform => :ruby
+gem 'activerecord-jdbcsqlite3-adapter', :platform => :jruby
 gem 'rspec-rails',        '~> 2.6'
-gem 'factory_girl'
-gem 'database_cleaner'
-gem 'ruby-debug19', :platforms => :ruby_19, :require => 'ruby-debug'
-gem 'ruby-debug',   :platforms => :ruby_18

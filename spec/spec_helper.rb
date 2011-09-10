@@ -11,15 +11,14 @@ require 'active_support'
 require 'active_model'
 require 'active_record'
 require 'action_controller'
-require 'factory_girl'
-require 'database_cleaner'
-require 'ruby-debug'
 
 require 'awesome_nested_set'
 
 ActiveRecord::Base.logger = Logger.new(plugin_test_dir + "/debug.log")
 
-ActiveRecord::Base.configurations = YAML::load(IO.read(plugin_test_dir + "/db/database.yml"))
+require 'yaml'
+require 'erb'
+ActiveRecord::Base.configurations = YAML::load(ERB.new(IO.read(plugin_test_dir + "/db/database.yml")).result)
 ActiveRecord::Base.establish_connection(ENV["DB"] || "sqlite3mem")
 ActiveRecord::Migration.verbose = false
 load(File.join(plugin_test_dir, "db", "schema.rb"))
