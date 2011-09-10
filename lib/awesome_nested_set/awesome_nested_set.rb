@@ -415,12 +415,35 @@ module CollectiveIdea #:nodoc:
             self[right_column_name] = maxright + 2
           end
 
+          def in_tenacious_transaction(&block)
+            retry_count = 0
+            begin
+              transaction(&block)
+            rescue ActiveRecord::StatementInvalid => error
+              raise unless connection.open_transactions.zero?
+              raise unless error.message =~ /Deadlock found when trying to get lock|Lock wait timeout exceeded/
+              raise unless retry_count < 10
+              retry_count += 1
+              logger.info "Deadlock detected on retry #{retry_count}, restarting transaction"
+              sleep(rand(retry_count)*0.1) # Aloha protocol
+              retry
+            end
+          end
+
           # Prunes a branch off of the tree, shifting all of the elements on the right
           # back to the left so the counts still work.
           def destroy_descendants
             return if right.nil? || left.nil? || skip_before_destroy
 
-            self.class.base_class.transaction do
+            in_tenacious_transaction do
+              reload_nested_set
+              # select the rows in the model that extend past the deletion point and apply a lock
+              self.class.base_class.find(:all,
+                :select => "id",
+                :conditions => ["#{quoted_left_column_name} >= ?", left],
+                :lock => true
+              )
+
               if acts_as_nested_set_options[:dependent] == :destroy
                 descendants.each do |model|
                   model.skip_before_destroy = true
@@ -451,14 +474,16 @@ module CollectiveIdea #:nodoc:
 
           # reload left, right, and parent
           def reload_nested_set
-            reload(:select => "#{quoted_left_column_name}, " +
-              "#{quoted_right_column_name}, #{quoted_parent_column_name}")
+            reload(
+              :select => "#{quoted_left_column_name}, #{quoted_right_column_name}, #{quoted_parent_column_name}",
+              :lock => true
+            )
           end
 
           def move_to(target, position)
             raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.new_record?
             run_callbacks :move do
-              transaction do
+              in_tenacious_transaction do
                 if target.is_a? self.class.base_class
                   target.reload_nested_set
                 elsif position != :root
