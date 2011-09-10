@@ -1,0 +1,12 @@
+notifications:
+  email:
+    - parndt@gmail.com
+    - daniel@collectiveidea.com
+env:
+  - DB=sqlite3
+rvm:
+  - 1.8.7
+  - 1.9.2
+  - 1.9.3
+  - rbx-2.0
+  - jruby
