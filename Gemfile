@@ -1,10 +1,10 @@
-source :rubygems
+source 'http://rubygems.org'
+
 gemspec
 
 gem 'rails'
-gem 'sqlite3-ruby'
-gem 'mysql'
-gem 'rspec-rails',        '~> 2.1.0'
+gem 'sqlite3'
+gem 'rspec-rails',        '~> 2.6'
 gem 'factory_girl'
 gem 'database_cleaner'
 gem 'ruby-debug19', :platforms => :ruby_19, :require => 'ruby-debug'
