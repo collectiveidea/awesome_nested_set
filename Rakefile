@@ -17,7 +17,7 @@ task :release => :build do
   system "gem push awesome_nested_set-#{ActsAsGeocodable::VERSION}.gem"
 end
 
-require 'rake/rdoctask'
+require 'rdoc/task'
 desc 'Generate documentation for the awesome_nested_set plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
