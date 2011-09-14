@@ -3,7 +3,7 @@ notifications:
     - parndt@gmail.com
 env:
   - DB=sqlite3
-  - DB=sqite3mem
+  - DB=sqlite3mem
   - DB=postgresql
   - DB=mysql
 rvm:
