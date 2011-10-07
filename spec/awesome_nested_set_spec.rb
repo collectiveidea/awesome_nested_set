@@ -798,7 +798,6 @@ describe "AwesomeNestedSet" do
     end
 
     it "should increment the counter cache on create" do
-      ActiveRecord::Base.logger.info 'FOO'
       note1 = things(:parent1)
       note1.children.count.should == 2
       note1[:children_count].should == 2
@@ -816,6 +815,27 @@ describe "AwesomeNestedSet" do
       note1.children.count.should == 1
       note1.reload
       note1[:children_count].should == 1
+    end
+  end
+
+  describe "association callbacks on children" do
+    it "should call the appropriate callbacks on the children :has_many association " do
+      root = DefaultWithCallbacks.create
+      root.should_not be_new_record
+
+      child = root.children.build
+
+      root.before_add.should == child
+      root.after_add.should  == child
+
+      root.before_remove.should_not == child
+      root.after_remove.should_not  == child
+
+      child.save.should be_true
+      root.children.delete(child).should be_true
+
+      root.before_remove.should == child
+      root.after_remove.should  == child
     end
   end
 end

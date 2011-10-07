@@ -64,7 +64,11 @@ module CollectiveIdea #:nodoc:
           :inverse_of => :children
         has_many :children, :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name, :order => quoted_left_column_name,
-          :inverse_of => :parent
+          :inverse_of => :parent,
+          :before_add    => options[:before_add],
+          :after_add     => options[:after_add],
+          :before_remove => options[:before_remove],
+          :after_remove  => options[:after_remove]
 
         attr_accessor :skip_before_destroy
 
