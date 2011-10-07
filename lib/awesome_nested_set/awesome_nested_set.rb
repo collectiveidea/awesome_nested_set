@@ -65,10 +65,10 @@ module CollectiveIdea #:nodoc:
         has_many :children, :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name, :order => quoted_left_column_name,
           :inverse_of => :parent,
-          :before_add    => options[:before_add]    || nil,
-          :after_add     => options[:after_add]     || nil,
-          :before_remove => options[:before_remove] || nil,
-          :after_remove  => options[:after_remove]  || nil
+          :before_add    => options[:before_add],
+          :after_add     => options[:after_add],
+          :before_remove => options[:before_remove],
+          :after_remove  => options[:after_remove]
 
         attr_accessor :skip_before_destroy
 
