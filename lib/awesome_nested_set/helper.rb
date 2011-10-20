@@ -79,7 +79,7 @@ module CollectiveIdea #:nodoc:
               end   
             end.compact
           end
-          children.sort_by! { |c| order }
+          children.sort_by! &order
           children.each { |c| result << [yield(c), c.id] }
           result
         end
