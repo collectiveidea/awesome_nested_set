@@ -63,7 +63,7 @@ module CollectiveIdea #:nodoc:
           :counter_cache => options[:counter_cache],
           :inverse_of => :children
         has_many :children, :class_name => self.base_class.to_s,
-          :foreign_key => parent_column_name, :order => quoted_left_column_name,
+          :foreign_key => parent_column_name, :order => left_column_name,
           :inverse_of => :parent,
           :before_add    => options[:before_add],
           :after_add     => options[:after_add],
@@ -91,8 +91,6 @@ module CollectiveIdea #:nodoc:
           end_eval
         end
 
-        scope :roots, where(parent_column_name => nil).order(quoted_left_column_name)
-
         define_model_callbacks :move
       end
 
@@ -103,6 +101,10 @@ module CollectiveIdea #:nodoc:
           # Returns the first root
           def root
             roots.first
+          end
+
+          def roots
+            where(parent_column_name => nil).order(quoted_left_column_name)
           end
 
           def leaves
