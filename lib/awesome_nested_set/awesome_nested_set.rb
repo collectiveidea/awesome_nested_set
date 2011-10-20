@@ -72,11 +72,6 @@ module CollectiveIdea #:nodoc:
 
         attr_accessor :skip_before_destroy
 
-        # no bulk assignment
-        if accessible_attributes.blank?
-          attr_protected  left_column_name.intern, right_column_name.intern
-        end
-
         before_create  :set_default_left_and_right
         before_save    :store_new_parent
         after_save     :move_to_new_parent
