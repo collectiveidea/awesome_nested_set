@@ -215,8 +215,38 @@ module CollectiveIdea #:nodoc:
               yield(o, path.length - 1)
             end
           end
+          
+          # Same as each_with_level - Accepts a string as a second argument to sort the list
+          # Example:
+          #    Category.each_with_level(Category.root.self_and_descendants, :sort_by_this_column) do |o, level|
+          def sorted_each_with_level(objects, order)
+            path = [nil]
+            children = []
+              objects.each do |o|
+              children << o if o.leaf?
+              if o.parent_id != path.last
+                if !children.empty? && !o.leaf?
+                  children.sort_by! &order
+                  children.each { |c| yield(c, path.length-1) }
+                  children = []
+                end
+                # we are on a new level, did we decent or ascent?
+                if path.include?(o.parent_id)
+                  # remove wrong wrong tailing paths elements
+                  path.pop while path.last != o.parent_id
+                else
+                  path << o.parent_id
+                end
+              end
+              yield(o,path.length-1) if !o.leaf?
+            end
+            if !children.empty?
+              children.sort_by! &order
+              children.each { |c| yield(c, path.length-1) }
+            end                
+          end
         end
-
+    
         # Any instance method that returns a collection makes use of Rails 2.1's named_scope (which is bundled for Rails 2.0), so it can be treated as a finder.
         #
         #   category.self_and_descendants.count
