@@ -92,7 +92,6 @@ module CollectiveIdea #:nodoc:
         end
 
         scope :roots, where(parent_column_name => nil).order(quoted_left_column_name)
-        scope :leaves, where("#{quoted_right_column_name} - #{quoted_left_column_name} = 1").order(quoted_left_column_name)
 
         define_model_callbacks :move
       end
@@ -104,6 +103,10 @@ module CollectiveIdea #:nodoc:
           # Returns the first root
           def root
             roots.first
+          end
+
+          def leaves
+            where("#{quoted_right_column_name} - #{quoted_left_column_name} = 1").order(quoted_left_column_name)
           end
 
           def valid?
