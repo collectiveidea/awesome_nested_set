@@ -74,12 +74,6 @@ describe "AwesomeNestedSet" do
     }.should raise_exception(ActiveRecord::ActiveRecordError)
   end
 
-  it "colums_protected_on_initialize" do
-    c = Category.new(:lft => 1, :rgt => 2)
-    c.lft.should be_nil
-    c.rgt.should be_nil
-  end
-
   it "scoped_appends_id" do
     ScopedCategory.acts_as_nested_set_options[:scope].should == :organization_id
   end

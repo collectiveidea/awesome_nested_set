@@ -63,7 +63,7 @@ module CollectiveIdea #:nodoc:
           :counter_cache => options[:counter_cache],
           :inverse_of => :children
         has_many :children, :class_name => self.base_class.to_s,
-          :foreign_key => parent_column_name, :order => quoted_left_column_name,
+          :foreign_key => parent_column_name, :order => left_column_name,
           :inverse_of => :parent,
           :before_add    => options[:before_add],
           :after_add     => options[:after_add],
@@ -71,11 +71,6 @@ module CollectiveIdea #:nodoc:
           :after_remove  => options[:after_remove]
 
         attr_accessor :skip_before_destroy
-
-        # no bulk assignment
-        if accessible_attributes.blank?
-          attr_protected  left_column_name.intern, right_column_name.intern
-        end
 
         before_create  :set_default_left_and_right
         before_save    :store_new_parent
@@ -91,9 +86,6 @@ module CollectiveIdea #:nodoc:
           end_eval
         end
 
-        scope :roots, where(parent_column_name => nil).order(quoted_left_column_name)
-        scope :leaves, where("#{quoted_right_column_name} - #{quoted_left_column_name} = 1").order(quoted_left_column_name)
-
         define_model_callbacks :move
       end
 
@@ -104,6 +96,14 @@ module CollectiveIdea #:nodoc:
           # Returns the first root
           def root
             roots.first
+          end
+
+          def roots
+            where(parent_column_name => nil).order(quoted_left_column_name)
+          end
+
+          def leaves
+            where("#{quoted_right_column_name} - #{quoted_left_column_name} = 1").order(quoted_left_column_name)
           end
 
           def valid?
