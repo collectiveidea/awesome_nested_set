@@ -110,8 +110,11 @@ module CollectiveIdea #:nodoc:
             left_and_rights_valid? && no_duplicates_for_columns? && all_roots_valid?
           end
 
-          def left_and_rights_valid?
-            joins("LEFT OUTER JOIN #{quoted_table_name} AS parent ON " +
+          def left_and_rights_valid?  
+            ## AS clause not supported in Oracle in FROM clause for aliasing table name
+            joins("LEFT OUTER JOIN #{quoted_table_name}" + 
+                (connection.adapter_name.match(/Oracle/).nil? ?  " AS " : " ") + 
+                "parent ON " +
                 "#{quoted_table_name}.#{quoted_parent_column_name} = parent.#{primary_key}").
             where(
                 "#{quoted_table_name}.#{quoted_left_column_name} IS NULL OR " +
