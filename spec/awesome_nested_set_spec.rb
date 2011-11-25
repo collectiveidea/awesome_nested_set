@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "AwesomeNestedSet" do
   before(:all) do
-    self.class.fixtures :categories, :departments, :notes, :things
+    self.class.fixtures :categories, :departments, :notes, :things, :brokens
   end
 
   describe "defaults" do
@@ -50,6 +50,12 @@ describe "AwesomeNestedSet" do
     }.should_not raise_exception
   end
 
+  it "creation when existing record has nil left column" do
+    assert_nothing_raised do
+      Broken.create!
+    end
+  end
+  
   it "quoted_left_column_name" do
     quoted = Default.connection.quote_column_name('lft')
     Default.quoted_left_column_name.should == quoted
