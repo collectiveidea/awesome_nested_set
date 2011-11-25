@@ -66,3 +66,7 @@ class DefaultWithCallbacks < ActiveRecord::Base
     end
 
 end
+
+class Broken < ActiveRecord::Base
+  acts_as_nested_set
+end
