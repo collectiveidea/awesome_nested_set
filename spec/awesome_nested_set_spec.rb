@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "AwesomeNestedSet" do
   before(:all) do
-    self.class.fixtures :categories, :departments, :notes, :things
+    self.class.fixtures :categories, :departments, :notes, :things, :brokens
   end
 
   describe "defaults" do
@@ -50,6 +50,12 @@ describe "AwesomeNestedSet" do
     }.should_not raise_exception
   end
 
+  it "creation when existing record has nil left column" do
+    assert_nothing_raised do
+      Broken.create!
+    end
+  end
+  
   it "quoted_left_column_name" do
     quoted = Default.connection.quote_column_name('lft')
     Default.quoted_left_column_name.should == quoted
@@ -72,12 +78,6 @@ describe "AwesomeNestedSet" do
     lambda {
       Category.new.rgt = 1
     }.should raise_exception(ActiveRecord::ActiveRecordError)
-  end
-
-  it "colums_protected_on_initialize" do
-    c = Category.new(:lft => 1, :rgt => 2)
-    c.lft.should be_nil
-    c.rgt.should be_nil
   end
 
   it "scoped_appends_id" do
@@ -798,7 +798,6 @@ describe "AwesomeNestedSet" do
     end
 
     it "should increment the counter cache on create" do
-      ActiveRecord::Base.logger.info 'FOO'
       note1 = things(:parent1)
       note1.children.count.should == 2
       note1[:children_count].should == 2
@@ -816,6 +815,27 @@ describe "AwesomeNestedSet" do
       note1.children.count.should == 1
       note1.reload
       note1[:children_count].should == 1
+    end
+  end
+
+  describe "association callbacks on children" do
+    it "should call the appropriate callbacks on the children :has_many association " do
+      root = DefaultWithCallbacks.create
+      root.should_not be_new_record
+
+      child = root.children.build
+
+      root.before_add.should == child
+      root.after_add.should  == child
+
+      root.before_remove.should_not == child
+      root.after_remove.should_not  == child
+
+      child.save.should be_true
+      root.children.delete(child).should be_true
+
+      root.before_remove.should == child
+      root.after_remove.should  == child
     end
   end
 end
