@@ -55,7 +55,7 @@ describe "AwesomeNestedSet" do
       Broken.create!
     end
   end
-  
+
   it "quoted_left_column_name" do
     quoted = Default.connection.quote_column_name('lft')
     Default.quoted_left_column_name.should == quoted
@@ -836,6 +836,21 @@ describe "AwesomeNestedSet" do
 
       root.before_remove.should == child
       root.after_remove.should  == child
+    end
+  end
+
+  describe 'creating roots with a default scope ordering' do
+    it "assigns rgt and lft correctly" do
+      alpha = Order.create(:name => 'Alpha')
+      gamma = Order.create(:name => 'Gamma')
+      omega = Order.create(:name => 'Omega')
+
+      alpha.lft.should == 1
+      alpha.rgt.should == 2
+      gamma.lft.should == 3
+      gamma.rgt.should == 4
+      omega.lft.should == 5
+      omega.rgt.should == 6
     end
   end
 end

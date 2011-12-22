@@ -70,3 +70,9 @@ end
 class Broken < ActiveRecord::Base
   acts_as_nested_set
 end
+
+class Order < ActiveRecord::Base
+  acts_as_nested_set
+
+  default_scope order(:name)
+end
