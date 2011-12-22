@@ -35,8 +35,15 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :rgt, :integer
     t.column :children_count, :integer
   end
-  
+
   create_table :brokens, :force => true do |t|
+    t.column :name, :string
+    t.column :parent_id, :integer
+    t.column :lft, :integer
+    t.column :rgt, :integer
+  end
+
+  create_table :orders, :force => true do |t|
     t.column :name, :string
     t.column :parent_id, :integer
     t.column :lft, :integer
