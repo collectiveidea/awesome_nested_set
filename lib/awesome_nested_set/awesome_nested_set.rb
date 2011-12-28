@@ -44,6 +44,7 @@ module CollectiveIdea #:nodoc:
           :left_column => 'lft',
           :right_column => 'rgt',
           :dependent => :delete_all, # or :destroy
+          :polymorphic => false,
           :counter_cache => false
         }.merge(options)
 
@@ -61,10 +62,11 @@ module CollectiveIdea #:nodoc:
         belongs_to :parent, :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name,
           :counter_cache => options[:counter_cache],
-          :inverse_of => :children
+          :inverse_of => (options[:polymorphic] ? nil : :children),
+          :polymorphic => options[:polymorphic]
         has_many :children, :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name, :order => left_column_name,
-          :inverse_of => :parent,
+          :inverse_of => (options[:polymorphic] ? nil : :parent),
           :before_add    => options[:before_add],
           :after_add     => options[:after_add],
           :before_remove => options[:before_remove],
