@@ -243,7 +243,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def leaf?
-            !new_record? && right - left == 1
+						!new_record? && !(right.nil? || left.nil?) && right - left == 1
           end
 
           # Returns true is this is a child node
