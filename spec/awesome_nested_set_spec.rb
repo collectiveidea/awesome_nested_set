@@ -36,6 +36,13 @@ describe "AwesomeNestedSet" do
       RenamedColumns.new.right_column_name.should == 'black'
     end
 
+    it "has a depth_column_name" do
+      Default.depth_column_name.should == 'depth'
+      Default.new.depth_column_name.should == 'depth'
+      RenamedColumns.depth_column_name.should == 'pitch'
+      RenamedColumns.depth_column_name.should == 'pitch'
+    end
+
     it "should have parent_column_name" do
       Default.parent_column_name.should == 'parent_id'
       Default.new.parent_column_name.should == 'parent_id'
@@ -68,6 +75,12 @@ describe "AwesomeNestedSet" do
     Default.new.quoted_right_column_name.should == quoted
   end
 
+  it "quoted_depth_column_name" do
+    quoted = Default.connection.quote_column_name('depth')
+    Default.quoted_depth_column_name.should == quoted
+    Default.new.quoted_depth_column_name.should == quoted
+  end
+
   it "left_column_protected_from_assignment" do
     lambda {
       Category.new.lft = 1
@@ -77,6 +90,12 @@ describe "AwesomeNestedSet" do
   it "right_column_protected_from_assignment" do
     lambda {
       Category.new.rgt = 1
+    }.should raise_exception(ActiveRecord::ActiveRecordError)
+  end
+
+  it "depth_column_protected_from_assignment" do
+    lambda {
+      Category.new.depth = 1
     }.should raise_exception(ActiveRecord::ActiveRecordError)
   end
 
@@ -165,13 +184,28 @@ describe "AwesomeNestedSet" do
     categories(:child_2_1).level.should == 2
   end
 
+  it "depth" do
+    lawyers = Category.create!(:name => "lawyers")
+    us = Category.create!(:name => "United States")
+    us.move_to_child_of(lawyers)
+    patent = Category.create!(:name => "Patent Law")
+    patent.move_to_child_of(us)
+    lawyers.reload
+    us.reload
+    patent.reload
+
+    lawyers.depth.should == 0
+    us.depth.should == 1
+    patent.depth.should == 2
+  end
+
   it "has_children?" do
     categories(:child_2_1).children.empty?.should be_true
     categories(:child_2).children.empty?.should be_false
     categories(:top_level).children.empty?.should be_false
   end
 
-  it "self_and_descendents" do
+  it "self_and_descendants" do
     parent = categories(:top_level)
     self_and_descendants = [parent, categories(:child_1), categories(:child_2),
       categories(:child_2_1), categories(:child_3)]
@@ -179,7 +213,7 @@ describe "AwesomeNestedSet" do
     self_and_descendants.count.should == parent.self_and_descendants.count
   end
 
-  it "descendents" do
+  it "descendants" do
     lawyers = Category.create!(:name => "lawyers")
     us = Category.create!(:name => "United States")
     us.move_to_child_of(lawyers)
@@ -192,7 +226,7 @@ describe "AwesomeNestedSet" do
     lawyers.descendants.size.should == 2
   end
 
-  it "self_and_descendents" do
+  it "self_and_descendants" do
     parent = categories(:top_level)
     descendants = [categories(:child_1), categories(:child_2),
       categories(:child_2_1), categories(:child_3)]

@@ -13,7 +13,10 @@ class ScopedCategory < ActiveRecord::Base
 end
 
 class RenamedColumns < ActiveRecord::Base
-  acts_as_nested_set :parent_column => 'mother_id', :left_column => 'red', :right_column => 'black'
+  acts_as_nested_set :parent_column => 'mother_id',
+                     :left_column => 'red',
+                     :right_column => 'black',
+                     :depth_column => 'pitch'
 end
 
 class Category < ActiveRecord::Base

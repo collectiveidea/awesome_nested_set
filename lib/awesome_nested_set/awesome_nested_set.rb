@@ -23,6 +23,7 @@ module CollectiveIdea #:nodoc:
       # * +:parent_column+ - specifies the column name to use for keeping the position integer (default: parent_id)
       # * +:left_column+ - column name for left boundry data, default "lft"
       # * +:right_column+ - column name for right boundry data, default "rgt"
+      # * +:depth_column+ - column name for the depth data, default "depth"
       # * +:scope+ - restricts what is to be considered a list. Given a symbol, it'll attach "_id"
       #   (if it hasn't been already) and use that as the foreign key restriction. You
       #   can also pass an array to scope by multiple attributes.
@@ -43,6 +44,7 @@ module CollectiveIdea #:nodoc:
           :parent_column => 'parent_id',
           :left_column => 'lft',
           :right_column => 'rgt',
+          :depth_column => 'depth',
           :dependent => :delete_all, # or :destroy
           :counter_cache => false
         }.merge(options)
@@ -74,11 +76,11 @@ module CollectiveIdea #:nodoc:
 
         before_create  :set_default_left_and_right
         before_save    :store_new_parent
-        after_save     :move_to_new_parent
+        after_save     :move_to_new_parent, :set_depth!
         before_destroy :destroy_descendants
 
         # no assignment to structure fields
-        [left_column_name, right_column_name].each do |column|
+        [left_column_name, right_column_name, depth_column_name].each do |column|
           module_eval <<-"end_eval", __FILE__, __LINE__
             def #{column}=(x)
               raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{column}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
@@ -204,7 +206,7 @@ module CollectiveIdea #:nodoc:
             path = [nil]
             objects.each do |o|
               if o.parent_id != path.last
-                # we are on a new level, did we decent or ascent?
+                # we are on a new level, did we descend or ascend?
                 if path.include?(o.parent_id)
                   # remove wrong wrong tailing paths elements
                   path.pop while path.last != o.parent_id
@@ -410,6 +412,15 @@ module CollectiveIdea #:nodoc:
             end
           end
 
+          def set_depth!
+            in_tenacious_transaction do
+              reload
+
+              nested_set_scope.where(:id => id).update_all(["#{quoted_depth_column_name} = ?", level])
+            end
+            self[:depth] = self.level
+          end
+
           # on creation, set automatically lft and rgt to the end of the tree
           def set_default_left_and_right
             highest_right_row = nested_set_scope(:order => "#{quoted_right_column_name} desc").find(:first, :limit => 1,:lock => true )
@@ -553,6 +564,7 @@ module CollectiveIdea #:nodoc:
                 ])
               end
               target.reload_nested_set if target
+              self.set_depth!
               self.reload_nested_set
             end
           end
@@ -571,6 +583,10 @@ module CollectiveIdea #:nodoc:
           acts_as_nested_set_options[:right_column]
         end
 
+        def depth_column_name
+          acts_as_nested_set_options[:depth_column]
+        end
+
         def parent_column_name
           acts_as_nested_set_options[:parent_column]
         end
@@ -585,6 +601,10 @@ module CollectiveIdea #:nodoc:
 
         def quoted_right_column_name
           connection.quote_column_name(right_column_name)
+        end
+
+        def quoted_depth_column_name
+          connection.quote_column_name(depth_column_name)
         end
 
         def quoted_parent_column_name
