@@ -448,12 +448,14 @@ module CollectiveIdea #:nodoc:
         end
 
         def set_depth!
-          in_tenacious_transaction do
-            reload
+          if nested_set_scope.column_names.map(&:to_s).include?(depth_column_name.to_s)
+            in_tenacious_transaction do
+              reload
 
-            nested_set_scope.where(:id => id).update_all(["#{quoted_depth_column_name} = ?", level])
+              nested_set_scope.where(:id => id).update_all(["#{quoted_depth_column_name} = ?", level])
+            end
+            self[:depth] = self.level
           end
-          self[:depth] = self.level
         end
 
         # on creation, set automatically lft and rgt to the end of the tree

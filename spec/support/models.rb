@@ -79,3 +79,7 @@ class Order < ActiveRecord::Base
 
   default_scope order(:name)
 end
+
+class NoDepth < ActiveRecord::Base
+  acts_as_nested_set
+end

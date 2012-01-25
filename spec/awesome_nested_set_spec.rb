@@ -199,6 +199,15 @@ describe "AwesomeNestedSet" do
     patent.depth.should == 2
   end
 
+  it "depth is magic and does not apply when column is missing" do
+    lambda { NoDepth.create!(:name => "shallow") }.should_not raise_error
+    lambda { NoDepth.first.save }.should_not raise_error
+    lambda { NoDepth.rebuild! }.should_not raise_error
+
+    NoDepth.method_defined?(:depth).should be_false
+    NoDepth.first.respond_to?(:depth).should be_false
+  end
+
   it "has_children?" do
     categories(:child_2_1).children.empty?.should be_true
     categories(:child_2).children.empty?.should be_false
@@ -651,7 +660,7 @@ describe "AwesomeNestedSet" do
   end
 
   it "quoting_of_multi_scope_column_names" do
-    ## Proper Array Assignment for different DBs as per their quoting column behavior   
+    ## Proper Array Assignment for different DBs as per their quoting column behavior
     if Note.connection.adapter_name.match(/Oracle/)
       expected_quoted_scope_column_names = ["\"NOTABLE_ID\"", "\"NOTABLE_TYPE\""]
     elsif Note.connection.adapter_name.match(/Mysql/)
