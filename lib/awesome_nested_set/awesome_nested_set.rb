@@ -243,8 +243,9 @@ module CollectiveIdea #:nodoc:
           parent_id.nil?
         end
 
+        # Returns true if this is the end of a branch.
         def leaf?
-          !new_record? && right - left == 1
+          persisted? && right.to_i - left.to_i == 1
         end
 
         # Returns true is this is a child node
