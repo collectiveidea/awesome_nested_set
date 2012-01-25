@@ -147,7 +147,7 @@ module CollectiveIdea #:nodoc:
           # Wrapper for each_root_valid? that can deal with scope.
           def all_roots_valid?
             if acts_as_nested_set_options[:scope]
-              roots.group(scope_column_names).group_by{|record| scope_column_names.collect{|col| record.send(col.to_sym)}}.all? do |scope, grouped_roots|
+              roots.group_by {|record| scope_column_names.collect {|col| record.send(col.to_sym) } }.all? do |scope, grouped_roots|
                 each_root_valid?(grouped_roots)
               end
             else
