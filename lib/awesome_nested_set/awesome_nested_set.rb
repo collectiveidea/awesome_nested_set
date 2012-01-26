@@ -461,7 +461,7 @@ module CollectiveIdea #:nodoc:
 
               nested_set_scope.where(:id => id).update_all(["#{quoted_depth_column_name} = ?", level])
             end
-            self[:depth] = self.level
+            self[depth_column_name.to_sym] = self.level
           end
         end
 
