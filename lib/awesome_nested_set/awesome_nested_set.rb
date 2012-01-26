@@ -62,17 +62,24 @@ module CollectiveIdea #:nodoc:
         extend Columns
 
         belongs_to :parent, :class_name => self.base_class.to_s,
+                            :foreign_key => parent_column_name,
+                            :counter_cache => options[:counter_cache],
+                            :inverse_of => (:children unless options[:polymorphic]),
+                            :polymorphic => options[:polymorphic]
+
+        has_many_children_options = {
+          :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name,
-          :counter_cache => options[:counter_cache],
-          :inverse_of => (:children unless options[:polymorphic]),
-          :polymorphic => options[:polymorphic]
-        has_many :children, :class_name => self.base_class.to_s,
-          :foreign_key => parent_column_name, :order => left_column_name,
+          :order => left_column_name,
           :inverse_of => (:parent unless options[:polymorphic]),
-          :before_add    => options[:before_add],
-          :after_add     => options[:after_add],
-          :before_remove => options[:before_remove],
-          :after_remove  => options[:after_remove]
+        }
+
+        # Add callbacks, if they were supplied.. otherwise, we don't want them.
+        [:before_add, :after_add, :before_remove, :after_remove].each do |ar_callback|
+          has_many_children_options.update(ar_callback => options[ar_callback]) if options[ar_callback]
+        end
+
+        has_many :children, has_many_children_options
 
         attr_accessor :skip_before_destroy
 
@@ -114,10 +121,10 @@ module CollectiveIdea #:nodoc:
             left_and_rights_valid? && no_duplicates_for_columns? && all_roots_valid?
           end
 
-          def left_and_rights_valid?  
+          def left_and_rights_valid?
             ## AS clause not supported in Oracle in FROM clause for aliasing table name
-            joins("LEFT OUTER JOIN #{quoted_table_name}" + 
-                (connection.adapter_name.match(/Oracle/).nil? ?  " AS " : " ") + 
+            joins("LEFT OUTER JOIN #{quoted_table_name}" +
+                (connection.adapter_name.match(/Oracle/).nil? ?  " AS " : " ") +
                 "parent ON " +
                 "#{quoted_table_name}.#{quoted_parent_column_name} = parent.#{primary_key}").
             where(
@@ -222,7 +229,7 @@ module CollectiveIdea #:nodoc:
               yield(o, path.length - 1)
             end
           end
-          
+
           # Same as each_with_level - Accepts a string as a second argument to sort the list
           # Example:
           #    Category.each_with_level(Category.root.self_and_descendants, :sort_by_this_column) do |o, level|
@@ -250,10 +257,10 @@ module CollectiveIdea #:nodoc:
             if !children.empty?
               children.sort_by! &order
               children.each { |c| yield(c, path.length-1) }
-            end                
+            end
           end
         end
-    
+
         # Any instance method that returns a collection makes use of Rails 2.1's named_scope (which is bundled for Rails 2.0), so it can be treated as a finder.
         #
         #   category.self_and_descendants.count
