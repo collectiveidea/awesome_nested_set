@@ -48,12 +48,17 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activerecord>, [">= 1.1"])
+      s.add_runtime_dependency(%q<activerecord>, [">= 1.1", "< 3.0"])
+      s.add_development_dependency(%q<rake>)
+      s.add_development_dependency(%q<jeweler>)
+      s.add_development_dependency(%q<rcov>)
+      s.add_development_dependency(%q<multi_rails>)
+      s.add_development_dependency(%q<rails>, [">= 1.1", "< 3.0"])
     else
-      s.add_dependency(%q<activerecord>, [">= 1.1"])
+      s.add_dependency(%q<activerecord>, [">= 1.1", "< 3.0"])
     end
   else
-    s.add_dependency(%q<activerecord>, [">= 1.1"])
+    s.add_dependency(%q<activerecord>, [">= 1.1", "< 3.0"])
   end
 end
 
