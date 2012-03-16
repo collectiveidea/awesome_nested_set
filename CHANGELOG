@@ -1,3 +1,18 @@
+2.1.1
+* Added 'depth' which indicates how many levels deep the node is.
+  This only works when you have a column called 'depth' in your table,
+  otherwise it doesn't set itself. [Philip Arndt]
+* Rails 3.2 support added. [Gabriel Sobrinho]
+* Oracle compatibility added. [Pikender Sharma]
+* Adding row locking to deletion, locking source of pivot values, and adding retry on collisions. [Markus J. Q. Roberts]
+* Added method and helper for sorting children by column. [bluegod]
+* Fixed .all_roots_valid? to work with Postgres. [Joshua Clayton]
+* Made compatible with polymorphic belongs_to. [Graham Randall]
+* Added in the association callbacks to the children :has_many association. [Michael Deering]
+* Modified helper to allow using array of objects as argument. [Rahmat Budiharso]
+* Fixed cases where we were calling attr_protected. [Jacob Swanner]
+* Fixed nil cases involving lft and rgt. [Stuart Coyle] and [Patrick Morgan]
+
 2.0.2
 * Fixed deprecation warning under Rails 3.1 [Philip Arndt]
 * Converted Test::Unit matchers to RSpec. [Uģis Ozols]
