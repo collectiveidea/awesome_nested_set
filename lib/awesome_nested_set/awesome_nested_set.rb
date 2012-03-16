@@ -336,7 +336,7 @@ module CollectiveIdea #:nodoc:
         # Returns a set of itself and all of its nested children
         def self_and_descendants
           nested_set_scope.where([
-            "#{self.class.quoted_table_name}.#{quoted_left_column_name} >= ? AND #{self.class.quoted_table_name}.#{quoted_left_column_name} <= ?", left, right
+            "#{self.class.quoted_table_name}.#{quoted_left_column_name} >= ? AND #{self.class.quoted_table_name}.#{quoted_left_column_name} < ?", left, right
             # using _left_ for both sides here lets us benefit from an index on that column if one exists
           ])
         end
