@@ -404,6 +404,17 @@ module CollectiveIdea #:nodoc:
         def move_to_child_of(node)
           move_to node, :child
         end
+        
+        # Move the node to the child of another node with specify index (you can pass id only)
+        def move_to_child_with_index(node, index)
+          if node.children.empty?
+            move_to_child_of(node)
+          elsif node.children.count == index
+            move_to_right_of(node.children.last)
+          else
+            move_to_left_of(node.children[index])
+          end
+        end
 
         # Move the node to root nodes
         def move_to_root
