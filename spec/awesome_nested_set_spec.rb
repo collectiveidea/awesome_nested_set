@@ -392,6 +392,43 @@ describe "AwesomeNestedSet" do
     categories(:child_3).id.should == categories(:child_1).parent_id
     Category.valid?.should be_true
   end
+  
+  describe "#move_to_child_with_index" do
+    it "move to a node without child" do
+      categories(:child_1).move_to_child_with_index(categories(:child_3), 0)
+      categories(:child_3).id.should == categories(:child_1).parent_id
+      categories(:child_1).left.should == 7
+      categories(:child_1).right.should == 8
+      categories(:child_3).left.should == 6
+      categories(:child_3).right.should == 9
+      Category.valid?.should be_true
+    end
+    
+    it "move to a node to the left child" do
+      categories(:child_1).move_to_child_with_index(categories(:child_2), 0)
+      categories(:child_1).parent_id.should == categories(:child_2).id
+      categories(:child_2_1).left.should == 5
+      categories(:child_2_1).right.should == 6
+      categories(:child_1).left.should == 3
+      categories(:child_1).right.should == 4
+      categories(:child_2).reload
+      categories(:child_2).left.should == 2
+      categories(:child_2).right.should == 7
+    end
+    
+    it "move to a node to the right child" do
+      categories(:child_1).move_to_child_with_index(categories(:child_2), 1)
+      categories(:child_1).parent_id.should == categories(:child_2).id
+      categories(:child_2_1).left.should == 3
+      categories(:child_2_1).right.should == 4
+      categories(:child_1).left.should == 5
+      categories(:child_1).right.should == 6
+      categories(:child_2).reload
+      categories(:child_2).left.should == 2
+      categories(:child_2).right.should == 7
+    end
+    
+  end  
 
   it "move_to_child_of_appends_to_end" do
     child = Category.create! :name => 'New Child'
