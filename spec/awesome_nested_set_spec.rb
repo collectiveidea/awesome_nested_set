@@ -115,6 +115,15 @@ describe "AwesomeNestedSet" do
     categories(:child_3).root.should == categories(:top_level)
   end
 
+  it "root when not persisted and parent_column_name value is NOT set" do
+    Category.new.root.should == nil
+  end
+
+  it "root when not persisted and parent_column_name value is set" do
+    last_category = Category.last
+    Category.new(Default.parent_column_name => last_category.id).root.should == last_category.root
+  end
+
   it "root?" do
     categories(:top_level).root?.should be_true
     categories(:top_level_2).root?.should be_true
@@ -392,7 +401,7 @@ describe "AwesomeNestedSet" do
     categories(:child_3).id.should == categories(:child_1).parent_id
     Category.valid?.should be_true
   end
-  
+
   describe "#move_to_child_with_index" do
     it "move to a node without child" do
       categories(:child_1).move_to_child_with_index(categories(:child_3), 0)
@@ -403,7 +412,7 @@ describe "AwesomeNestedSet" do
       categories(:child_3).right.should == 9
       Category.valid?.should be_true
     end
-    
+
     it "move to a node to the left child" do
       categories(:child_1).move_to_child_with_index(categories(:child_2), 0)
       categories(:child_1).parent_id.should == categories(:child_2).id
@@ -415,7 +424,7 @@ describe "AwesomeNestedSet" do
       categories(:child_2).left.should == 2
       categories(:child_2).right.should == 7
     end
-    
+
     it "move to a node to the right child" do
       categories(:child_1).move_to_child_with_index(categories(:child_2), 1)
       categories(:child_1).parent_id.should == categories(:child_2).id
@@ -427,8 +436,8 @@ describe "AwesomeNestedSet" do
       categories(:child_2).left.should == 2
       categories(:child_2).right.should == 7
     end
-    
-  end  
+
+  end
 
   it "move_to_child_of_appends_to_end" do
     child = Category.create! :name => 'New Child'
