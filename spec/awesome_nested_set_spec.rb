@@ -193,19 +193,32 @@ describe "AwesomeNestedSet" do
     categories(:child_2_1).level.should == 2
   end
 
-  it "depth" do
-    lawyers = Category.create!(:name => "lawyers")
-    us = Category.create!(:name => "United States")
-    us.move_to_child_of(lawyers)
-    patent = Category.create!(:name => "Patent Law")
-    patent.move_to_child_of(us)
-    lawyers.reload
-    us.reload
-    patent.reload
+  describe "depth" do
+    let(:lawyers) { Category.create!(:name => "lawyers") }
+    let(:us) { Category.create!(:name => "United States") }
+    let(:patent) { Category.create!(:name => "Patent Law") }
+    
+    before(:each) do
+      # lawyers > us > patent
+      us.move_to_child_of(lawyers)
+      patent.move_to_child_of(us)
+      [lawyers, us, patent].each(&:reload)
+    end
+    
+    it "updates depth when moved into child position" do
+      lawyers.depth.should == 0
+      us.depth.should == 1
+      patent.depth.should == 2
+    end
 
-    lawyers.depth.should == 0
-    us.depth.should == 1
-    patent.depth.should == 2
+    it "updates depth of child when parent is moved" do
+      # lawyers
+      # us > patent
+      us.move_to_right_of(lawyers)
+      [lawyers, us, patent].each(&:reload)
+      us.depth.should == 0
+      patent.depth.should == 1
+    end  
   end
 
   it "depth is magic and does not apply when column is missing" do
