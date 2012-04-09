@@ -303,7 +303,7 @@ module CollectiveIdea #:nodoc:
             if parent_id && current_parent = nested_set_scope.find(parent_id)
               current_parent.root
             else
-              nil
+              self
             end
           end
         end

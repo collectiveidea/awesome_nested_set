@@ -115,8 +115,9 @@ describe "AwesomeNestedSet" do
     categories(:child_3).root.should == categories(:top_level)
   end
 
-  it "root when not persisted and parent_column_name value is NOT set" do
-    Category.new.root.should == nil
+  it "root when not persisted and parent_column_name value is self" do
+    new_category = Category.new
+    new_category.root.should == new_category
   end
 
   it "root when not persisted and parent_column_name value is set" do
@@ -197,14 +198,14 @@ describe "AwesomeNestedSet" do
     let(:lawyers) { Category.create!(:name => "lawyers") }
     let(:us) { Category.create!(:name => "United States") }
     let(:patent) { Category.create!(:name => "Patent Law") }
-    
+
     before(:each) do
       # lawyers > us > patent
       us.move_to_child_of(lawyers)
       patent.move_to_child_of(us)
       [lawyers, us, patent].each(&:reload)
     end
-    
+
     it "updates depth when moved into child position" do
       lawyers.depth.should == 0
       us.depth.should == 1
@@ -218,7 +219,7 @@ describe "AwesomeNestedSet" do
       [lawyers, us, patent].each(&:reload)
       us.depth.should == 0
       patent.depth.should == 1
-    end  
+    end
   end
 
   it "depth is magic and does not apply when column is missing" do
