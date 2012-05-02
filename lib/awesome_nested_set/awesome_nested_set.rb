@@ -259,6 +259,16 @@ module CollectiveIdea #:nodoc:
               children.each { |c| yield(c, path.length-1) }
             end
           end
+
+          def associate_parents(objects)
+            id_indexed = objects.index_by(&:id)
+            objects.each do |object|
+              if !(association = object.association(:parent)).loaded? && (parent = id_indexed[object.parent_id])
+                association.target = parent
+                association.set_inverse_instance(parent)
+              end
+            end
+          end
         end
 
         # Any instance method that returns a collection makes use of Rails 2.1's named_scope (which is bundled for Rails 2.0), so it can be treated as a finder.
@@ -338,7 +348,7 @@ module CollectiveIdea #:nodoc:
         # Returns the level of this object in the tree
         # root level is 0
         def level
-          parent_id.nil? ? 0 : ancestors.count
+          parent_id.nil? ? 0 : compute_level
         end
 
         # Returns a set of itself and all of its nested children
@@ -444,6 +454,14 @@ module CollectiveIdea #:nodoc:
         end
 
       protected
+        def compute_level
+          node, nesting = self, 0
+          while (association = node.association(:parent)).loaded?
+            nesting += 1
+            node = node.parent
+          end
+          node == self ? ancestors.count : node.level + nesting
+        end
 
         def without_self(scope)
           scope.where(["#{self.class.quoted_table_name}.#{self.class.primary_key} != ?", self])

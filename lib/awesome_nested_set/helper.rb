@@ -30,7 +30,7 @@ module CollectiveIdea #:nodoc:
           end
           result = []
           items.each do |root|
-            result += root.self_and_descendants.map do |i|
+            result += root.class.associate_parents(root.self_and_descendants).map do |i|
               if mover.nil? || mover.new_record? || mover.move_possible?(i)
                 [yield(i), i.id]
               end
@@ -66,7 +66,7 @@ module CollectiveIdea #:nodoc:
           result = []
           children = []
           items.each do |root|
-            root.self_and_descendants.map do |i|
+            root.class.associate_parents(root.self_and_descendants).map do |i|
               if mover.nil? || mover.new_record? || mover.move_possible?(i)
                 if !i.leaf?
                   children.sort_by! &order
