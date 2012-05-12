@@ -964,4 +964,52 @@ describe "AwesomeNestedSet" do
       omega.rgt.should == 6
     end
   end
+
+  describe 'moving node from one scoped tree to another' do
+    it "moves single node correctly" do
+      root1 = Note.create!(:body => "A-1", :notable_id => 4, :notable_type => 'Category')
+      child1_1 = Note.create!(:body => "B-1", :notable_id => 4, :notable_type => 'Category')
+      child1_2 = Note.create!(:body => "C-1", :notable_id => 4, :notable_type => 'Category')
+      child1_1.move_to_child_of root1
+      child1_2.move_to_child_of root1
+
+      root2 = Note.create!(:body => "A-2", :notable_id => 5, :notable_type => 'Category')
+      child2_1 = Note.create!(:body => "B-2", :notable_id => 5, :notable_type => 'Category')
+      child2_2 = Note.create!(:body => "C-2", :notable_id => 5, :notable_type => 'Category')
+      child2_1.move_to_child_of root2
+      child2_2.move_to_child_of root2
+
+      child1_1.update_attributes!(:notable_id => 5)
+      child1_1.move_to_child_of root2
+
+      root1.children.should == [child1_2]
+      root2.children.should == [child2_1, child2_2, child1_1]
+
+      Note.valid?.should == true
+    end
+
+    it "moves node with children correctly" do
+      root1 = Note.create!(:body => "A-1", :notable_id => 4, :notable_type => 'Category')
+      child1_1 = Note.create!(:body => "B-1", :notable_id => 4, :notable_type => 'Category')
+      child1_2 = Note.create!(:body => "C-1", :notable_id => 4, :notable_type => 'Category')
+      child1_1.move_to_child_of root1
+      child1_2.move_to_child_of child1_1
+
+      root2 = Note.create!(:body => "A-2", :notable_id => 5, :notable_type => 'Category')
+      child2_1 = Note.create!(:body => "B-2", :notable_id => 5, :notable_type => 'Category')
+      child2_2 = Note.create!(:body => "C-2", :notable_id => 5, :notable_type => 'Category')
+      child2_1.move_to_child_of root2
+      child2_2.move_to_child_of root2
+
+      child1_1.update_attributes!(:notable_id => 5)
+      child1_1.move_to_child_of root2
+
+      root1.children.should == []
+      root2.children.should == [child2_1, child2_2, child1_1]
+      child1_1.children should == [child1_2]
+      root2.siblings.should == [child2_1, child2_2, child1_1, child1_2]
+
+      Note.valid?.should == true
+    end
+  end
 end
