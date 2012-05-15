@@ -1,4 +1,3 @@
-
 = AwesomeNestedSet
 
 Awesome Nested Set is an implementation of the nested set pattern for ActiveRecord models. It is replacement for acts_as_nested_set and BetterNestedSet, but more awesome.
