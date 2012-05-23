@@ -535,11 +535,8 @@ module CollectiveIdea #:nodoc:
           in_tenacious_transaction do
             reload_nested_set
             # select the rows in the model that extend past the deletion point and apply a lock
-            self.class.base_class.find(:all,
-              :select => "id",
-              :conditions => ["#{quoted_left_column_name} >= ?", left],
-              :lock => true
-            )
+            self.class.base_class.where(["#{quoted_left_column_name} >= ?", left]).
+                                  select(id).lock(true)
 
             if acts_as_nested_set_options[:dependent] == :destroy
               descendants.each do |model|
@@ -547,21 +544,18 @@ module CollectiveIdea #:nodoc:
                 model.destroy
               end
             else
-              nested_set_scope.delete_all(
-                ["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?",
-                  left, right]
-              )
+              nested_set_scope.where(["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?", left, right]).
+                               delete_all
             end
 
             # update lefts and rights for remaining nodes
             diff = right - left + 1
-            nested_set_scope.update_all(
-              ["#{quoted_left_column_name} = (#{quoted_left_column_name} - ?)", diff],
-              ["#{quoted_left_column_name} > ?", right]
+            nested_set_scope.where(["#{quoted_left_column_name} > ?", right]).update_all(
+              ["#{quoted_left_column_name} = (#{quoted_left_column_name} - ?)", diff]
             )
-            nested_set_scope.update_all(
-              ["#{quoted_right_column_name} = (#{quoted_right_column_name} - ?)", diff],
-              ["#{quoted_right_column_name} > ?", right]
+
+            nested_set_scope.where(["#{quoted_right_column_name} > ?", right]).update_all(
+              ["#{quoted_right_column_name} = (#{quoted_right_column_name} - ?)", diff]
             )
 
             # Don't allow multiple calls to destroy to corrupt the set
