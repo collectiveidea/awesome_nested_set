@@ -114,7 +114,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def branches
-            where("(#{quoted_right_column_name} - #{quoted_left_column_name} > 1) and parent_column_name is not null").order(quoted_left_column_name)
+            where("(#{quoted_right_column_name} - #{quoted_left_column_name} > 1) and #{quoted_parent_column_name} is not null").order(quoted_left_column_name)
           end
 
           def leaves
