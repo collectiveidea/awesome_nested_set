@@ -533,7 +533,12 @@ module CollectiveIdea #:nodoc:
           return if right.nil? || left.nil? || skip_before_destroy
 
           in_tenacious_transaction do
-            reload_nested_set
+            begin
+              reload_nested_set
+            rescue ActiveRecord::RecordNotFound
+              return
+            end
+
             # select the rows in the model that extend past the deletion point and apply a lock
             nested_set_scope.where(["#{quoted_left_column_name} >= ?", left]).
                                   select(id).lock(true)
