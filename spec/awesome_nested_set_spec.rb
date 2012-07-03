@@ -583,6 +583,7 @@ describe "AwesomeNestedSet" do
     assert_equal node3.id, node1.children[1].id   
 
     node3.move_to_ordered_child_of(node1, "name", false)
+    node1.reload
     assert_equal node3.id, node1.children[0].id
     assert_equal node2.id, node1.children[1].id
   end
