@@ -575,17 +575,20 @@ describe "AwesomeNestedSet" do
     assert_equal node1, node2.parent
     assert_equal 1, node1.children.count
 
-    node3.move_to_ordered_child_of(node1, "name", true)
+    node3.move_to_ordered_child_of(node1, "name", true) # acending
 
     assert_equal node1, node3.parent
     assert_equal 2, node1.children.count
-    assert_equal node2.id, node1.children[0].id
-    assert_equal node3.id, node1.children[1].id   
+    assert_equal node2.name, node1.children[0].name
+    assert_equal node3.name, node1.children[1].name
 
-    node3.move_to_ordered_child_of(node1, "name", false)
+    node3.move_to_ordered_child_of(node1, "name", false) # decending
     node1.reload
-    assert_equal node3.id, node1.children[0].id
-    assert_equal node2.id, node1.children[1].id
+
+    assert_equal node1, node3.parent
+    assert_equal 2, node1.children.count
+    assert_equal node3.name, node1.children[0].name
+    assert_equal node2.name, node1.children[1].name
   end
 
   it "valid_with_null_lefts" do
