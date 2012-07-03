@@ -966,7 +966,7 @@ describe "AwesomeNestedSet" do
   end
 
   describe 'moving node from one scoped tree to another' do
-    it "moves single node correctly" do
+    xit "moves single node correctly" do
       root1 = Note.create!(:body => "A-1", :notable_id => 4, :notable_type => 'Category')
       child1_1 = Note.create!(:body => "B-1", :notable_id => 4, :notable_type => 'Category')
       child1_2 = Note.create!(:body => "C-1", :notable_id => 4, :notable_type => 'Category')
@@ -988,7 +988,7 @@ describe "AwesomeNestedSet" do
       Note.valid?.should == true
     end
 
-    it "moves node with children correctly" do
+    xit "moves node with children correctly" do
       root1 = Note.create!(:body => "A-1", :notable_id => 4, :notable_type => 'Category')
       child1_1 = Note.create!(:body => "B-1", :notable_id => 4, :notable_type => 'Category')
       child1_2 = Note.create!(:body => "C-1", :notable_id => 4, :notable_type => 'Category')
