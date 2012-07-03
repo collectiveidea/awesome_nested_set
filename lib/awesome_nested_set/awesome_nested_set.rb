@@ -259,6 +259,16 @@ module CollectiveIdea #:nodoc:
               children.each { |c| yield(c, path.length-1) }
             end
           end
+
+          def associate_parents(objects)
+            id_indexed = objects.index_by(&:id)
+            objects.each do |object|
+              if !(association = object.association(:parent)).loaded? && (parent = id_indexed[object.parent_id])
+                association.target = parent
+                association.set_inverse_instance(parent)
+              end
+            end
+          end
         end
 
         # Any instance method that returns a collection makes use of Rails 2.1's named_scope (which is bundled for Rails 2.0), so it can be treated as a finder.
@@ -338,7 +348,7 @@ module CollectiveIdea #:nodoc:
         # Returns the level of this object in the tree
         # root level is 0
         def level
-          parent_id.nil? ? 0 : ancestors.count
+          parent_id.nil? ? 0 : compute_level
         end
 
         # Returns a set of itself and all of its nested children
@@ -468,6 +478,14 @@ module CollectiveIdea #:nodoc:
         end
 
       protected
+        def compute_level
+          node, nesting = self, 0
+          while (association = node.association(:parent)).loaded?
+            nesting += 1
+            node = node.parent
+          end
+          node == self ? ancestors.count : node.level + nesting
+        end
 
         def without_self(scope)
           scope.where(["#{self.class.quoted_table_name}.#{self.class.primary_key} != ?", self])
@@ -511,7 +529,7 @@ module CollectiveIdea #:nodoc:
 
         # on creation, set automatically lft and rgt to the end of the tree
         def set_default_left_and_right
-          highest_right_row = nested_set_scope(:order => "#{quoted_right_column_name} desc").find(:first, :limit => 1,:lock => true )
+          highest_right_row = nested_set_scope(:order => "#{quoted_right_column_name} desc").limit(1).lock(true).first
           maxright = highest_right_row ? (highest_right_row[right_column_name] || 0) : 0
           # adds the new node to the right of all existing nodes
           self[left_column_name] = maxright + 1
@@ -541,11 +559,8 @@ module CollectiveIdea #:nodoc:
           in_tenacious_transaction do
             reload_nested_set
             # select the rows in the model that extend past the deletion point and apply a lock
-            self.class.base_class.find(:all,
-              :select => "id",
-              :conditions => ["#{quoted_left_column_name} >= ?", left],
-              :lock => true
-            )
+            nested_set_scope.where(["#{quoted_left_column_name} >= ?", left]).
+                                  select(id).lock(true)
 
             if acts_as_nested_set_options[:dependent] == :destroy
               descendants.each do |model|
@@ -553,21 +568,18 @@ module CollectiveIdea #:nodoc:
                 model.destroy
               end
             else
-              nested_set_scope.delete_all(
-                ["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?",
-                  left, right]
-              )
+              nested_set_scope.where(["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?", left, right]).
+                               delete_all
             end
 
             # update lefts and rights for remaining nodes
             diff = right - left + 1
-            nested_set_scope.update_all(
-              ["#{quoted_left_column_name} = (#{quoted_left_column_name} - ?)", diff],
-              ["#{quoted_left_column_name} > ?", right]
+            nested_set_scope.where(["#{quoted_left_column_name} > ?", right]).update_all(
+              ["#{quoted_left_column_name} = (#{quoted_left_column_name} - ?)", diff]
             )
-            nested_set_scope.update_all(
-              ["#{quoted_right_column_name} = (#{quoted_right_column_name} - ?)", diff],
-              ["#{quoted_right_column_name} > ?", right]
+
+            nested_set_scope.where(["#{quoted_right_column_name} > ?", right]).update_all(
+              ["#{quoted_right_column_name} = (#{quoted_right_column_name} - ?)", diff]
             )
 
             # Don't allow multiple calls to destroy to corrupt the set
