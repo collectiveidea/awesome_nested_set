@@ -456,7 +456,7 @@ module CollectiveIdea #:nodoc:
       protected
         def compute_level
           node, nesting = self, 0
-          while (association = node.association(:parent)).loaded?
+          while (association = node.association(:parent)).loaded? && association.target
             nesting += 1
             node = node.parent
           end
