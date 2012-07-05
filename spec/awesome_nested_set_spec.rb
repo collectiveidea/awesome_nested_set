@@ -188,10 +188,21 @@ describe "AwesomeNestedSet" do
     categories(:top_level).leaves.should == leaves
   end
 
-  it "level" do
-    categories(:top_level).level.should == 0
-    categories(:child_1).level.should == 1
-    categories(:child_2_1).level.should == 2
+  describe "level" do
+    it "returns the correct level" do
+      categories(:top_level).level.should == 0
+      categories(:child_1).level.should == 1
+      categories(:child_2_1).level.should == 2
+    end
+
+    context "given parent associations are loaded" do
+      it "returns the correct level" do
+        child = categories(:child_1)
+        child.association(:parent).load_target
+        child.parent.association(:parent).load_target
+        child.level.should == 1
+      end
+    end
   end
 
   describe "depth" do
