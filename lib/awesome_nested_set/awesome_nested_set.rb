@@ -35,6 +35,8 @@ module CollectiveIdea #:nodoc:
       # * +:counter_cache+ adds a counter cache for the number of children.
       #   defaults to false.
       #   Example: <tt>acts_as_nested_set :counter_cache => :children_count</tt>
+      # * +:order_column+ on which column to do sorting, by default it is the left_column_name
+      #   Example: <tt>acts_as_nested_set :order_column => :position</tt>
       #
       # See CollectiveIdea::Acts::NestedSet::Model::ClassMethods for a list of class methods and
       # CollectiveIdea::Acts::NestedSet::Model for a list of instance methods added
@@ -70,7 +72,7 @@ module CollectiveIdea #:nodoc:
         has_many_children_options = {
           :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name,
-          :order => left_column_name,
+          :order => order_column,
           :inverse_of => (:parent unless options[:polymorphic]),
         }
 
@@ -668,6 +670,10 @@ module CollectiveIdea #:nodoc:
 
         def parent_column_name
           acts_as_nested_set_options[:parent_column]
+        end
+        
+        def order_column
+          acts_as_nested_set_options[:order_column] || left_column_name
         end
 
         def scope_column_names
