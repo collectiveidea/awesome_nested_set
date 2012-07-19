@@ -102,7 +102,7 @@ describe "AwesomeNestedSet" do
   it "scoped_appends_id" do
     ScopedCategory.acts_as_nested_set_options[:scope].should == :organization_id
   end
-
+  
   it "roots_class_method" do
     Category.roots.should == Category.find_all_by_parent_id(nil)
   end
@@ -880,7 +880,7 @@ describe "AwesomeNestedSet" do
       [2, "Child 2.1"],
       [1, "Child 3" ]]
 
-      check_structure(Category.root.self_and_descendants, levels)
+    check_structure(Category.root.self_and_descendants, levels)
   end
 
   it "should not error on a model with attr_accessible" do
@@ -1021,6 +1021,17 @@ describe "AwesomeNestedSet" do
       root2.siblings.should == [child2_1, child2_2, child1_1, child1_2]
 
       Note.valid?.should == true
+    end
+  end
+  
+  describe 'specifying custom sort column' do
+    it "should sort by the default sort column" do
+      Category.order_column.should == 'lft'
+    end
+    
+    it "should sort by custom sort column" do
+      OrderedCategory.acts_as_nested_set_options[:order_column].should == 'name'
+      OrderedCategory.order_column.should == 'name'
     end
   end
 end
