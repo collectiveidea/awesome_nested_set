@@ -76,22 +76,22 @@ Beside this there are also hooks to act on the newly added or removed children.
 
     private
 
-      def do_before_add_stuff(child_node)
-        # do whatever with the child
-      end
-
-      def do_after_add_stuff(child_node)
-        # do whatever with the child
-      end
-
-      def do_before_remove_stuff(child_node)
-        # do whatever with the child
-      end
-
-      def do_after_remove_stuff(child_node)
-        # do whatever with the child
-      end
+    def do_before_add_stuff(child_node)
+      # do whatever with the child
     end
+
+    def do_after_add_stuff(child_node)
+      # do whatever with the child
+    end
+
+    def do_before_remove_stuff(child_node)
+      # do whatever with the child
+    end
+
+    def do_after_remove_stuff(child_node)
+      # do whatever with the child
+    end
+  end
 
 
 == Protecting attributes from mass assignment
