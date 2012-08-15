@@ -2,6 +2,8 @@ module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
     module NestedSet #:nodoc:
 
+      @@data_import_mode = false
+
       # This acts provides Nested Set functionality. Nested Set is a smart way to implement
       # an _ordered_ tree, with the added feature that you can select the children and all of their
       # descendants with a single query. The drawback is that insertion or move need some complex
@@ -88,13 +90,17 @@ module CollectiveIdea #:nodoc:
         after_save     :move_to_new_parent, :set_depth!
         before_destroy :destroy_descendants
 
+
+
         # no assignment to structure fields
-        [left_column_name, right_column_name, depth_column_name].each do |column|
-          module_eval <<-"end_eval", __FILE__, __LINE__
-            def #{column}=(x)
-              raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{column}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
-            end
-          end_eval
+        unless @@data_import_mode
+          [left_column_name, right_column_name, depth_column_name].each do |column|
+            module_eval <<-"end_eval", __FILE__, __LINE__
+              def #{column}=(x)
+                raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{column}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
+              end
+            end_eval
+          end
         end
 
         define_model_callbacks :move
