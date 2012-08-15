@@ -83,6 +83,23 @@ See CollectiveIdea::Acts::NestedSet::Helper for more information about the helpe
 
 You can learn more about nested sets at: http://threebit.net/tutorials/nestedset/tutorial1.html
 
+== Loading data
+
+awesome_nested_set will give you an error if you try to access internal fields like lft. This may not play nicely if you have seed data that you generated using a tool like https://rubygems.org/gems/seed_dump .
+
+There is now a setting for avoiding these error messages: set data import mode to true.
+
+To use this, create an initializer in your Rails app that looks like this:
+
+	module CollectiveIdea
+	  module Acts
+		module NestedSet
+		  @@data_import_mode = true
+		end
+	  end
+	end
+
+
 == How to contribute
 
 If you find what you might think is a bug:
