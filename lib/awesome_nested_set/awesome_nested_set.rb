@@ -2,7 +2,7 @@ module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
     module NestedSet #:nodoc:
 
-      @@data_import_mode = false
+      @@data_import_mode ||= false
 
       # This acts provides Nested Set functionality. Nested Set is a smart way to implement
       # an _ordered_ tree, with the added feature that you can select the children and all of their
