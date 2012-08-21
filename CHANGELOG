@@ -1,3 +1,9 @@
+2.1.4
+* nested_set_options accept both Class & AR Relation. [Semyon Perepelitsa]
+* Reduce the number of queries triggered by the canonical usage of `i.level` in the `nested_set` helpers. [thedarkone]
+* Specifically require active_record [Bogdan Gusiev]
+* compute_level now checks for a non nil association target. [Joel Nimety]
+
 2.1.3
 * Update child depth when parent node is moved. [Amanda Wagener]
 * Added move_to_child_with_index. [Ben Zhang]
