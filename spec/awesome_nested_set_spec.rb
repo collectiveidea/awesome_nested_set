@@ -250,8 +250,13 @@ describe "AwesomeNestedSet" do
 
   it "self_and_descendants" do
     parent = categories(:top_level)
-    self_and_descendants = [parent, categories(:child_1), categories(:child_2),
-      categories(:child_2_1), categories(:child_3)]
+    self_and_descendants = [
+      parent,
+      categories(:child_1),
+      categories(:child_2),
+      categories(:child_2_1),
+      categories(:child_3)
+    ]
     self_and_descendants.should == parent.self_and_descendants
     self_and_descendants.count.should == parent.self_and_descendants.count
   end
@@ -271,8 +276,12 @@ describe "AwesomeNestedSet" do
 
   it "self_and_descendants" do
     parent = categories(:top_level)
-    descendants = [categories(:child_1), categories(:child_2),
-      categories(:child_2_1), categories(:child_3)]
+    descendants = [
+      categories(:child_1),
+      categories(:child_2),
+      categories(:child_2_1),
+      categories(:child_3)
+    ]
     descendants.should == parent.descendants
   end
 
@@ -852,7 +861,8 @@ describe "AwesomeNestedSet" do
       [1, "Child 1"],
       [1, "Child 2"],
       [2, "Child 2.1"],
-      [1, "Child 3" ]]
+      [1, "Child 3" ]
+    ]
 
     check_structure(Category.root.self_and_descendants, levels)
 
@@ -878,7 +888,8 @@ describe "AwesomeNestedSet" do
       [2, "Child 1.2"],
       [1, "Child 2"],
       [2, "Child 2.1"],
-      [1, "Child 3" ]]
+      [1, "Child 3" ]
+    ]
 
     check_structure(Category.root.self_and_descendants, levels)
   end
