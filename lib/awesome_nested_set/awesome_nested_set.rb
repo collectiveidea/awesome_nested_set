@@ -482,7 +482,7 @@ module CollectiveIdea #:nodoc:
           options[:conditions] = scopes.inject({}) do |conditions,attr|
             conditions.merge attr => self[attr]
           end unless scopes.empty?
-          self.class.base_class.unscoped.scoped options
+          self.class.base_class.all.unscoped options
         end
 
         def store_new_parent
@@ -671,7 +671,7 @@ module CollectiveIdea #:nodoc:
         def parent_column_name
           acts_as_nested_set_options[:parent_column]
         end
-        
+
         def order_column
           acts_as_nested_set_options[:order_column] || left_column_name
         end
