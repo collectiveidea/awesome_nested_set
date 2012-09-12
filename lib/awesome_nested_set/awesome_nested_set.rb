@@ -72,7 +72,6 @@ module CollectiveIdea #:nodoc:
         has_many_children_options = {
           :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name,
-          :order => order_column,
           :inverse_of => (:parent unless options[:polymorphic]),
         }
 
@@ -81,7 +80,7 @@ module CollectiveIdea #:nodoc:
           has_many_children_options.update(ar_callback => options[ar_callback]) if options[ar_callback]
         end
 
-        has_many :children, has_many_children_options
+        has_many :children, has_many_children_options, -> { order(order_column) }
 
         attr_accessor :skip_before_destroy
 
