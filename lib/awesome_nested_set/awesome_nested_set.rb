@@ -72,7 +72,6 @@ module CollectiveIdea #:nodoc:
         has_many_children_options = {
           :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name,
-          :order => order_column,
           :inverse_of => (:parent unless options[:polymorphic]),
         }
 
@@ -81,7 +80,7 @@ module CollectiveIdea #:nodoc:
           has_many_children_options.update(ar_callback => options[ar_callback]) if options[ar_callback]
         end
 
-        has_many :children, has_many_children_options
+        has_many :children, has_many_children_options, -> { order(order_column) }
 
         attr_accessor :skip_before_destroy
 
@@ -477,12 +476,12 @@ module CollectiveIdea #:nodoc:
         # the base ActiveRecord class, using the :scope declared in the acts_as_nested_set
         # declaration.
         def nested_set_scope(options = {})
-          options = {:order => quoted_left_column_full_name}.merge(options)
+          order = options.delete(:order) || quoted_left_column_full_name
           scopes = Array(acts_as_nested_set_options[:scope])
           options[:conditions] = scopes.inject({}) do |conditions,attr|
             conditions.merge attr => self[attr]
           end unless scopes.empty?
-          self.class.base_class.unscoped.scoped options
+          self.class.base_class.all.unscoped.where(options[:conditions]).order(order)
         end
 
         def store_new_parent
@@ -671,7 +670,7 @@ module CollectiveIdea #:nodoc:
         def parent_column_name
           acts_as_nested_set_options[:parent_column]
         end
-        
+
         def order_column
           acts_as_nested_set_options[:order_column] || left_column_name
         end
