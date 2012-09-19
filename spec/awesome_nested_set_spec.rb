@@ -928,16 +928,6 @@ describe "AwesomeNestedSet" do
     check_structure(Category.root.self_and_descendants, levels)
   end
 
-  it "should not error on a model with attr_accessible" do
-    model = Class.new(ActiveRecord::Base)
-    model.table_name = 'categories'
-    model.attr_accessible :name
-    lambda {
-      model.acts_as_nested_set
-      model.new(:name => 'foo')
-    }.should_not raise_exception
-  end
-
   describe "before_move_callback" do
     it "should fire the callback" do
       categories(:child_2).should_receive(:custom_before_move)
