@@ -669,7 +669,7 @@ module CollectiveIdea #:nodoc:
             end
             target.reload_nested_set if target
             self.set_depth!
-            self.children.each(&:save)
+            self.descendants.each(&:save)
             self.reload_nested_set
           end
         end

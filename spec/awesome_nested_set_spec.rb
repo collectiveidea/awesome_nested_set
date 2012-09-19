@@ -208,28 +208,32 @@ describe "AwesomeNestedSet" do
   describe "depth" do
     let(:lawyers) { Category.create!(:name => "lawyers") }
     let(:us) { Category.create!(:name => "United States") }
+    let(:new_york) { Category.create!(:name => "New York") }
     let(:patent) { Category.create!(:name => "Patent Law") }
 
     before(:each) do
-      # lawyers > us > patent
+      # lawyers > us > new_york > patent
       us.move_to_child_of(lawyers)
-      patent.move_to_child_of(us)
-      [lawyers, us, patent].each(&:reload)
+      new_york.move_to_child_of(us)
+      patent.move_to_child_of(new_york)
+      [lawyers, us, new_york, patent].each(&:reload)
     end
 
     it "updates depth when moved into child position" do
       lawyers.depth.should == 0
       us.depth.should == 1
-      patent.depth.should == 2
+      new_york.depth.should == 2
+      patent.depth.should == 3
     end
 
-    it "updates depth of child when parent is moved" do
+    it "updates depth of all descendants when parent is moved" do
       # lawyers
-      # us > patent
+      # us > new_york > patent
       us.move_to_right_of(lawyers)
-      [lawyers, us, patent].each(&:reload)
+      [lawyers, us, new_york, patent].each(&:reload)
       us.depth.should == 0
-      patent.depth.should == 1
+      new_york.depth.should == 1
+      patent.depth.should == 2
     end
   end
 
