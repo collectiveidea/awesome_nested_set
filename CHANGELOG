@@ -1,3 +1,11 @@
+2.1.5
+* Worked around issues where AR#association wasn't present on Rails 3.0.x. [Philip Arndt]
+* Adds option 'order_column' which defaults to 'left_column_name'. [gudata]
+* Added moving with order functionality. [Sytse Sijbrandij]
+* Use tablename in all select queries. [Mikhail Dieterle]
+* Made sure all descendants' depths are updated when moving parent, not just immediate child. [Phil Thompson]
+* Add documentation of the callbacks. [Tobias Maier]
+
 2.1.4
 * nested_set_options accept both Class & AR Relation. [Semyon Perepelitsa]
 * Reduce the number of queries triggered by the canonical usage of `i.level` in the `nested_set` helpers. [thedarkone]
