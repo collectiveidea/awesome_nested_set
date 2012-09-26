@@ -198,9 +198,13 @@ describe "AwesomeNestedSet" do
     context "given parent associations are loaded" do
       it "returns the correct level" do
         child = categories(:child_1)
-        child.association(:parent).load_target
-        child.parent.association(:parent).load_target
-        child.level.should == 1
+        if child.respond_to?(:association)
+          child.association(:parent).load_target
+          child.parent.association(:parent).load_target
+          child.level.should == 1
+        else
+          pending 'associations not used where child#association is not a method'
+        end
       end
     end
   end

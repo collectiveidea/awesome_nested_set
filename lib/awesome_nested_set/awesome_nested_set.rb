@@ -267,12 +267,16 @@ module CollectiveIdea #:nodoc:
           end
 
           def associate_parents(objects)
-            id_indexed = objects.index_by(&:id)
-            objects.each do |object|
-              if !(association = object.association(:parent)).loaded? && (parent = id_indexed[object.parent_id])
-                association.target = parent
-                association.set_inverse_instance(parent)
+            if objects.all?{|o| o.respond_to?(:association)}
+              id_indexed = objects.index_by(&:id)
+              objects.each do |object|
+                if !(association = object.association(:parent)).loaded? && (parent = id_indexed[object.parent_id])
+                  association.target = parent
+                  association.set_inverse_instance(parent)
+                end
               end
+            else
+              objects
             end
           end
         end
@@ -487,7 +491,7 @@ module CollectiveIdea #:nodoc:
           while (association = node.association(:parent)).loaded? && association.target
             nesting += 1
             node = node.parent
-          end
+          end if node.respond_to? :association
           node == self ? ancestors.count : node.level + nesting
         end
 
