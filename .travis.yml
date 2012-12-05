@@ -1,4 +1,3 @@
-before_install: gem install bundler --pre
 notifications:
   email:
     - parndt@gmail.com
