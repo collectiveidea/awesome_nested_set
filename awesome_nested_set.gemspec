@@ -17,4 +17,7 @@ Gem::Specification.new do |s|
   s.license = %q{MIT}
 
   s.add_runtime_dependency 'activerecord', '>= 3.0.0'
+
+  s.add_development_dependency 'rspec-rails', '~> 2.12'
+  s.add_development_dependency 'rake', '~> 10'
 end
