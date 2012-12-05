@@ -1,7 +1,5 @@
 # -*- encoding: utf-8 -*-
-lib = File.expand_path('../lib/', __FILE__)
-$:.unshift lib unless $:.include?(lib)
-require 'awesome_nested_set/version'
+require File.expand_path('../lib/awesome_nested_set/version', __FILE__)
 
 Gem::Specification.new do |s|
   s.name = %q{awesome_nested_set}
