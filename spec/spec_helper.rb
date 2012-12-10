@@ -4,13 +4,13 @@ plugin_test_dir = File.dirname(__FILE__)
 require 'rubygems'
 require 'bundler/setup'
 
-require 'rspec'
-require 'logger'
-
 require 'active_support'
 require 'active_model'
 require 'active_record'
 require 'action_controller'
+
+require 'rspec/rails'
+require 'logger'
 
 require 'awesome_nested_set'
 
