@@ -6,6 +6,8 @@ script: bundle exec rake
 env:
   - DB=sqlite3
   - DB=sqlite3mem
+  - DB=postgresql
+  - DB=mysql
 rvm:
   - 2.0
   - 1.9.3

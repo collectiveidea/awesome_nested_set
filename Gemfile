@@ -1,4 +1,4 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 gemspec
 
@@ -10,3 +10,7 @@ gem 'activerecord-jdbcsqlite3-adapter', :platform => :jruby
 # Add Oracle Adapters
 # gem 'ruby-oci8'
 # gem 'activerecord-oracle_enhanced-adapter'
+
+# Debuggers
+# gem 'pry'
+# gem 'pry-nav'
