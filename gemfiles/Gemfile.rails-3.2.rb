@@ -1,18 +1,4 @@
-source 'https://rubygems.org'
+MYSQL2_VERSION = '>= 0.3'
+RAILS_VERSION = '~> 3.2.0'
 
-gemspec :path => '../'
-
-platforms :jruby do
-  gem 'activerecord-jdbcsqlite3-adapter'
-  gem 'activerecord-jdbcmysql-adapter'
-  gem 'activerecord-jdbcpostgresql-adapter'
-  gem 'jruby-openssl'
-end
-
-platforms :ruby do
-  gem 'sqlite3'
-  gem 'mysql2'
-  gem 'pg'
-end
-
-gem 'activerecord', '~> 3.2.0'
+eval File.read(File.expand_path('../../Gemfile', __FILE__))

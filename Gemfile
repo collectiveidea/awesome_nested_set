@@ -1,11 +1,26 @@
+gem 'combustion', :github => 'pat/combustion'
+
 source 'https://rubygems.org'
 
-gemspec
+gemspec :path => File.expand_path('../', __FILE__)
 
-gem 'mysql2', :platform => :ruby
-gem 'pg', :platform => :ruby
-gem 'sqlite3', :platform => :ruby
-gem 'activerecord-jdbcsqlite3-adapter', :platform => :jruby
+platforms :jruby do
+  gem 'activerecord-jdbcsqlite3-adapter'
+  gem 'activerecord-jdbcmysql-adapter'
+  gem 'activerecord-jdbcpostgresql-adapter'
+  gem 'jruby-openssl'
+end
+
+platforms :ruby do
+  gem 'sqlite3'
+  gem 'mysql2', (MYSQL2_VERSION if defined? MYSQL2_VERSION)
+  gem 'pg'
+end
+
+RAILS_VERSION = nil unless defined? RAILS_VERSION
+gem 'railties', RAILS_VERSION
+gem 'activerecord', RAILS_VERSION
+gem 'actionpack', RAILS_VERSION
 
 # Add Oracle Adapters
 # gem 'ruby-oci8'

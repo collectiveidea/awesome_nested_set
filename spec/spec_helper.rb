@@ -1,19 +1,10 @@
-$:.unshift(File.dirname(__FILE__) + '/../lib')
 plugin_test_dir = File.dirname(__FILE__)
 
 require 'rubygems'
 require 'bundler/setup'
 
-require 'active_support'
-require 'active_model'
-require 'active_record'
-require 'action_controller'
-
-require 'rspec/rails'
 require 'logger'
-
-require 'awesome_nested_set'
-
+require 'active_record'
 ActiveRecord::Base.logger = Logger.new(plugin_test_dir + "/debug.log")
 
 require 'yaml'
@@ -22,12 +13,14 @@ ActiveRecord::Base.configurations = YAML::load(ERB.new(IO.read(plugin_test_dir +
 ActiveRecord::Base.establish_connection(ENV["DB"] ||= "sqlite3mem")
 ActiveRecord::Migration.verbose = false
 
-require 'combustion'
+require 'combustion/database'
 Combustion::Database.create_database(ActiveRecord::Base.configurations[ENV["DB"]])
 load(File.join(plugin_test_dir, "db", "schema.rb"))
 
+require 'awesome_nested_set'
 require 'support/models'
 
+require 'action_controller'
 require 'rspec/rails'
 RSpec.configure do |config|
   config.fixture_path = "#{plugin_test_dir}/fixtures"
