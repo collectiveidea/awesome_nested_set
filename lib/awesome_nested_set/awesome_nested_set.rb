@@ -655,7 +655,27 @@ module CollectiveIdea #:nodoc:
                 else          target[parent_column_name]
               end
 
-              self.nested_set_scope.update_all([
+              where_statement = ["not (#{quoted_left_column_name} = CASE " +
+                                     "WHEN #{quoted_left_column_name} BETWEEN :a AND :b " +
+                                     "THEN #{quoted_left_column_name} + :d - :b " +
+                                     "WHEN #{quoted_left_column_name} BETWEEN :c AND :d " +
+                                     "THEN #{quoted_left_column_name} + :a - :c " +
+                                     "ELSE #{quoted_left_column_name} END AND " +
+                                     "#{quoted_right_column_name} = CASE " +
+                                     "WHEN #{quoted_right_column_name} BETWEEN :a AND :b " +
+                                     "THEN #{quoted_right_column_name} + :d - :b " +
+                                     "WHEN #{quoted_right_column_name} BETWEEN :c AND :d " +
+                                     "THEN #{quoted_right_column_name} + :a - :c " +
+                                     "ELSE #{quoted_right_column_name} END AND " +
+                                     "#{quoted_parent_column_name} = CASE " +
+                                     "WHEN #{self.class.base_class.primary_key} = :id THEN :new_parent " +
+                                     "ELSE #{quoted_parent_column_name} END)" ,
+                                 {:a => a, :b => b, :c => c, :d => d, :id => self.id, :new_parent => new_parent}    ]
+
+
+
+
+              self.nested_set_scope.where(*where_statement).update_all([
                 "#{quoted_left_column_name} = CASE " +
                   "WHEN #{quoted_left_column_name} BETWEEN :a AND :b " +
                     "THEN #{quoted_left_column_name} + :d - :b " +
