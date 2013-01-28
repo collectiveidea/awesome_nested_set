@@ -88,7 +88,7 @@ end
 class Position < ActiveRecord::Base
   acts_as_nested_set
 
-  default_scope order(:position)
+  default_scope -> { order(:position) }
 end
 
 class NoDepth < ActiveRecord::Base

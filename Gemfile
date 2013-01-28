@@ -17,12 +17,7 @@ platforms :ruby do
   gem 'pg'
 end
 
-RAILS_VERSION = nil unless defined? RAILS_VERSION
-gem 'railties', RAILS_VERSION
-gem 'activerecord', RAILS_VERSION
-gem 'actionpack', RAILS_VERSION
-
-gem 'activerecord', '~> 4.0.0.beta', :github => 'rails/rails'
+gem 'activerecord', :github => 'rails/rails'
 gem 'activerecord-deprecated_finders', :github => 'rails/activerecord-deprecated_finders'
 gem 'journey', :github => 'rails/journey'
 
