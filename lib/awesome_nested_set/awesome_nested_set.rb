@@ -421,22 +421,22 @@ module CollectiveIdea #:nodoc:
           move_to_right_of right_sibling
         end
 
-        # Move the node to the left of another node (you can pass id only)
+        # Move the node to the left of another node
         def move_to_left_of(node)
           move_to node, :left
         end
 
-        # Move the node to the left of another node (you can pass id only)
+        # Move the node to the left of another node
         def move_to_right_of(node)
           move_to node, :right
         end
 
-        # Move the node to the child of another node (you can pass id only)
+        # Move the node to the child of another node
         def move_to_child_of(node)
           move_to node, :child
         end
 
-        # Move the node to the child of another node with specify index (you can pass id only)
+        # Move the node to the child of another node with specify index
         def move_to_child_with_index(node, index)
           if node.children.empty?
             move_to_child_of(node)
@@ -449,7 +449,7 @@ module CollectiveIdea #:nodoc:
 
         # Move the node to root nodes
         def move_to_root
-          move_to nil, :root
+          move_to_right_of(root)
         end
 
         # Order children in a nested set by an attribute
@@ -610,12 +610,11 @@ module CollectiveIdea #:nodoc:
           raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.new_record?
           run_callbacks :move do
             in_tenacious_transaction do
-              if target.is_a? self.class.base_class
-                target.reload_nested_set
-              elsif position != :root
-                # load object if node is not an object
-                target = nested_set_scope.find(target)
-              end
+              target = if target.is_a? self.class.base_class
+                         target.reload
+                       else
+                         nested_set_scope.find(target)
+                       end
               self.reload_nested_set
 
               unless position == :root || move_possible?(target)
@@ -626,7 +625,6 @@ module CollectiveIdea #:nodoc:
                 when :child;  target[right_column_name]
                 when :left;   target[left_column_name]
                 when :right;  target[right_column_name] + 1
-                when :root;   1
                 else raise ActiveRecord::ActiveRecordError, "Position should be :child, :left, :right or :root ('#{position}' received)."
               end
 
@@ -651,29 +649,10 @@ module CollectiveIdea #:nodoc:
 
               new_parent = case position
                 when :child;  target.id
-                when :root;   nil
                 else          target[parent_column_name]
               end
 
-              where_statement = ["not (#{quoted_left_column_name} = CASE " +
-                                     "WHEN #{quoted_left_column_name} BETWEEN :a AND :b " +
-                                     "THEN #{quoted_left_column_name} + :d - :b " +
-                                     "WHEN #{quoted_left_column_name} BETWEEN :c AND :d " +
-                                     "THEN #{quoted_left_column_name} + :a - :c " +
-                                     "ELSE #{quoted_left_column_name} END AND " +
-                                     "#{quoted_right_column_name} = CASE " +
-                                     "WHEN #{quoted_right_column_name} BETWEEN :a AND :b " +
-                                     "THEN #{quoted_right_column_name} + :d - :b " +
-                                     "WHEN #{quoted_right_column_name} BETWEEN :c AND :d " +
-                                     "THEN #{quoted_right_column_name} + :a - :c " +
-                                     "ELSE #{quoted_right_column_name} END AND " +
-                                     "#{quoted_parent_column_name} = CASE " +
-                                     "WHEN #{self.class.base_class.primary_key} = :id THEN :new_parent " +
-                                     "ELSE #{quoted_parent_column_name} END)" ,
-                                 {:a => a, :b => b, :c => c, :d => d, :id => self.id, :new_parent => new_parent}    ]
-
-
-
+              where_statement = ["(#{quoted_left_column_name} BETWEEN :a AND :d) OR (#{quoted_right_column_name} BETWEEN :a AND :d)", {:a => a, :d => d}]
 
               self.nested_set_scope.where(*where_statement).update_all([
                 "#{quoted_left_column_name} = CASE " +
