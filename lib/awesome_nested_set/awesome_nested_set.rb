@@ -119,6 +119,10 @@ module CollectiveIdea #:nodoc:
             where(parent_column_name => nil).order(quoted_left_column_full_name)
           end
 
+          def branches
+            where("(#{quoted_right_column_name} - #{quoted_left_column_name} > 1) and #{quoted_parent_column_name} is not null").order(quoted_left_column_name)
+          end
+
           def leaves
             where("#{quoted_right_column_full_name} - #{quoted_left_column_full_name} = 1").order(quoted_left_column_full_name)
           end
