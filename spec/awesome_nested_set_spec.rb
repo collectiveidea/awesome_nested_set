@@ -779,14 +779,14 @@ describe "AwesomeNestedSet" do
 
   it "quoting_of_multi_scope_column_names" do
     ## Proper Array Assignment for different DBs as per their quoting column behavior
-    if Note.connection.adapter_name.match(/Oracle/)
+    if Note.connection.adapter_name.match(/oracle/i)
       expected_quoted_scope_column_names = ["\"NOTABLE_ID\"", "\"NOTABLE_TYPE\""]
-    elsif Note.connection.adapter_name.match(/Mysql/)
+    elsif Note.connection.adapter_name.match(/mysql/i)
       expected_quoted_scope_column_names = ["`notable_id`", "`notable_type`"]
     else
       expected_quoted_scope_column_names = ["\"notable_id\"", "\"notable_type\""]
     end
-    expected_quoted_scope_column_names.should == Note.quoted_scope_column_names
+    Note.quoted_scope_column_names.should == expected_quoted_scope_column_names
   end
 
   it "equal_in_same_scope" do
