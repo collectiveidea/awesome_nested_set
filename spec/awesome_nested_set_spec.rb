@@ -104,7 +104,12 @@ describe "AwesomeNestedSet" do
   end
 
   it "roots_class_method" do
-    Category.roots.should == Category.find_all_by_parent_id(nil)
+    found_by_us = Category.where(:parent_id => nil).to_a
+    found_by_roots = Category.roots.to_a
+    found_by_us.length.should == found_by_roots.length
+    found_by_us.each do |root|
+      found_by_roots.should include(root)
+    end
   end
 
   it "root_class_method" do
@@ -131,7 +136,6 @@ describe "AwesomeNestedSet" do
   end
 
   it "leaves_class_method" do
-    Category.find(:all, :conditions => "#{Category.right_column_name} - #{Category.left_column_name} = 1").should == Category.leaves
     Category.leaves.count.should == 4
     Category.leaves.should include(categories(:child_1))
     Category.leaves.should include(categories(:child_2_1))
