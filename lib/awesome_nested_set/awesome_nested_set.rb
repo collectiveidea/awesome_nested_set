@@ -105,7 +105,7 @@ module CollectiveIdea #:nodoc:
         extend ActiveSupport::Concern
 
         included do
-          delegate :quoted_table_name, :to => self
+          delegate :quoted_table_name, :connection, :to => self
         end
 
         module ClassMethods
