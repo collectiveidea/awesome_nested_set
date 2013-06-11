@@ -72,7 +72,7 @@ module CollectiveIdea #:nodoc:
         has_many_children_options = {
           :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name,
-          :order => order_column,
+          :order => quoted_order_column_name,
           :inverse_of => (:parent unless options[:polymorphic]),
         }
 
@@ -726,6 +726,10 @@ module CollectiveIdea #:nodoc:
 
         def quoted_scope_column_names
           scope_column_names.collect {|column_name| connection.quote_column_name(column_name) }
+        end
+
+        def quoted_order_column_name
+          connection.quote_column_name(order_column)
         end
 
         def quoted_left_column_full_name

@@ -81,6 +81,12 @@ describe "AwesomeNestedSet" do
     Default.new.quoted_depth_column_name.should == quoted
   end
 
+  it "quoted_order_column_name" do
+    quoted = Default.connection.quote_column_name('lft')
+    Default.quoted_order_column_name.should == quoted
+    Default.new.quoted_order_column_name.should == quoted
+  end
+
   it "left_column_protected_from_assignment" do
     lambda {
       Category.new.lft = 1
