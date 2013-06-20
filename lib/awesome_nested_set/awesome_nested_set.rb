@@ -402,8 +402,7 @@ module CollectiveIdea #:nodoc:
 
         # Find the first sibling to the left
         def left_sibling
-          siblings.where(["#{quoted_left_column_full_name} < ?", left]).
-                  order("#{quoted_left_column_full_name}").last
+          siblings.where(["#{quoted_left_column_full_name} < ?", left]).last
         end
 
         # Find the first sibling to the right
