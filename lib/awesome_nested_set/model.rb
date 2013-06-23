@@ -1,4 +1,5 @@
 require 'awesome_nested_set/model/prunable'
+require 'awesome_nested_set/model/movable'
 
 module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
@@ -10,12 +11,17 @@ module CollectiveIdea #:nodoc:
         included do
           delegate :quoted_table_name, :to => self
           include Prunable
+          include Movable
         end
 
         module ClassMethods
           # Returns the first root
           def root
             roots.first
+          end
+
+          def primary_key_scope(id)
+            where(primary_key.to_sym => id)
           end
 
           def roots
@@ -234,6 +240,10 @@ module CollectiveIdea #:nodoc:
           !root?
         end
 
+        def has_multiple_children?
+          children.count > 1
+        end
+
         # Returns root
         def root
           return self_and_ancestors.where(parent_column_name => nil).first if persisted?
@@ -323,81 +333,10 @@ module CollectiveIdea #:nodoc:
           siblings.where(["#{quoted_left_column_full_name} > ?", left]).first
         end
 
-        # Shorthand method for finding the left sibling and moving to the left of it.
-        def move_left
-          move_to_left_of left_sibling
-        end
-
-        # Shorthand method for finding the right sibling and moving to the right of it.
-        def move_right
-          move_to_right_of right_sibling
-        end
-
-        # Move the node to the left of another node
-        def move_to_left_of(node)
-          move_to node, :left
-        end
-
-        # Move the node to the left of another node
-        def move_to_right_of(node)
-          move_to node, :right
-        end
-
-        # Move the node to the child of another node
-        def move_to_child_of(node)
-          move_to node, :child
-        end
-
-        # Move the node to the child of another node with specify index
-        def move_to_child_with_index(node, index)
-          if node.children.empty?
-            move_to_child_of(node)
-          elsif node.children.count == index
-            move_to_right_of(node.children.last)
-          else
-            move_to_left_of(node.children[index])
-          end
-        end
-
-        # Move the node to root nodes
-        def move_to_root
-          move_to_right_of(root)
-        end
-
-        # Order children in a nested set by an attribute
-        # Can order by any attribute class that uses the Comparable mixin, for example a string or integer
-        # Usage example when sorting categories alphabetically: @new_category.move_to_ordered_child_of(@root, "name")
-        def move_to_ordered_child_of(parent, order_attribute, ascending = true)
-          self.move_to_root and return unless parent
-          left = nil # This is needed, at least for the tests.
-          parent.children.each do |n| # Find the node immediately to the left of this node.
-            if ascending
-              left = n if n.send(order_attribute) < self.send(order_attribute)
-            else
-              left = n if n.send(order_attribute) > self.send(order_attribute)
-            end
-          end
-          self.move_to_child_of(parent)
-          return unless parent.children.count > 1 # Only need to order if there are multiple children.
-          if left # Self has a left neighbor.
-            self.move_to_right_of(left)
-          else # Self is the left most node.
-            self.move_to_left_of(parent.children[0])
-          end
-        end
-
         def to_text
           self_and_descendants.map do |node|
             "#{'*'*(node.level+1)} #{node.id} #{node.to_s} (#{node.parent_id}, #{node.left}, #{node.right})"
           end.join("\n")
-        end
-
-        def move_possible?(target)
-          self != target && # Can't target self
-            same_scope?(target) && # can't be in different scopes
-            # !(left..right).include?(target.left..target.right) # this needs tested more
-            # detect impossible move
-            !((left <= target.left && right >= target.left) or (left <= target.right && right >= target.right))
         end
 
         # All nested set queries should use this nested_set_scope, which performs finds on
@@ -431,23 +370,19 @@ module CollectiveIdea #:nodoc:
           true # force callback to return true
         end
 
-        def move_to_new_parent
-          if @move_to_new_parent_id.nil?
-            move_to_root
-          elsif @move_to_new_parent_id
-            move_to_child_of(@move_to_new_parent_id)
-          end
+        def has_depth_column?
+          nested_set_scope.column_names.map(&:to_s).include?(depth_column_name.to_s)
         end
 
         def set_depth!
-          if nested_set_scope.column_names.map(&:to_s).include?(depth_column_name.to_s)
-            in_tenacious_transaction do
-              reload
+          return unless has_depth_column?
 
-              nested_set_scope.where(self.class.base_class.primary_key.to_sym => id).update_all(["#{quoted_depth_column_name} = ?", level])
-            end
-            self[depth_column_name.to_sym] = self.level
+          in_tenacious_transaction do
+            reload
+            nested_set_scope.primary_key_scope(id).
+              update_all(["#{quoted_depth_column_name} = ?", level])
           end
+          self[depth_column_name.to_sym] = self.level
         end
 
         # on creation, set automatically lft and rgt to the end of the tree
@@ -481,22 +416,6 @@ module CollectiveIdea #:nodoc:
                  :select => "#{quoted_left_column_full_name}, #{quoted_right_column_full_name}, #{quoted_parent_column_full_name}",
                  :lock => true
                  )
-        end
-
-        def move_to(target, position)
-          raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.new_record?
-          run_callbacks :move do
-            in_tenacious_transaction do
-              target = reload_target(target)
-              self.reload_nested_set
-
-              Move.new(target, position, self).move
-            end
-            target.reload_nested_set if target
-            self.set_depth!
-            self.descendants.each(&:save)
-            self.reload_nested_set
-          end
         end
 
         def reload_target(target)
