@@ -40,23 +40,27 @@ module CollectiveIdea #:nodoc:
 
         def conditions(a,b,c,d)
           [
-           "#{quoted_left_column_name} = CASE " +
-           "WHEN #{quoted_left_column_name} BETWEEN :a AND :b " +
-           "THEN #{quoted_left_column_name} + :d - :b " +
-           "WHEN #{quoted_left_column_name} BETWEEN :c AND :d " +
-           "THEN #{quoted_left_column_name} + :a - :c " +
-           "ELSE #{quoted_left_column_name} END, " +
-           "#{quoted_right_column_name} = CASE " +
-           "WHEN #{quoted_right_column_name} BETWEEN :a AND :b " +
-           "THEN #{quoted_right_column_name} + :d - :b " +
-           "WHEN #{quoted_right_column_name} BETWEEN :c AND :d " +
-           "THEN #{quoted_right_column_name} + :a - :c " +
-           "ELSE #{quoted_right_column_name} END, " +
-           "#{quoted_parent_column_name} = CASE " +
-           "WHEN #{instance.class.base_class.primary_key} = :id THEN :new_parent " +
-           "ELSE #{quoted_parent_column_name} END",
+           case_condition_for_direction(:quoted_left_column_name) +
+           case_condition_for_direction(:quoted_right_column_name) +
+           case_condition_for_parent,
            {:a => a, :b => b, :c => c, :d => d, :id => instance.id, :new_parent => new_parent}
           ]
+        end
+
+        def case_condition_for_direction(column_name)
+          column = send(column_name)
+          "#{column} = CASE " +
+            "WHEN #{column} BETWEEN :a AND :b " +
+            "THEN #{column} + :d - :b " +
+            "WHEN #{column} BETWEEN :c AND :d " +
+            "THEN #{column} + :a - :c " +
+            "ELSE #{column} END, "
+        end
+
+        def case_condition_for_parent
+          "#{quoted_parent_column_name} = CASE " +
+            "WHEN #{instance.class.base_class.primary_key} = :id THEN :new_parent " +
+            "ELSE #{quoted_parent_column_name} END"
         end
 
         def not_root
