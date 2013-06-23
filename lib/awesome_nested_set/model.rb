@@ -1,6 +1,7 @@
 require 'awesome_nested_set/model/prunable'
 require 'awesome_nested_set/model/movable'
 require 'awesome_nested_set/tree'
+require 'awesome_nested_set/iterator'
 
 module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
@@ -129,68 +130,35 @@ module CollectiveIdea #:nodoc:
           # Example:
           #    Category.each_with_level(Category.root.self_and_descendants) do |o, level|
           #
-          def each_with_level(objects)
-            path = [nil]
-            objects.each do |o|
-              if o.parent_id != path.last
-                # we are on a new level, did we descend or ascend?
-                if path.include?(o.parent_id)
-                  # remove wrong wrong tailing paths elements
-                  path.pop while path.last != o.parent_id
-                else
-                  path << o.parent_id
-                end
-              end
-              yield(o, path.length - 1)
-            end
+          def each_with_level(objects, &block)
+            Iterator.new(objects).each_with_level(&block)
           end
 
           # Same as each_with_level - Accepts a string as a second argument to sort the list
           # Example:
-          #    Category.each_with_level(Category.root.self_and_descendants, :sort_by_this_column) do |o, level|
-          def sorted_each_with_level(objects, order)
-            path = [nil]
-            children = []
-            objects.each do |o|
-              children << o if o.leaf?
-              if o.parent_id != path.last
-                if !children.empty? && !o.leaf?
-                  children.sort_by! &order
-                  children.each { |c| yield(c, path.length-1) }
-                  children = []
-                end
-                # we are on a new level, did we decent or ascent?
-                if path.include?(o.parent_id)
-                  # remove wrong wrong tailing paths elements
-                  path.pop while path.last != o.parent_id
-                else
-                  path << o.parent_id
-                end
-              end
-              yield(o,path.length-1) if !o.leaf?
-            end
-            if !children.empty?
-              children.sort_by! &order
-              children.each { |c| yield(c, path.length-1) }
-            end
+          #    Category.sorted_each_with_level(Category.root.self_and_descendants, :sort_by_this_column) do |o, level|
+          def sorted_each_with_level(objects, order, &block)
+            Iterator.new(objects).sorted_each_with_level(order, &block)
           end
 
           def associate_parents(objects)
-            if objects.all?{|o| o.respond_to?(:association)}
-              id_indexed = objects.index_by(&:id)
-              objects.each do |object|
-                if !(association = object.association(:parent)).loaded? && (parent = id_indexed[object.parent_id])
-                  association.target = parent
-                  association.set_inverse_instance(parent)
-                end
+            return objects unless objects.all? {|o| o.respond_to?(:association)}
+
+            id_indexed = objects.index_by(&:id)
+            objects.each do |object|
+              association = object.association(:parent)
+              parent = id_indexed[object.parent_id]
+
+              if !association.loaded? && parent
+                association.target = parent
+                association.set_inverse_instance(parent)
               end
-            else
-              objects
             end
           end
 
           private
-          ## AS clause not supported in Oracle in FROM clause for aliasing table name
+
+          # AS clause not supported in Oracle in FROM clause for aliasing table name
           def alias_keyword_for_adapter
             (connection.adapter_name.match(/Oracle/).nil? ?  " AS " : " ")
           end
