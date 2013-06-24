@@ -1,7 +1,9 @@
 require 'awesome_nested_set/model/prunable'
 require 'awesome_nested_set/model/movable'
+require 'awesome_nested_set/model/transactable'
 require 'awesome_nested_set/tree'
 require 'awesome_nested_set/iterator'
+require 'awesome_nested_set/set_validator'
 
 module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
@@ -14,6 +16,7 @@ module CollectiveIdea #:nodoc:
           delegate :quoted_table_name, :to => self
           include Prunable
           include Movable
+          include Transactable
         end
 
         module ClassMethods
@@ -47,19 +50,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def left_and_rights_valid?
-            joins("LEFT OUTER JOIN #{quoted_table_name}" +
-                  alias_keyword_for_adapter +
-                  "parent ON " +
-                  "#{quoted_parent_column_full_name} = parent.#{primary_key}").
-              where(
-                    "#{quoted_left_column_full_name} IS NULL OR " +
-                    "#{quoted_right_column_full_name} IS NULL OR " +
-                    "#{quoted_left_column_full_name} >= " +
-                    "#{quoted_right_column_full_name} OR " +
-                    "(#{quoted_parent_column_full_name} IS NOT NULL AND " +
-                    "(#{quoted_left_column_full_name} <= parent.#{quoted_left_column_name} OR " +
-                    "#{quoted_right_column_full_name} >= parent.#{quoted_right_column_name}))"
-                    ).count == 0
+            SetValidator.new(self).valid?
           end
 
           def no_duplicates_for_columns?
@@ -154,13 +145,6 @@ module CollectiveIdea #:nodoc:
                 association.set_inverse_instance(parent)
               end
             end
-          end
-
-          private
-
-          # AS clause not supported in Oracle in FROM clause for aliasing table name
-          def alias_keyword_for_adapter
-            (connection.adapter_name.match(/Oracle/).nil? ?  " AS " : " ")
           end
         end # end class methods
 
@@ -351,21 +335,6 @@ module CollectiveIdea #:nodoc:
           # adds the new node to the right of all existing nodes
           self[left_column_name] = maxright + 1
           self[right_column_name] = maxright + 2
-        end
-
-        def in_tenacious_transaction(&block)
-          retry_count = 0
-          begin
-            transaction(&block)
-          rescue ActiveRecord::StatementInvalid => error
-            raise unless connection.open_transactions.zero?
-            raise unless error.message =~ /Deadlock found when trying to get lock|Lock wait timeout exceeded/
-            raise unless retry_count < 10
-            retry_count += 1
-            logger.info "Deadlock detected on retry #{retry_count}, restarting transaction"
-            sleep(rand(retry_count)*0.1) # Aloha protocol
-            retry
-          end
         end
 
         # reload left, right, and parent
