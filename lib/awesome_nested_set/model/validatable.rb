@@ -4,7 +4,7 @@ module CollectiveIdea
   module Acts
     module NestedSet
       module Model
-        module Validators
+        module Validatable
 
           def valid?
             left_and_rights_valid? && no_duplicates_for_columns? && all_roots_valid?

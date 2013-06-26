@@ -1,8 +1,8 @@
 require 'awesome_nested_set/model/prunable'
 require 'awesome_nested_set/model/movable'
 require 'awesome_nested_set/model/transactable'
-require 'awesome_nested_set/model/validators'
-require 'awesome_nested_set/tree'
+require 'awesome_nested_set/model/rebuildable'
+require 'awesome_nested_set/model/validatable'
 require 'awesome_nested_set/iterator'
 
 module CollectiveIdea #:nodoc:
@@ -14,24 +14,36 @@ module CollectiveIdea #:nodoc:
 
         included do
           delegate :quoted_table_name, :to => self
-          extend Validators
+          extend Validatable
+          extend Rebuildable
           include Prunable
           include Movable
           include Transactable
         end
 
         module ClassMethods
-          # Returns the first root
-          def root
-            roots.first
-          end
+          def associate_parents(objects)
+            return objects unless objects.all? {|o| o.respond_to?(:association)}
 
-          def primary_key_scope(id)
-            where(primary_key.to_sym => id)
+            id_indexed = objects.index_by(&:id)
+            objects.each do |object|
+              association = object.association(:parent)
+              parent = id_indexed[object.parent_id]
+
+              if !association.loaded? && parent
+                association.target = parent
+                association.set_inverse_instance(parent)
+              end
+            end
           end
 
           def roots
             where(parent_column_name => nil).order(quoted_left_column_full_name)
+          end
+
+          # Returns the first root
+          def root
+            roots.first
           end
 
           def leaves
@@ -46,30 +58,8 @@ module CollectiveIdea #:nodoc:
             where(["#{quoted_left_column_full_name} >= ?", node])
           end
 
-          # Rebuilds the left & rights if unset or invalid.
-          # Also very useful for converting from acts_as_tree.
-          def rebuild!(validate_nodes = true)
-            # default_scope with order may break database queries so we do all operation without scope
-            unscoped do
-              Tree.new(self, validate_nodes).rebuild!
-            end
-          end
-
-          def scope_for_rebuild
-            scope = lambda {|node|}
-
-            if acts_as_nested_set_options[:scope]
-              scope = lambda {|node|
-                scope_column_names.inject("") {|str, column_name|
-                  str << "AND #{connection.quote_column_name(column_name)} = #{connection.quote(node.send(column_name.to_sym))} "
-                }
-              }
-            end
-            scope
-          end
-
-          def order_for_rebuild
-            "#{quoted_left_column_full_name}, #{quoted_right_column_full_name}, #{primary_key}"
+          def primary_key_scope(id)
+            where(primary_key.to_sym => id)
           end
 
           # Iterates over tree elements and determines the current level in the tree.
@@ -82,21 +72,6 @@ module CollectiveIdea #:nodoc:
           #
           def each_with_level(objects, &block)
             Iterator.new(objects).each_with_level(&block)
-          end
-
-          def associate_parents(objects)
-            return objects unless objects.all? {|o| o.respond_to?(:association)}
-
-            id_indexed = objects.index_by(&:id)
-            objects.each do |object|
-              association = object.association(:parent)
-              parent = id_indexed[object.parent_id]
-
-              if !association.loaded? && parent
-                association.target = parent
-                association.set_inverse_instance(parent)
-              end
-            end
           end
         end # end class methods
 
