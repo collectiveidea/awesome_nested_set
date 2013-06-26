@@ -84,13 +84,6 @@ module CollectiveIdea #:nodoc:
             Iterator.new(objects).each_with_level(&block)
           end
 
-          # Same as each_with_level - Accepts a string as a second argument to sort the list
-          # Example:
-          #    Category.sorted_each_with_level(Category.root.self_and_descendants, :sort_by_this_column) do |o, level|
-          def sorted_each_with_level(objects, order, &block)
-            Iterator.new(objects).sorted_each_with_level(order, &block)
-          end
-
           def associate_parents(objects)
             return objects unless objects.all? {|o| o.respond_to?(:association)}
 
