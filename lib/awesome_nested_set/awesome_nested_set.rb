@@ -1,3 +1,6 @@
+require 'awesome_nested_set/columns'
+require 'awesome_nested_set/model'
+
 module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
     module NestedSet #:nodoc:
