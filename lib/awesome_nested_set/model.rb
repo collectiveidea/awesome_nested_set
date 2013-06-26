@@ -38,7 +38,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def roots
-            where(parent_column_name => nil).order(quoted_left_column_full_name)
+            where(parent_column_name => nil).order(quoted_order_column_name)
           end
 
           # Returns the first root
@@ -47,7 +47,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def leaves
-            where("#{quoted_right_column_full_name} - #{quoted_left_column_full_name} = 1").order(quoted_left_column_full_name)
+            where("#{quoted_right_column_full_name} - #{quoted_left_column_full_name} = 1").order(quoted_order_column_name)
           end
 
           def left_of_right_side(node)
