@@ -28,5 +28,5 @@ gem 'actionpack', RAILS_VERSION
 # gem 'activerecord-oracle_enhanced-adapter'
 
 # Debuggers
-# gem 'pry'
-# gem 'pry-nav'
+gem 'pry'
+gem 'pry-nav'
