@@ -62,9 +62,9 @@ module CollectiveIdea #:nodoc:
         class_attribute :acts_as_nested_set_options
         self.acts_as_nested_set_options = options
 
-        include CollectiveIdea::Acts::NestedSet::Model
-        include CollectiveIdea::Acts::NestedSet::Columns
-        extend CollectiveIdea::Acts::NestedSet::Columns
+        include Model
+        include Columns
+        extend Columns
 
         belongs_to :parent, :class_name => self.base_class.to_s,
                             :foreign_key => parent_column_name,

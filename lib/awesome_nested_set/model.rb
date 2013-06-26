@@ -304,6 +304,7 @@ module CollectiveIdea #:nodoc:
         end
 
         def without_self(scope)
+          return scope if new_record?
           scope.where(["#{self.class.quoted_table_name}.#{self.class.primary_key} != ?", self])
         end
 
