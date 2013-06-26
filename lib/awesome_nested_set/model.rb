@@ -69,12 +69,22 @@ module CollectiveIdea #:nodoc:
           # Wrapper for each_root_valid? that can deal with scope.
           def all_roots_valid?
             if acts_as_nested_set_options[:scope]
-              roots.group_by {|record| scope_column_names.collect {|col| record.send(col.to_sym) } }.all? do |scope, grouped_roots|
-                each_root_valid?(grouped_roots)
-              end
+              all_roots_valid_by_scope?(roots)
             else
               each_root_valid?(roots)
             end
+          end
+
+          def all_roots_valid_by_scope?(roots_to_validate)
+            roots_grouped_by_scope(roots_to_validate).all? do |scope, grouped_roots|
+              each_root_valid?(grouped_roots)
+            end
+          end
+
+          def roots_grouped_by_scope(roots_to_group)
+            roots_to_group.group_by {|record|
+              scope_column_names.collect {|col| record.send(col.to_sym) }
+            }
           end
 
           def each_root_valid?(roots_to_validate)
@@ -200,8 +210,8 @@ module CollectiveIdea #:nodoc:
         # Returns the array of all parents and self
         def self_and_ancestors
           nested_set_scope.where([
-                                  "#{quoted_left_column_full_name} <= ? AND #{quoted_right_column_full_name} >= ?", left, right
-                                 ])
+            "#{quoted_left_column_full_name} <= ? AND #{quoted_right_column_full_name} >= ?", left, right
+          ])
         end
 
         # Returns an array of all parents
