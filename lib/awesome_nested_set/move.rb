@@ -4,7 +4,7 @@ module CollectiveIdea #:nodoc:
       class Move
         attr_reader :target, :position, :instance
 
-        delegate :left, :right, :quoted_left_column_name, :quoted_right_column_name, :quoted_parent_column_name, :parent_column_name, to: :instance
+        delegate :left, :right, :quoted_left_column_name, :quoted_right_column_name, :quoted_parent_column_name, :parent_column_name, :to => :instance
 
         def initialize(target, position, instance)
           @target = target

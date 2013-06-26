@@ -5,7 +5,7 @@ module CollectiveIdea #:nodoc:
         attr_reader :klass, :validate_nodes, :scope
         attr_accessor :indices
 
-        delegate :left_column_name, :right_column_name, :quoted_parent_column_full_name, to: :klass
+        delegate :left_column_name, :right_column_name, :quoted_parent_column_full_name, :to => :klass
 
         def initialize(klass, validate_nodes)
           @klass = klass
