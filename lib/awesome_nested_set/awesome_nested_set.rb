@@ -45,7 +45,57 @@ module CollectiveIdea #:nodoc:
       # CollectiveIdea::Acts::NestedSet::Model for a list of instance methods added
       # to acts_as_nested_set models
       def acts_as_nested_set(options = {})
-        options = {
+        acts_as_nested_set_parse_options! options
+
+        include Model
+        include Columns
+        extend Columns
+
+        acts_as_nested_set_relate_parent!
+        acts_as_nested_set_relate_children!
+
+        attr_accessor :skip_before_destroy
+
+        acts_as_nested_set_prevent_assignment_to_reserved_columns!
+        acts_as_nested_set_define_callbacks!
+      end
+
+      private
+      def acts_as_nested_set_define_callbacks!
+        before_create  :set_default_left_and_right
+        before_save    :store_new_parent
+        after_save     :move_to_new_parent, :set_depth!
+        before_destroy :destroy_descendants
+
+        define_model_callbacks :move
+      end
+
+      def acts_as_nested_set_relate_children!
+        has_many_children_options = {
+          :class_name => self.base_class.to_s,
+          :foreign_key => parent_column_name,
+          :order => quoted_order_column_name,
+          :inverse_of => (:parent unless acts_as_nested_set_options[:polymorphic]),
+        }
+
+        # Add callbacks, if they were supplied.. otherwise, we don't want them.
+        [:before_add, :after_add, :before_remove, :after_remove].each do |ar_callback|
+          has_many_children_options.update(ar_callback => acts_as_nested_set_options[ar_callback]) if acts_as_nested_set_options[ar_callback]
+        end
+
+        has_many :children, has_many_children_options
+      end
+
+      def acts_as_nested_set_relate_parent!
+        belongs_to :parent, :class_name => self.base_class.to_s,
+                            :foreign_key => parent_column_name,
+                            :counter_cache => acts_as_nested_set_options[:counter_cache],
+                            :inverse_of => (:children unless acts_as_nested_set_options[:polymorphic]),
+                            :polymorphic => acts_as_nested_set_options[:polymorphic]
+      end
+
+      def acts_as_nested_set_default_options
+        {
           :parent_column => 'parent_id',
           :left_column => 'lft',
           :right_column => 'rgt',
@@ -53,7 +103,11 @@ module CollectiveIdea #:nodoc:
           :dependent => :delete_all, # or :destroy
           :polymorphic => false,
           :counter_cache => false
-        }.merge(options)
+        }.freeze
+      end
+
+      def acts_as_nested_set_parse_options!(options)
+        options = acts_as_nested_set_default_options.merge(options)
 
         if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
           options[:scope] = "#{options[:scope]}_id".intern
@@ -61,38 +115,9 @@ module CollectiveIdea #:nodoc:
 
         class_attribute :acts_as_nested_set_options
         self.acts_as_nested_set_options = options
+      end
 
-        include Model
-        include Columns
-        extend Columns
-
-        belongs_to :parent, :class_name => self.base_class.to_s,
-                            :foreign_key => parent_column_name,
-                            :counter_cache => options[:counter_cache],
-                            :inverse_of => (:children unless options[:polymorphic]),
-                            :polymorphic => options[:polymorphic]
-
-        has_many_children_options = {
-          :class_name => self.base_class.to_s,
-          :foreign_key => parent_column_name,
-          :order => quoted_order_column_name,
-          :inverse_of => (:parent unless options[:polymorphic]),
-        }
-
-        # Add callbacks, if they were supplied.. otherwise, we don't want them.
-        [:before_add, :after_add, :before_remove, :after_remove].each do |ar_callback|
-          has_many_children_options.update(ar_callback => options[ar_callback]) if options[ar_callback]
-        end
-
-        has_many :children, has_many_children_options
-
-        attr_accessor :skip_before_destroy
-
-        before_create  :set_default_left_and_right
-        before_save    :store_new_parent
-        after_save     :move_to_new_parent, :set_depth!
-        before_destroy :destroy_descendants
-
+      def acts_as_nested_set_prevent_assignment_to_reserved_columns!
         # no assignment to structure fields
         [left_column_name, right_column_name, depth_column_name].each do |column|
           module_eval <<-"end_eval", __FILE__, __LINE__
@@ -101,8 +126,6 @@ module CollectiveIdea #:nodoc:
             end
           end_eval
         end
-
-        define_model_callbacks :move
       end
     end
   end
