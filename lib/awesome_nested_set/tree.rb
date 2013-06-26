@@ -28,20 +28,34 @@ module CollectiveIdea #:nodoc:
 
         private
 
+        def increment_indice!(node)
+          indices[scope_for_rebuild.call(node)] += 1
+        end
+
         def set_left_and_rights(node)
-          scope_for_node = scope_for_rebuild.call(node)
-          # set left
-          node[left_column_name] = indices[scope_for_node] += 1
+          set_left!(node)
           # find
-          model.where(["#{quoted_parent_column_full_name} = ? #{scope_for_node}", node]).
-                order(order_for_rebuild).each { |n| set_left_and_rights(n) }
-          # set right
-          node[right_column_name] = indices[scope_for_node] += 1
+          node_children(node).each { |n| set_left_and_rights(n) }
+          set_right!(node)
+
           node.save!(:validate => validate_nodes)
+        end
+
+        def node_children(node)
+          model.where(["#{quoted_parent_column_full_name} = ? #{scope_for_rebuild.call(node)}", node]).
+                order(order_for_rebuild)
         end
 
         def root_nodes
           model.where("#{quoted_parent_column_full_name} IS NULL").order(order_for_rebuild)
+        end
+
+        def set_left!(node)
+          node[left_column_name] = increment_indice!(node)
+        end
+
+        def set_right!(node)
+          node[right_column_name] = increment_indice!(node)
         end
       end
     end
