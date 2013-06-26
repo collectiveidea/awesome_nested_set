@@ -80,7 +80,7 @@ module CollectiveIdea #:nodoc:
           has_many_children_options.update(ar_callback => options[ar_callback]) if options[ar_callback]
         end
 
-        has_many :children, has_many_children_options, -> { order(order_column) }
+        has_many :children, has_many_children_options, -> { order(quoted_order_column_name) }
 
         attr_accessor :skip_before_destroy
 
@@ -124,6 +124,14 @@ module CollectiveIdea #:nodoc:
 
           def valid?
             left_and_rights_valid? && no_duplicates_for_columns? && all_roots_valid?
+          end
+
+          def left_of_right_side(node)
+            where(["#{quoted_right_column_full_name} <= ?", node])
+          end
+
+          def right_of(node)
+            where(["#{quoted_left_column_full_name} >= ?", node])
           end
 
           def left_and_rights_valid?
@@ -199,14 +207,14 @@ module CollectiveIdea #:nodoc:
                 # set left
                 node[left_column_name] = indices[scope.call(node)] += 1
                 # find
-                where(["#{quoted_parent_column_full_name} = ? #{scope.call(node)}", node]).order("#{quoted_left_column_full_name}, #{quoted_right_column_full_name}, id").each{|n| set_left_and_rights.call(n) }
+                where(["#{quoted_parent_column_full_name} = ? #{scope.call(node)}", node]).order("#{quoted_left_column_full_name}, #{quoted_right_column_full_name}, #{primary_key}").each{|n| set_left_and_rights.call(n) }
                 # set right
                 node[right_column_name] = indices[scope.call(node)] += 1
                 node.save!(:validate => validate_nodes)
               end
 
               # Find root node(s)
-              root_nodes = where("#{quoted_parent_column_full_name} IS NULL").order("#{quoted_left_column_full_name}, #{quoted_right_column_full_name}, id").each do |root_node|
+              root_nodes = where("#{quoted_parent_column_full_name} IS NULL").order("#{quoted_left_column_full_name}, #{quoted_right_column_full_name}, #{primary_key}").each do |root_node|
                 # setup index for this scope
                 indices[scope.call(root_node)] ||= 0
                 set_left_and_rights.call(root_node)
@@ -288,18 +296,18 @@ module CollectiveIdea #:nodoc:
         #   category.self_and_descendants.count
         #   category.ancestors.find(:all, :conditions => "name like '%foo%'")
         # Value of the parent column
-        def parent_id
-          self[parent_column_name]
+        def parent_id(target = self)
+          target[parent_column_name]
         end
 
         # Value of the left column
-        def left
-          self[left_column_name]
+        def left(target = self)
+          target[left_column_name]
         end
 
         # Value of the right column
-        def right
-          self[right_column_name]
+        def right(target = self)
+          target[right_column_name]
         end
 
         # Returns true if this is a root node.
@@ -319,14 +327,12 @@ module CollectiveIdea #:nodoc:
 
         # Returns root
         def root
-          if persisted?
-            self_and_ancestors.where(parent_column_name => nil).first
+          return self_and_ancestors.where(parent_column_name => nil).first if persisted?
+
+          if parent_id && current_parent = nested_set_scope.find(parent_id)
+            current_parent.root
           else
-            if parent_id && current_parent = nested_set_scope.find(parent_id)
-              current_parent.root
-            else
-              self
-            end
+            self
           end
         end
 
@@ -365,10 +371,9 @@ module CollectiveIdea #:nodoc:
 
         # Returns a set of itself and all of its nested children
         def self_and_descendants
-          nested_set_scope.where([
-            "#{quoted_left_column_full_name} >= ? AND #{quoted_left_column_full_name} < ?", left, right
-            # using _left_ for both sides here lets us benefit from an index on that column if one exists
-          ])
+          # using _left_ for both sides here lets us benefit from an index on that column if one exists
+          nested_set_scope.right_of(left).
+                           where(["#{quoted_left_column_full_name} < ?", right])
         end
 
         # Returns a set of all of its children and nested children
@@ -401,8 +406,7 @@ module CollectiveIdea #:nodoc:
 
         # Find the first sibling to the left
         def left_sibling
-          siblings.where(["#{quoted_left_column_full_name} < ?", left]).
-                  order("#{quoted_left_column_full_name} DESC").last
+          siblings.where(["#{quoted_left_column_full_name} < ?", left]).last
         end
 
         # Find the first sibling to the right
@@ -420,22 +424,22 @@ module CollectiveIdea #:nodoc:
           move_to_right_of right_sibling
         end
 
-        # Move the node to the left of another node (you can pass id only)
+        # Move the node to the left of another node
         def move_to_left_of(node)
           move_to node, :left
         end
 
-        # Move the node to the left of another node (you can pass id only)
+        # Move the node to the left of another node
         def move_to_right_of(node)
           move_to node, :right
         end
 
-        # Move the node to the child of another node (you can pass id only)
+        # Move the node to the child of another node
         def move_to_child_of(node)
           move_to node, :child
         end
 
-        # Move the node to the child of another node with specify index (you can pass id only)
+        # Move the node to the child of another node with specify index
         def move_to_child_with_index(node, index)
           if node.children.empty?
             move_to_child_of(node)
@@ -448,7 +452,7 @@ module CollectiveIdea #:nodoc:
 
         # Move the node to root nodes
         def move_to_root
-          move_to nil, :root
+          move_to_right_of(root)
         end
 
         # Order children in a nested set by an attribute
@@ -498,6 +502,7 @@ module CollectiveIdea #:nodoc:
         end
 
         def without_self(scope)
+          return scope if new_record?
           scope.where(["#{self.class.quoted_table_name}.#{self.class.primary_key} != ?", self])
         end
 
@@ -505,12 +510,11 @@ module CollectiveIdea #:nodoc:
         # the base ActiveRecord class, using the :scope declared in the acts_as_nested_set
         # declaration.
         def nested_set_scope(options = {})
-          order = options.delete(:order) || quoted_left_column_full_name
           scopes = Array(acts_as_nested_set_options[:scope])
           options[:conditions] = scopes.inject({}) do |conditions,attr|
             conditions.merge attr => self[attr]
-          end unless scopes.empty?
-          self.class.base_class.all.unscoped.where(options[:conditions]).order(order)
+          end if scopes.any?
+          self.class.base_class.all.unscoped.where(options[:conditions]).order(quoted_order_column_name)
         end
 
         def store_new_parent
@@ -531,7 +535,7 @@ module CollectiveIdea #:nodoc:
             in_tenacious_transaction do
               reload
 
-              nested_set_scope.where(:id => id).update_all(["#{quoted_depth_column_name} = ?", level])
+              nested_set_scope.where(self.class.base_class.primary_key.to_sym => id).update_all(["#{quoted_depth_column_name} = ?", level])
             end
             self[depth_column_name.to_sym] = self.level
           end
@@ -539,7 +543,8 @@ module CollectiveIdea #:nodoc:
 
         # on creation, set automatically lft and rgt to the end of the tree
         def set_default_left_and_right
-          highest_right_row = nested_set_scope(:order => "#{quoted_right_column_full_name} desc").limit(1).lock(true).first
+          highest_right_row = nested_set_scope(:order => "#{quoted_right_column_full_name} desc").first
+          highest_right_row && highest_right_row.lock!
           maxright = highest_right_row ? (highest_right_row[right_column_name] || 0) : 0
           # adds the new node to the right of all existing nodes
           self[left_column_name] = maxright + 1
@@ -569,8 +574,7 @@ module CollectiveIdea #:nodoc:
           in_tenacious_transaction do
             reload_nested_set
             # select the rows in the model that extend past the deletion point and apply a lock
-            nested_set_scope.where(["#{quoted_left_column_full_name} >= ?", left]).
-                                  select(id).lock(true)
+            nested_set_scope.right_of(left).select(id).lock(true)
 
             if acts_as_nested_set_options[:dependent] == :destroy
               descendants.each do |model|
@@ -578,8 +582,7 @@ module CollectiveIdea #:nodoc:
                 model.destroy
               end
             else
-              nested_set_scope.where(["#{quoted_left_column_name} > ? AND #{quoted_right_column_name} < ?", left, right]).
-                               delete_all
+              descendants.delete_all
             end
 
             # update lefts and rights for remaining nodes
@@ -609,70 +612,36 @@ module CollectiveIdea #:nodoc:
           raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.new_record?
           run_callbacks :move do
             in_tenacious_transaction do
-              if target.is_a? self.class.base_class
-                target.reload_nested_set
-              elsif position != :root
-                # load object if node is not an object
-                target = nested_set_scope.find(target)
-              end
+              target = reload_target(target)
               self.reload_nested_set
 
-              unless position == :root || move_possible?(target)
+              if position != :root && !move_possible?(target)
                 raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
               end
 
-              bound = case position
-                when :child;  target[right_column_name]
-                when :left;   target[left_column_name]
-                when :right;  target[right_column_name] + 1
-                when :root;   1
-                else raise ActiveRecord::ActiveRecordError, "Position should be :child, :left, :right or :root ('#{position}' received)."
-              end
-
-              if bound > self[right_column_name]
-                bound = bound - 1
-                other_bound = self[right_column_name] + 1
+              if (bound = target_bound(target, position)) > right
+                bound -= 1
+                other_bound = right + 1
               else
-                other_bound = self[left_column_name] - 1
+                other_bound = left - 1
               end
 
               # there would be no change
-              return if bound == self[right_column_name] || bound == self[left_column_name]
+              return if bound == right || bound == left
 
               # we have defined the boundaries of two non-overlapping intervals,
               # so sorting puts both the intervals and their boundaries in order
-              a, b, c, d = [self[left_column_name], self[right_column_name], bound, other_bound].sort
+              a, b, c, d = [left, right, bound, other_bound].sort
 
               # select the rows in the model between a and d, and apply a lock
-              self.class.base_class.select('id').lock(true).where(
-                ["#{quoted_left_column_full_name} >= :a and #{quoted_right_column_full_name} <= :d", {:a => a, :d => d}]
-              )
+              self.class.base_class.select('id').lock(true).right_of(a).left_of_right_side(d)
 
               new_parent = case position
                 when :child;  target.id
-                when :root;   nil
                 else          target[parent_column_name]
               end
 
-              where_statement = ["not (#{quoted_left_column_name} = CASE " +
-                                     "WHEN #{quoted_left_column_name} BETWEEN :a AND :b " +
-                                     "THEN #{quoted_left_column_name} + :d - :b " +
-                                     "WHEN #{quoted_left_column_name} BETWEEN :c AND :d " +
-                                     "THEN #{quoted_left_column_name} + :a - :c " +
-                                     "ELSE #{quoted_left_column_name} END AND " +
-                                     "#{quoted_right_column_name} = CASE " +
-                                     "WHEN #{quoted_right_column_name} BETWEEN :a AND :b " +
-                                     "THEN #{quoted_right_column_name} + :d - :b " +
-                                     "WHEN #{quoted_right_column_name} BETWEEN :c AND :d " +
-                                     "THEN #{quoted_right_column_name} + :a - :c " +
-                                     "ELSE #{quoted_right_column_name} END AND " +
-                                     "#{quoted_parent_column_name} = CASE " +
-                                     "WHEN #{self.class.base_class.primary_key} = :id THEN :new_parent " +
-                                     "ELSE #{quoted_parent_column_name} END)" ,
-                                 {:a => a, :b => b, :c => c, :d => d, :id => self.id, :new_parent => new_parent}    ]
-
-
-
+              where_statement = ["(#{quoted_left_column_name} BETWEEN :a AND :d) OR (#{quoted_right_column_name} BETWEEN :a AND :d)", {:a => a, :d => d}]
 
               self.nested_set_scope.where(*where_statement).update_all([
                 "#{quoted_left_column_name} = CASE " +
@@ -697,6 +666,23 @@ module CollectiveIdea #:nodoc:
             self.set_depth!
             self.descendants.each(&:save)
             self.reload_nested_set
+          end
+        end
+
+        def target_bound(target, position)
+          case position
+            when :child;  right(target)
+            when :left;   left(target)
+            when :right;  right(target) + 1
+            else raise ActiveRecord::ActiveRecordError, "Position should be :child, :left, :right or :root ('#{position}' received)."
+          end
+        end
+
+        def reload_target(target)
+          if target.is_a? self.class.base_class
+            target.reload
+          else
+            nested_set_scope.find(target)
           end
         end
 
@@ -746,6 +732,10 @@ module CollectiveIdea #:nodoc:
 
         def quoted_scope_column_names
           scope_column_names.collect {|column_name| connection.quote_column_name(column_name) }
+        end
+
+        def quoted_order_column_name
+          connection.quote_column_name(order_column)
         end
 
         def quoted_left_column_full_name

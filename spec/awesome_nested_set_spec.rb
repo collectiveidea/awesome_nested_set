@@ -81,6 +81,12 @@ describe "AwesomeNestedSet" do
     Default.new.quoted_depth_column_name.should == quoted
   end
 
+  it "quoted_order_column_name" do
+    quoted = Default.connection.quote_column_name('lft')
+    Default.quoted_order_column_name.should == quoted
+    Default.new.quoted_order_column_name.should == quoted
+  end
+
   it "left_column_protected_from_assignment" do
     lambda {
       Category.new.lft = 1
@@ -104,7 +110,12 @@ describe "AwesomeNestedSet" do
   end
 
   it "roots_class_method" do
-    Category.roots.to_a.should == Category.where(:parent_id => nil).to_a
+    found_by_us = Category.where(:parent_id => nil).to_a
+    found_by_roots = Category.roots.to_a
+    found_by_us.length.should == found_by_roots.length
+    found_by_us.each do |root|
+      found_by_roots.should include(root)
+    end
   end
 
   it "root_class_method" do
@@ -433,8 +444,8 @@ describe "AwesomeNestedSet" do
     categories(:child_2).parent.should be_nil
     categories(:child_2).level.should == 0
     categories(:child_2_1).level.should == 1
-    categories(:child_2).left.should == 1
-    categories(:child_2).right.should == 4
+    categories(:child_2).left.should == 7
+    categories(:child_2).right.should == 10
     Category.valid?.should be_true
   end
 
@@ -775,14 +786,14 @@ describe "AwesomeNestedSet" do
 
   it "quoting_of_multi_scope_column_names" do
     ## Proper Array Assignment for different DBs as per their quoting column behavior
-    if Note.connection.adapter_name.match(/Oracle/)
+    if Note.connection.adapter_name.match(/oracle/i)
       expected_quoted_scope_column_names = ["\"NOTABLE_ID\"", "\"NOTABLE_TYPE\""]
-    elsif Note.connection.adapter_name.match(/Mysql/)
+    elsif Note.connection.adapter_name.match(/mysql/i)
       expected_quoted_scope_column_names = ["`notable_id`", "`notable_type`"]
     else
       expected_quoted_scope_column_names = ["\"notable_id\"", "\"notable_type\""]
     end
-    expected_quoted_scope_column_names.should == Note.quoted_scope_column_names
+    Note.quoted_scope_column_names.should == expected_quoted_scope_column_names
   end
 
   it "equal_in_same_scope" do

@@ -7,6 +7,7 @@ gemspec :path => File.expand_path('../', __FILE__)
 platforms :jruby do
   gem 'activerecord-jdbcsqlite3-adapter'
   gem 'activerecord-jdbcmysql-adapter'
+  gem 'jdbc-mysql'
   gem 'activerecord-jdbcpostgresql-adapter'
   gem 'jruby-openssl'
 end
