@@ -15,9 +15,6 @@ module CollectiveIdea
           end
 
           def no_duplicates_for_columns?
-            scope_string = Array(acts_as_nested_set_options[:scope]).map do |c|
-              connection.quote_column_name(c)
-            end.push(nil).join(", ")
             [quoted_left_column_full_name, quoted_right_column_full_name].all? do |column|
               # No duplicates
               select("#{scope_string}#{column}, COUNT(#{column})").
@@ -57,6 +54,12 @@ module CollectiveIdea
             roots_to_group.group_by {|record|
               scope_column_names.collect {|col| record.send(col.to_sym) }
             }
+          end
+
+          def scope_string
+            Array(acts_as_nested_set_options[:scope]).map do |c|
+              connection.quote_column_name(c)
+            end.push(nil).join(", ")
           end
 
         end
