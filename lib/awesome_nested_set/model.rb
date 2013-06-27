@@ -258,7 +258,7 @@ module CollectiveIdea #:nodoc:
             nested_set_scope.primary_key_scope(id).
               update_all(["#{quoted_depth_column_name} = ?", level])
           end
-          self[depth_column_name.to_sym] = self.level
+          self[depth_column_name] = self.level
         end
 
         # on creation, set automatically lft and rgt to the end of the tree
