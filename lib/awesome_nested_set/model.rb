@@ -54,7 +54,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def leaves
-            where("#{quoted_right_column_full_name} - #{quoted_left_column_full_name} = 1").order(quoted_order_column_name)
+            nested_set_scope.where "#{quoted_right_column_full_name} - #{quoted_left_column_full_name} = 1"
           end
 
           def left_of(node)
@@ -69,6 +69,12 @@ module CollectiveIdea #:nodoc:
             where arel_table[left_column_name].gteq(node)
           end
 
+          def nested_set_scope(options = {})
+            options = {:order => quoted_order_column_name}.merge(options)
+
+            order(options.delete(:order)).scoped options
+          end
+
           def primary_key_scope(id)
             where arel_table[primary_key].eq(id)
           end
@@ -78,7 +84,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def roots
-            children_of(nil).order(quoted_order_column_name)
+            nested_set_scope.children_of nil
           end
         end # end class methods
 
@@ -168,12 +174,13 @@ module CollectiveIdea #:nodoc:
         # performs finds on the base ActiveRecord class, using the :scope
         # declared in the acts_as_nested_set declaration.
         def nested_set_scope(options = {})
-          options = {:order => quoted_order_column_name}.merge(options)
-          scopes = Array(acts_as_nested_set_options[:scope])
-          options[:conditions] = scopes.inject({}) do |conditions,attr|
-            conditions.merge attr => self[attr]
-          end unless scopes.empty?
-          self.class.base_class.unscoped.scoped options
+          if (scopes = Array(acts_as_nested_set_options[:scope])).any?
+            options[:conditions] = scopes.inject({}) do |conditions,attr|
+              conditions.merge attr => self[attr]
+            end
+          end
+
+          self.class.nested_set_scope options
         end
 
         # Returns a collection including all of its children and nested children
@@ -263,7 +270,9 @@ module CollectiveIdea #:nodoc:
 
         # on creation, set automatically lft and rgt to the end of the tree
         def set_default_left_and_right
-          right_most = nested_set_scope(:order => "#{quoted_right_column_full_name} desc").first
+          right_most = self.class.base_class.unscoped.nested_set_scope(
+            :order => "#{quoted_right_column_full_name} desc"
+          ).first
           right_most && right_most.lock!
           maxright = right_most ? (right_most[right_column_name] || 0) : 0
           # adds the new node to the right of all existing nodes
