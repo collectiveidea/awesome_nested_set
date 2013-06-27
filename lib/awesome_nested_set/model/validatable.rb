@@ -52,7 +52,7 @@ module CollectiveIdea
           private
           def roots_grouped_by_scope(roots_to_group)
             roots_to_group.group_by {|record|
-              scope_column_names.collect {|col| record.send(col.to_sym) }
+              scope_column_names.collect {|col| record.send(col) }
             }
           end
 

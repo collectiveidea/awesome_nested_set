@@ -18,12 +18,12 @@ module CollectiveIdea
 
           private
           def scope_for_rebuild
-            scope = lambda {|node|}
+            scope = proc {}
 
             if acts_as_nested_set_options[:scope]
-              scope = lambda {|node|
+              scope = proc {|node|
                 scope_column_names.inject("") {|str, column_name|
-                  str << "AND #{connection.quote_column_name(column_name)} = #{connection.quote(node.send(column_name.to_sym))} "
+                  str << "AND #{connection.quote_column_name(column_name)} = #{connection.quote(node.send(column_name))} "
                 }
               }
             end
