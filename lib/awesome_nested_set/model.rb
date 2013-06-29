@@ -170,6 +170,21 @@ module CollectiveIdea #:nodoc:
           nested_set_scope.column_names.map(&:to_s).include?(depth_column_name.to_s)
         end
 
+        def right_most_node
+          @right_most_node ||= self.class.base_class.unscoped.nested_set_scope(
+            :order => "#{quoted_right_column_full_name} desc"
+          ).first
+        end
+
+        def right_most_bound
+          @right_most_bound ||= begin
+            return 0 if right_most_node.nil?
+
+            right_most_node.lock!
+            right_most_node[right_column_name] || 0
+          end
+        end
+
         def set_depth!
           return unless has_depth_column?
 
@@ -181,16 +196,10 @@ module CollectiveIdea #:nodoc:
           self[depth_column_name] = self.level
         end
 
-        # on creation, set automatically lft and rgt to the end of the tree
         def set_default_left_and_right
-          right_most = self.class.base_class.unscoped.nested_set_scope(
-            :order => "#{quoted_right_column_full_name} desc"
-          ).first
-          right_most && right_most.lock!
-          maxright = right_most ? (right_most[right_column_name] || 0) : 0
           # adds the new node to the right of all existing nodes
-          self[left_column_name] = maxright + 1
-          self[right_column_name] = maxright + 2
+          self[left_column_name] = right_most_bound + 1
+          self[right_column_name] = right_most_bound + 2
         end
 
         # reload left, right, and parent
