@@ -155,14 +155,6 @@ module CollectiveIdea #:nodoc:
         end
 
         protected
-        def compute_level
-          node, nesting = self, 0
-          while (association = node.association(:parent)).loaded? && association.target
-            nesting += 1
-            node = node.parent
-          end if node.respond_to? :association
-          node == self ? ancestors.count : node.level + nesting
-        end
 
         def without_self(scope)
           return scope if new_record?

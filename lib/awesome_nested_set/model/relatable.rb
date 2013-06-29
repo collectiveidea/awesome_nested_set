@@ -85,6 +85,21 @@ module CollectiveIdea
 
           protected
 
+          def compute_level
+            node, nesting = determine_depth
+
+            node == self ? ancestors.count : node.level + nesting
+          end
+
+          def determine_depth(node = self, nesting = 0)
+            while (association = node.association(:parent)).loaded? && association.target
+              nesting += 1
+              node = node.parent
+            end if node.respond_to?(:association)
+
+            [node, nesting]
+          end
+
           def within_node?(node, within)
             node.left < within.left && within.left < node.right
           end
