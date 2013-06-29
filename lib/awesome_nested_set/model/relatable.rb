@@ -28,7 +28,9 @@ module CollectiveIdea
 
           # Returns a set of all of its nested children which do not have children
           def leaves
-            descendants.where("#{quoted_right_column_full_name} - #{quoted_left_column_full_name} = 1")
+            descendants.where(
+              "#{quoted_right_column_full_name} - #{quoted_left_column_full_name} = 1"
+            )
           end
 
           # Returns the level of this object in the tree
@@ -49,19 +51,19 @@ module CollectiveIdea
           end
 
           def is_descendant_of?(other)
-            other.left < self.left && self.left < other.right && same_scope?(other)
+            within_node?(other, self) && same_scope?(other)
           end
 
           def is_or_is_descendant_of?(other)
-            other.left <= self.left && self.left < other.right && same_scope?(other)
+            (other == self || within_node?(other, self)) && same_scope?(other)
           end
 
           def is_ancestor_of?(other)
-            self.left < other.left && other.left < self.right && same_scope?(other)
+            within_node?(self, other) && same_scope?(other)
           end
 
           def is_or_is_ancestor_of?(other)
-            self.left <= other.left && other.left < self.right && same_scope?(other)
+            (self == other || within_node?(self, other)) && same_scope?(other)
           end
 
           # Check if other model is in the same scope
@@ -79,6 +81,12 @@ module CollectiveIdea
           # Find the first sibling to the right
           def right_sibling
             siblings.right_of(left).first
+          end
+
+          protected
+
+          def within_node?(node, within)
+            node.left < within.left && within.left < node.right
           end
 
         end
