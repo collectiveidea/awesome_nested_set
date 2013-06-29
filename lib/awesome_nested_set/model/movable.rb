@@ -87,7 +87,8 @@ module CollectiveIdea #:nodoc:
           end
 
           def move_to(target, position)
-            raise ActiveRecord::ActiveRecordError, "You cannot move a new node" if self.new_record?
+            prevent_unpersisted_move
+
             run_callbacks :move do
               in_tenacious_transaction do
                 target = reload_target(target)
@@ -118,6 +119,12 @@ module CollectiveIdea #:nodoc:
 
           def out_of_bounds?(left_bound, right_bound)
             left <= left_bound && right >= right_bound
+          end
+
+          def prevent_unpersisted_move
+            if self.new_record?
+              raise ActiveRecord::ActiveRecordError, "You cannot move a new node"
+            end
           end
 
           def within_bounds?(left_bound, right_bound)
