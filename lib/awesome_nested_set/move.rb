@@ -4,8 +4,6 @@ module CollectiveIdea #:nodoc:
       class Move
         attr_reader :target, :position, :instance
 
-        delegate :left, :right, :quoted_left_column_name, :quoted_right_column_name, :quoted_parent_column_name, :parent_column_name, :to => :instance
-
         def initialize(target, position, instance)
           @target = target
           @position = position
@@ -13,9 +11,7 @@ module CollectiveIdea #:nodoc:
         end
 
         def move
-          if not_root && !instance.move_possible?(target)
-            raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
-          end
+          prevent_impossible_move
 
           bound, other_bound = get_boundaries
 
@@ -26,19 +22,28 @@ module CollectiveIdea #:nodoc:
           # so sorting puts both the intervals and their boundaries in order
           a, b, c, d = [left, right, bound, other_bound].sort
 
-          # select the rows in the model between a and d, and apply a lock
-          instance.class.base_class.select('id').lock(true).right_of(a).left_of_right_side(d)
+          lock_nodes_between! a, d
 
-          instance.nested_set_scope.where(*where_statement(a,d)).update_all(conditions(a,b,c,d))
+          nested_set_scope.where(where_statement(a, d)).
+                           update_all(conditions(a, b, c, d))
         end
 
         private
 
-        def where_statement(a,d)
-          ["(#{quoted_left_column_name} BETWEEN :a AND :d) OR (#{quoted_right_column_name} BETWEEN :a AND :d)", {:a => a, :d => d}]
+        delegate :left, :right, :left_column_name, :right_column_name,
+                 :quoted_left_column_name, :quoted_right_column_name,
+                 :quoted_parent_column_name, :parent_column_name, :nested_set_scope,
+                 :to => :instance
+
+        delegate :arel_table, :class, :to => :instance, :prefix => true
+        delegate :base_class, :to => :instance_class, :prefix => :instance
+
+        def where_statement(left_bound, right_bound)
+          instance_arel_table[left_column_name].in(left_bound..right_bound).
+            or(instance_arel_table[right_column_name].in(left_bound..right_bound))
         end
 
-        def conditions(a,b,c,d)
+        def conditions(a, b, c, d)
           [
            case_condition_for_direction(:quoted_left_column_name) +
            case_condition_for_direction(:quoted_right_column_name) +
@@ -59,12 +64,18 @@ module CollectiveIdea #:nodoc:
 
         def case_condition_for_parent
           "#{quoted_parent_column_name} = CASE " +
-            "WHEN #{instance.class.base_class.primary_key} = :id THEN :new_parent " +
+            "WHEN #{instance_base_class.primary_key} = :id THEN :new_parent " +
             "ELSE #{quoted_parent_column_name} END"
         end
 
-        def not_root
-          position != :root
+        def lock_nodes_between!(left_bound, right_bound)
+          # select the rows in the model between a and d, and apply a lock
+          instance_base_class.right_of(left_bound).left_of_right_side(right_bound).
+                              select(:id).lock(true)
+        end
+
+        def root
+          position == :root
         end
 
         def new_parent
@@ -84,6 +95,12 @@ module CollectiveIdea #:nodoc:
             other_bound = left - 1
           end
           [bound, other_bound]
+        end
+
+        def prevent_impossible_move
+          if !root && !instance.move_possible?(target)
+            raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
+          end
         end
 
         def target_bound
