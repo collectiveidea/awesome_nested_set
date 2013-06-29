@@ -114,25 +114,14 @@ module CollectiveIdea #:nodoc:
           parent_id.nil?
         end
 
-        # Returns true if this is the end of a branch.
-        def leaf?
-          persisted? && right.to_i - left.to_i == 1
-        end
-
         # Returns true is this is a child node
         def child?
           !root?
         end
 
-        # Returns root
-        def root
-          return self_and_ancestors.children_of(nil).first if persisted?
-
-          if parent_id && current_parent = nested_set_scope.find(parent_id)
-            current_parent.root
-          else
-            self
-          end
+        # Returns true if this is the end of a branch.
+        def leaf?
+          persisted? && right.to_i - left.to_i == 1
         end
 
         # All nested set queries should use this nested_set_scope, which
