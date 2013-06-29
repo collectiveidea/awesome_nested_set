@@ -1,6 +1,7 @@
 require 'awesome_nested_set/model/prunable'
 require 'awesome_nested_set/model/movable'
 require 'awesome_nested_set/model/transactable'
+require 'awesome_nested_set/model/relatable'
 require 'awesome_nested_set/model/rebuildable'
 require 'awesome_nested_set/model/validatable'
 require 'awesome_nested_set/iterator'
@@ -16,8 +17,9 @@ module CollectiveIdea #:nodoc:
           delegate :quoted_table_name, :arel_table, :to => self
           extend Validatable
           extend Rebuildable
-          include Prunable
           include Movable
+          include Prunable
+          include Relatable
           include Transactable
         end
 
@@ -122,10 +124,6 @@ module CollectiveIdea #:nodoc:
           !root?
         end
 
-        def has_multiple_children?
-          children.many?
-        end
-
         # Returns root
         def root
           return self_and_ancestors.children_of(nil).first if persisted?
@@ -135,39 +133,6 @@ module CollectiveIdea #:nodoc:
           else
             self
           end
-        end
-
-        # Returns an collection of all parents
-        def ancestors
-          without_self self_and_ancestors
-        end
-
-        # Returns the collection of all parents and self
-        def self_and_ancestors
-          nested_set_scope.
-            where(arel_table[left_column_name].lteq(left)).
-            where(arel_table[right_column_name].gteq(right))
-        end
-
-        # Returns the collection of all children of the parent, except self
-        def siblings
-          without_self self_and_siblings
-        end
-
-        # Returns the collection of all children of the parent, including self
-        def self_and_siblings
-          nested_set_scope.children_of parent_id
-        end
-
-        # Returns a set of all of its nested children which do not have children
-        def leaves
-          descendants.where("#{quoted_right_column_full_name} - #{quoted_left_column_full_name} = 1")
-        end
-
-        # Returns the level of this object in the tree
-        # root level is 0
-        def level
-          parent_id.nil? ? 0 : compute_level
         end
 
         # All nested set queries should use this nested_set_scope, which
@@ -181,50 +146,6 @@ module CollectiveIdea #:nodoc:
           end
 
           self.class.nested_set_scope options
-        end
-
-        # Returns a collection including all of its children and nested children
-        def descendants
-          without_self self_and_descendants
-        end
-
-        # Returns a collection including itself and all of its nested children
-        def self_and_descendants
-          # using _left_ for both sides here lets us benefit from an index on that column if one exists
-          nested_set_scope.right_of(left).left_of(right)
-        end
-
-        def is_descendant_of?(other)
-          other.left < self.left && self.left < other.right && same_scope?(other)
-        end
-
-        def is_or_is_descendant_of?(other)
-          other.left <= self.left && self.left < other.right && same_scope?(other)
-        end
-
-        def is_ancestor_of?(other)
-          self.left < other.left && other.left < self.right && same_scope?(other)
-        end
-
-        def is_or_is_ancestor_of?(other)
-          self.left <= other.left && other.left < self.right && same_scope?(other)
-        end
-
-        # Check if other model is in the same scope
-        def same_scope?(other)
-          Array(acts_as_nested_set_options[:scope]).all? do |attr|
-            self.send(attr) == other.send(attr)
-          end
-        end
-
-        # Find the first sibling to the left
-        def left_sibling
-          siblings.left_of(left).last
-        end
-
-        # Find the first sibling to the right
-        def right_sibling
-          siblings.right_of(left).first
         end
 
         def to_text

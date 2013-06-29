@@ -64,7 +64,7 @@ module CollectiveIdea #:nodoc:
             left_neighbor = find_left_neighbor(parent, order_attribute, ascending)
             self.move_to_child_of(parent)
 
-            return unless parent.has_multiple_children?
+            return unless parent.children.many?
 
             if left_neighbor
               self.move_to_right_of(left_neighbor)
