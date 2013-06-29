@@ -54,7 +54,7 @@ There are three callbacks called when moving a node. `before_move`, `after_move`
     around_move :da_fancy_things_around
 
     private
-    
+
     def rebuild_slug
       # do whatever
     end
@@ -68,7 +68,7 @@ There are three callbacks called when moving a node. `before_move`, `after_move`
 
 Beside this there are also hooks to act on the newly added or removed children.
 
-  class Category < ActiveRecord::Base  
+  class Category < ActiveRecord::Base
     acts_as_nested_set  :before_add     => :do_before_add_stuff,
                         :after_add      => :do_after_add_stuff,
                         :before_remove  => :do_before_remove_stuff,
