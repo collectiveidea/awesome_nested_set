@@ -158,4 +158,6 @@ You can learn more about nested sets at: http://threebit.net/tutorials/nestedset
 
 ## How to contribute
 
+Please see the ['Contributing' document](CONTRIBUTING.md).
+
 Copyright © 2008 - 2013 Collective Idea, released under the MIT license
