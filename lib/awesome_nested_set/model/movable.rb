@@ -9,9 +9,9 @@ module CollectiveIdea #:nodoc:
           def move_possible?(target)
             self != target && # Can't target self
               same_scope?(target) && # can't be in different scopes
-              # !(left..right).include?(target.left..target.right) # this needs tested more
               # detect impossible move
-              !((left <= target.left && right >= target.left) or (left <= target.right && right >= target.right))
+              within_bounds?(target.left, target.left) &&
+              within_bounds?(target.right, target.right)
           end
 
           # Shorthand method for finding the left sibling and moving to the left of it.
@@ -95,14 +95,18 @@ module CollectiveIdea #:nodoc:
 
                 Move.new(target, position, self).move
               end
-              target.reload_nested_set if target
-              self.set_depth!
-              self.descendants.each(&:save)
-              self.reload_nested_set
+              after_move_to(target, position)
             end
           end
 
           protected
+
+          def after_move_to(target, position)
+            target.reload_nested_set if target
+            self.set_depth!
+            self.descendants.each(&:save)
+            self.reload_nested_set
+          end
 
           def move_to_new_parent
             if @move_to_new_parent_id.nil?
@@ -110,6 +114,14 @@ module CollectiveIdea #:nodoc:
             elsif @move_to_new_parent_id
               move_to_child_of(@move_to_new_parent_id)
             end
+          end
+
+          def out_of_bounds?(left_bound, right_bound)
+            left <= left_bound && right >= right_bound
+          end
+
+          def within_bounds?(left_bound, right_bound)
+            !out_of_bounds?(left_bound, right_bound)
           end
         end
       end
