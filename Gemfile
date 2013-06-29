@@ -1,4 +1,4 @@
-gem 'combustion', :github => 'pat/combustion'
+gem 'combustion', :github => 'pat/combustion', :branch => 'master'
 
 source 'https://rubygems.org'
 
