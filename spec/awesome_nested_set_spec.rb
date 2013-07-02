@@ -169,7 +169,7 @@ describe "AwesomeNestedSet" do
   it "self_and_ancestors" do
     child = categories(:child_2_1)
     self_and_ancestors = [categories(:top_level), categories(:child_2), child]
-    self_and_ancestors.should == child.self_and_ancestors
+    child.self_and_ancestors.should == self_and_ancestors
   end
 
   it "ancestors" do

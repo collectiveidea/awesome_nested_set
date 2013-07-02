@@ -1,4 +1,4 @@
-gem 'combustion', :github => 'pat/combustion'
+gem 'combustion', :github => 'pat/combustion', :branch => 'master'
 
 source 'https://rubygems.org'
 
@@ -18,14 +18,10 @@ platforms :ruby do
   gem 'pg'
 end
 
-gem 'activerecord', :github => 'rails/rails'
-gem 'activerecord-deprecated_finders', :github => 'rails/activerecord-deprecated_finders'
-gem 'journey', :github => 'rails/journey'
-
 # Add Oracle Adapters
 # gem 'ruby-oci8'
 # gem 'activerecord-oracle_enhanced-adapter'
 
 # Debuggers
-# gem 'pry'
-# gem 'pry-nav'
+gem 'pry'
+gem 'pry-nav'

@@ -2,6 +2,7 @@ plugin_test_dir = File.dirname(__FILE__)
 
 require 'rubygems'
 require 'bundler/setup'
+require 'pry'
 
 require 'logger'
 require 'active_record'

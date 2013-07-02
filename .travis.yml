@@ -1,7 +1,4 @@
 language: ruby
-notifications:
-  email:
-    - parndt@gmail.com
 script: bundle exec rspec spec
 env:
   - DB=sqlite3
