@@ -85,7 +85,7 @@ module CollectiveIdea #:nodoc:
         end
 
         order_condition = has_many_children_options.delete(:order)
-        has_many :children, has_many_children_options, -> { order(order_condition) }
+        has_many :children, -> { order(order_condition) }, has_many_children_options
       end
 
       def acts_as_nested_set_relate_parent!

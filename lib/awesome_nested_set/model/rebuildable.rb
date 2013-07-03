@@ -16,7 +16,6 @@ module CollectiveIdea
             end
           end
 
-          private
           def scope_for_rebuild
             scope = proc {}
 
