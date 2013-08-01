@@ -7,10 +7,11 @@ require 'awesome_nested_set/version'
 task :default => :spec
 
 task :spec do
-  %w(3.0 3.1 3.2).each do |rails_version|
-    puts "\n" + (cmd = "BUNDLE_GEMFILE='gemfiles/Gemfile.rails-#{rails_version}.rb' bundle exec rspec spec")
-    system cmd
-  end
+  puts "\n" + (cmd = "bundle exec rspec spec")
+#   %w(3.0 3.1 3.2).each do |rails_version|
+#     puts "\n" + (cmd = "BUNDLE_GEMFILE='gemfiles/Gemfile.rails-#{rails_version}.rb' bundle exec rspec spec")
+     system cmd
+#   end
 end
 
 task :build do
@@ -27,6 +28,6 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title    = 'AwesomeNestedSet'
   rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README.rdoc')
+  rdoc.rdoc_files.include('README.md')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

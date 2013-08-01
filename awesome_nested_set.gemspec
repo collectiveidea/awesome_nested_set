@@ -7,15 +7,16 @@ Gem::Specification.new do |s|
   s.authors = ["Brandon Keepers", "Daniel Morrison", "Philip Arndt"]
   s.description = %q{An awesome nested set implementation for Active Record}
   s.email = %q{info@collectiveidea.com}
+  s.extra_rdoc_files = %w[README.md]
   s.files = Dir.glob("lib/**/*") + %w(MIT-LICENSE README.md CHANGELOG)
   s.homepage = %q{http://github.com/collectiveidea/awesome_nested_set}
-  s.rdoc_options = ["--inline-source", "--line-numbers"]
+  s.rdoc_options = ["--main", "README.md", "--inline-source", "--line-numbers"]
   s.require_paths = ["lib"]
   s.rubygems_version = %q{1.3.6}
   s.summary = %q{An awesome nested set implementation for Active Record}
   s.license = %q{MIT}
 
-  s.add_runtime_dependency 'activerecord', '>= 3.0.0'
+  s.add_runtime_dependency 'activerecord', '~> 4.0.0'
 
   s.add_development_dependency 'rspec-rails', '~> 2.12'
   s.add_development_dependency 'rake', '~> 10'

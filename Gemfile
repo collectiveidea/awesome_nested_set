@@ -5,10 +5,10 @@ source 'https://rubygems.org'
 gemspec :path => File.expand_path('../', __FILE__)
 
 platforms :jruby do
-  gem 'activerecord-jdbcsqlite3-adapter'
-  gem 'activerecord-jdbcmysql-adapter'
+  gem 'activerecord-jdbcsqlite3-adapter', '>= 1.3.0.beta2'
+  gem 'activerecord-jdbcmysql-adapter', '>= 1.3.0.beta2'
   gem 'jdbc-mysql'
-  gem 'activerecord-jdbcpostgresql-adapter'
+  gem 'activerecord-jdbcpostgresql-adapter', '>= 1.3.0.beta2'
   gem 'jruby-openssl'
 end
 
@@ -17,11 +17,6 @@ platforms :ruby do
   gem 'mysql2', (MYSQL2_VERSION if defined? MYSQL2_VERSION)
   gem 'pg'
 end
-
-RAILS_VERSION = nil unless defined? RAILS_VERSION
-gem 'railties', RAILS_VERSION
-gem 'activerecord', RAILS_VERSION
-gem 'actionpack', RAILS_VERSION
 
 # Add Oracle Adapters
 # gem 'ruby-oci8'
