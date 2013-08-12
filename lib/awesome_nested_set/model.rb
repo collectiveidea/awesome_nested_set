@@ -199,10 +199,10 @@ module CollectiveIdea #:nodoc:
           )
         end
 
-        def reload_target(target)
+        def reload_target(target, position)
           if target.is_a? self.class.base_class
             target.reload
-          else
+          elsif position != :root
             nested_set_scope.find(target)
           end
         end

@@ -52,7 +52,7 @@ module CollectiveIdea #:nodoc:
 
           # Move the node to root nodes
           def move_to_root
-            move_to_right_of(root)
+            move_to self, :root
           end
 
           # Order children in a nested set by an attribute
@@ -91,7 +91,7 @@ module CollectiveIdea #:nodoc:
 
             run_callbacks :move do
               in_tenacious_transaction do
-                target = reload_target(target)
+                target = reload_target(target, position)
                 self.reload_nested_set
 
                 Move.new(target, position, self).move

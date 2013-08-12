@@ -444,8 +444,8 @@ describe "AwesomeNestedSet" do
     categories(:child_2).parent.should be_nil
     categories(:child_2).level.should == 0
     categories(:child_2_1).level.should == 1
-    categories(:child_2).left.should == 7
-    categories(:child_2).right.should == 10
+    categories(:child_2).left.should == 9
+    categories(:child_2).right.should == 12
     Category.valid?.should be_true
   end
 
