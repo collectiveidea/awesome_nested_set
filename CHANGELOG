@@ -1,3 +1,5 @@
+* Modified associate_parents to add child objects to the parent#children collection [Tiago Moraes]
+
 2.1.6
 * Fixed rebuild! when there is a default_scope with order [Adrian Serafin]
 * Testing with stable bundler, ruby 2.0, MySQL and PostgreSQL [Philip Arndt]

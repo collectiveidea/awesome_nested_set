@@ -1086,4 +1086,20 @@ describe "AwesomeNestedSet" do
       OrderedCategory.order_column.should == 'name'
     end
   end
+
+  describe 'associate_parents' do
+    it 'assigns parent' do
+      root = Category.root
+      categories = root.self_and_descendants
+      categories = Category.associate_parents categories
+      expect(categories[1].parent).to be categories.first
+    end
+
+    it 'adds children on inverse of association' do
+      root = Category.root
+      categories = root.self_and_descendants
+      categories = Category.associate_parents categories
+      expect(categories[0].children.first).to be categories[1]
+    end
+  end
 end
