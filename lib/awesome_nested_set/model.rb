@@ -34,9 +34,16 @@ module CollectiveIdea #:nodoc:
 
               if !association.loaded? && parent
                 association.target = parent
-                association.set_inverse_instance(parent)
+                add_to_inverse_association(association, parent)
               end
             end
+          end
+
+          def add_to_inverse_association(association, record)
+            inverse_reflection = association.send(:inverse_reflection_for, record)
+            inverse = record.association(inverse_reflection.name)
+            inverse.target << association.owner
+            inverse.loaded!
           end
 
           def children_of(parent_id)
