@@ -141,7 +141,7 @@ module CollectiveIdea #:nodoc:
             end
           end
 
-          self.class.nested_set_scope options
+          self.class.base_class.nested_set_scope options
         end
 
         def to_text

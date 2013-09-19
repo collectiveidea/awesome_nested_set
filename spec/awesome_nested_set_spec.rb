@@ -1102,4 +1102,11 @@ describe "AwesomeNestedSet" do
       expect(categories[0].children.first).to be categories[1]
     end
   end
+
+  describe 'table inheritance' do
+    it 'allows creation of a subclass pointing to a superclass' do
+      subclass1 = Subclass1.create(name: "Subclass1")
+      Subclass2.create(name: "Subclass2", parent_id: subclass1.id)
+    end
+  end
 end

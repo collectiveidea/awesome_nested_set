@@ -94,3 +94,14 @@ end
 class NoDepth < ActiveRecord::Base
   acts_as_nested_set
 end
+
+class Superclass < ActiveRecord::Base
+  acts_as_nested_set
+  self.table_name = 'single_table_inheritance'
+end
+
+class Subclass1 < Superclass
+end
+
+class Subclass2 < Superclass
+end
