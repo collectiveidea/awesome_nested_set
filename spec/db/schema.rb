@@ -71,4 +71,12 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :lft, :integer
     t.column :rgt, :integer
   end
+
+  create_table :single_table_inheritance, :force => true do |t|
+    t.column :type, :string
+    t.column :name, :string
+    t.column :parent_id, :integer
+    t.column :lft, :integer
+    t.column :rgt, :integer
+  end
 end
