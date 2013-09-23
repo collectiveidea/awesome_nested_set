@@ -30,6 +30,8 @@ module CollectiveIdea #:nodoc:
                 model.skip_before_destroy = true
                 model.destroy
               end
+            elsif acts_as_nested_set_options[:dependent] == :restrict_with_exception
+              raise ActiveRecord::DeleteRestrictionError.new(:children) unless leaf?
             else
               descendants.delete_all
             end

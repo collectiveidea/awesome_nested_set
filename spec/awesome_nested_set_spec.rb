@@ -1109,4 +1109,28 @@ describe "AwesomeNestedSet" do
       Subclass2.create(name: "Subclass2", parent_id: subclass1.id)
     end
   end
+
+  describe 'option dependent' do
+    it 'destroy should destroy children and node' do
+      Category.acts_as_nested_set_options[:dependent] = :destroy
+      root = Category.root
+      root.destroy!
+      expect(Category.where(id: root.id)).to be_empty
+      expect(Category.where(parent_id: root.id)).to be_empty
+    end
+
+    it 'delete should delete children and node' do
+      Category.acts_as_nested_set_options[:dependent] = :delete
+      root = Category.root
+      root.destroy!
+      expect(Category.where(id: root.id)).to be_empty
+      expect(Category.where(parent_id: root.id)).to be_empty
+    end
+
+    it 'restrict_with_exception should raise exception' do
+      Category.acts_as_nested_set_options[:dependent] = :restrict_with_exception
+      root = Category.root
+      expect { root.destroy! }.to raise_error  ActiveRecord::DeleteRestrictionError, 'Cannot delete record because of dependent children'
+    end
+  end
 end
