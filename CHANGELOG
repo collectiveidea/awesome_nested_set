@@ -1,3 +1,4 @@
+* Added information to the README regarding indexes to be added for performance [bdarfler]
 * Modified associate_parents to add child objects to the parent#children collection [Tiago Moraes]
 
 2.1.6
