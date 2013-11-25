@@ -53,6 +53,10 @@ end
 
 Run `rake rdoc` to generate the API docs and see [CollectiveIdea::Acts::NestedSet](lib/awesome_nested_set/awesome_nested_set.rb) for more information.
 
+## Indexes
+
+It is highly recommended that you add an index to the `rgt` column on your models. Every insertion requires finding the next `rgt` value to use and this can be slow for large tables without an index. It is probably best to index the other fields as well (`parent_id`, `lft`, `depth`).
+
 ## Callbacks
 
 There are three callbacks called when moving a node:
