@@ -1,3 +1,3 @@
 module AwesomeNestedSet
-  VERSION = '3.0.0.rc.2' unless defined?(::AwesomeNestedSet::VERSION)
+  VERSION = '3.0.0.rc.3' unless defined?(::AwesomeNestedSet::VERSION)
 end
