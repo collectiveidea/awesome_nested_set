@@ -36,8 +36,9 @@ module CollectiveIdea #:nodoc:
               unless leaf?
                 record = self.class.human_attribute_name(:children).downcase
                 errors.add(:base, :"restrict_dependent_destroy.many", record: record)
-                false
+                return false
               end
+              return true
             else
               descendants.delete_all
             end

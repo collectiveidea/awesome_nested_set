@@ -1133,12 +1133,19 @@ describe "AwesomeNestedSet" do
       expect { root.destroy! }.to raise_error  ActiveRecord::DeleteRestrictionError, 'Cannot delete record because of dependent children'
     end
 
-    it 'restrict_with_error adds the error to the model' do
-      Category.acts_as_nested_set_options[:dependent] = :restrict_with_error
-      root = Category.root
-      root.destroy
-      assert_equal ["Cannot delete record because dependent children exist"], root.errors[:base]
-    end
+    describe 'restrict_with_error' do
+      it 'adds the error to the parent' do
+        Category.acts_as_nested_set_options[:dependent] = :restrict_with_error
+        root = Category.root
+        root.destroy
+        assert_equal ["Cannot delete record because dependent children exist"], root.errors[:base]
+      end
 
+      it 'deletes the leaf' do
+        Category.acts_as_nested_set_options[:dependent] = :restrict_with_error
+        leaf = Category.last
+        assert_equal leaf, leaf.destroy
+      end
+    end
   end
 end
