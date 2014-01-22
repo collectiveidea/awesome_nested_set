@@ -81,7 +81,9 @@ module CollectiveIdea #:nodoc:
           has_many_children_options.update(ar_callback => options[ar_callback]) if options[ar_callback]
         end
 
-        has_many :children, has_many_children_options
+        ActiveSupport::Deprecation.silence do
+          has_many :children, has_many_children_options
+        end
 
         attr_accessor :skip_before_destroy
 
