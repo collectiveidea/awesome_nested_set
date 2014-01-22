@@ -511,7 +511,9 @@ module CollectiveIdea #:nodoc:
           options[:conditions] = scopes.inject({}) do |conditions,attr|
             conditions.merge attr => self[attr]
           end unless scopes.empty?
-          self.class.base_class.unscoped.scoped options
+          ActiveSupport::Deprecation.silence do
+            self.class.base_class.unscoped.scoped(options)
+          end
         end
 
         def store_new_parent
