@@ -24,6 +24,7 @@ module CollectiveIdea #:nodoc:
       # Configuration options are:
       #
       # * +:parent_column+ - specifies the column name to use for keeping the position integer (default: parent_id)
+      # * +:primary_column+ - specifies the column name to use as the inverse of the parent column (default: id)
       # * +:left_column+ - column name for left boundry data, default "lft"
       # * +:right_column+ - column name for right boundry data, default "rgt"
       # * +:depth_column+ - column name for the depth data, default "depth"
@@ -75,6 +76,7 @@ module CollectiveIdea #:nodoc:
         has_many_children_options = {
           :class_name => self.base_class.to_s,
           :foreign_key => parent_column_name,
+          :primary_key => primary_column_name,
           :inverse_of => (:parent unless acts_as_nested_set_options[:polymorphic]),
         }
 
@@ -92,6 +94,7 @@ module CollectiveIdea #:nodoc:
       def acts_as_nested_set_relate_parent!
         belongs_to :parent, :class_name => self.base_class.to_s,
                             :foreign_key => parent_column_name,
+                            :primary_key => primary_column_name,
                             :counter_cache => acts_as_nested_set_options[:counter_cache],
                             :inverse_of => (:children unless acts_as_nested_set_options[:polymorphic]),
                             :polymorphic => acts_as_nested_set_options[:polymorphic],
@@ -101,6 +104,7 @@ module CollectiveIdea #:nodoc:
       def acts_as_nested_set_default_options
         {
           :parent_column => 'parent_id',
+          :primary_column => 'id',
           :left_column => 'lft',
           :right_column => 'rgt',
           :depth_column => 'depth',
@@ -114,8 +118,8 @@ module CollectiveIdea #:nodoc:
       def acts_as_nested_set_parse_options!(options)
         options = acts_as_nested_set_default_options.merge(options)
 
-        if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
-          options[:scope] = "#{options[:scope]}_id".intern
+        if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_#{options[:primary_column]}$/
+          options[:scope] = "#{options[:scope]}_#{options[:primary_column]}".intern
         end
 
         class_attribute :acts_as_nested_set_options

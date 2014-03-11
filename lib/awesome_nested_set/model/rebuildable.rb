@@ -32,7 +32,7 @@ module CollectiveIdea
           end
 
           def order_for_rebuild
-            "#{quoted_left_column_full_name}, #{quoted_right_column_full_name}, #{primary_key}"
+            "#{quoted_left_column_full_name}, #{quoted_right_column_full_name}, #{quoted_primary_column_name}"
           end
         end
 

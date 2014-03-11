@@ -27,7 +27,7 @@ module CollectiveIdea #:nodoc:
           def associate_parents(objects)
             return objects unless objects.all? {|o| o.respond_to?(:association)}
 
-            id_indexed = objects.index_by(&:id)
+            id_indexed = objects.index_by(&primary_column_name.to_sym)
             objects.each do |object|
               association = object.association(:parent)
               parent = id_indexed[object.parent_id]
@@ -85,7 +85,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def primary_key_scope(id)
-            where arel_table[primary_key].eq(id)
+            where arel_table[primary_column_name].eq(id)
           end
 
           def root
@@ -104,6 +104,10 @@ module CollectiveIdea #:nodoc:
         # Value of the parent column
         def parent_id(target = self)
           target[parent_column_name]
+        end
+
+        def primary_id(target = self)
+          target[primary_column_name]
         end
 
         # Value of the left column
@@ -146,7 +150,7 @@ module CollectiveIdea #:nodoc:
 
         def to_text
           self_and_descendants.map do |node|
-            "#{'*'*(node.level+1)} #{node.id} #{node.to_s} (#{node.parent_id}, #{node.left}, #{node.right})"
+            "#{'*'*(node.level+1)} #{node.primary_id} #{node.to_s} (#{node.parent_id}, #{node.left}, #{node.right})"
           end.join("\n")
         end
 
@@ -154,7 +158,7 @@ module CollectiveIdea #:nodoc:
 
         def without_self(scope)
           return scope if new_record?
-          scope.where(["#{self.class.quoted_table_name}.#{self.class.primary_key} != ?", self])
+          scope.where(["#{self.class.quoted_table_name}.#{self.class.quoted_primary_column_name} != ?", self.primary_id])
         end
 
         def store_new_parent
@@ -186,7 +190,7 @@ module CollectiveIdea #:nodoc:
 
           in_tenacious_transaction do
             reload
-            nested_set_scope.primary_key_scope(id).
+            nested_set_scope.primary_key_scope(primary_id).
               update_all(["#{quoted_depth_column_name} = ?", level])
           end
           self[depth_column_name] = self.level
@@ -210,7 +214,7 @@ module CollectiveIdea #:nodoc:
           if target.is_a? self.class.base_class
             target.reload
           elsif position != :root
-            nested_set_scope.find(target)
+            nested_set_scope.where(primary_column_name.to_sym => target).first!
           end
         end
       end

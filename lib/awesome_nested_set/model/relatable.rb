@@ -86,7 +86,7 @@ module CollectiveIdea
           def root
             return self_and_ancestors.children_of(nil).first if persisted?
 
-            if parent_id && current_parent = nested_set_scope.find(parent_id)
+            if parent_id && current_parent = nested_set_scope.where(primary_column_name => parent_id).first!
               current_parent.root
             else
               self
