@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "AwesomeNestedSet" do
   before(:all) do
-    self.class.fixtures :categories, :departments, :notes, :things, :brokens
+    self.class.fixtures :categories, :departments, :notes, :things, :brokens, :users
   end
 
   describe "defaults" do
@@ -16,6 +16,10 @@ describe "AwesomeNestedSet" do
 
     it "should have parent_column_default" do
       Default.acts_as_nested_set_options[:parent_column].should == 'parent_id'
+    end
+
+    it " should have a primary_column_default" do
+      Default.acts_as_nested_set_options[:primary_column].should == 'id'
     end
 
     it "should have scope_default" do
@@ -48,6 +52,13 @@ describe "AwesomeNestedSet" do
       Default.new.parent_column_name.should == 'parent_id'
       RenamedColumns.parent_column_name.should == 'mother_id'
       RenamedColumns.new.parent_column_name.should == 'mother_id'
+    end
+
+    it "should have primary_column_name" do
+      Default.primary_column_name.should == 'id'
+      Default.new.primary_column_name.should == 'id'
+      User.primary_column_name.should == 'uuid'
+      User.new.primary_column_name.should == 'uuid'
     end
   end
 

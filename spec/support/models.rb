@@ -95,6 +95,10 @@ class NoDepth < ActiveRecord::Base
   acts_as_nested_set
 end
 
+class User < ActiveRecord::Base
+  acts_as_nested_set :parent_column => 'parent_uuid', :primary_column => 'uuid'
+end
+
 class Superclass < ActiveRecord::Base
   acts_as_nested_set
   self.table_name = 'single_table_inheritance'
