@@ -118,8 +118,8 @@ module CollectiveIdea #:nodoc:
       def acts_as_nested_set_parse_options!(options)
         options = acts_as_nested_set_default_options.merge(options)
 
-        if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_#{options[:primary_column]}$/
-          options[:scope] = "#{options[:scope]}_#{options[:primary_column]}".intern
+        if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
+          options[:scope] = "#{options[:scope]}_id".intern
         end
 
         class_attribute :acts_as_nested_set_options
