@@ -1,129 +1,8 @@
 require 'spec_helper'
 
-describe "AwesomeNestedSet" do
+describe "Category" do
   before(:all) do
     self.class.fixtures :categories, :departments, :notes, :things, :brokens, :users
-  end
-
-  describe "defaults" do
-    it "should have left_column_default" do
-      Default.acts_as_nested_set_options[:left_column].should == 'lft'
-    end
-
-    it "should have right_column_default" do
-      Default.acts_as_nested_set_options[:right_column].should == 'rgt'
-    end
-
-    it "should have parent_column_default" do
-      Default.acts_as_nested_set_options[:parent_column].should == 'parent_id'
-    end
-
-    it " should have a primary_column_default" do
-      Default.acts_as_nested_set_options[:primary_column].should == 'id'
-    end
-
-    it "should have scope_default" do
-      Default.acts_as_nested_set_options[:scope].should be_nil
-    end
-
-    it "should have left_column_name" do
-      Default.left_column_name.should == 'lft'
-      Default.new.left_column_name.should == 'lft'
-      RenamedColumns.left_column_name.should == 'red'
-      RenamedColumns.new.left_column_name.should == 'red'
-    end
-
-    it "should have right_column_name" do
-      Default.right_column_name.should == 'rgt'
-      Default.new.right_column_name.should == 'rgt'
-      RenamedColumns.right_column_name.should == 'black'
-      RenamedColumns.new.right_column_name.should == 'black'
-    end
-
-    it "has a depth_column_name" do
-      Default.depth_column_name.should == 'depth'
-      Default.new.depth_column_name.should == 'depth'
-      RenamedColumns.depth_column_name.should == 'pitch'
-      RenamedColumns.depth_column_name.should == 'pitch'
-    end
-
-    it "should have parent_column_name" do
-      Default.parent_column_name.should == 'parent_id'
-      Default.new.parent_column_name.should == 'parent_id'
-      RenamedColumns.parent_column_name.should == 'mother_id'
-      RenamedColumns.new.parent_column_name.should == 'mother_id'
-    end
-
-    it "should have primary_column_name" do
-      Default.primary_column_name.should == 'id'
-      Default.new.primary_column_name.should == 'id'
-      User.primary_column_name.should == 'uuid'
-      User.new.primary_column_name.should == 'uuid'
-    end
-  end
-
-  it "creation_with_altered_column_names" do
-    lambda {
-      RenamedColumns.create!()
-    }.should_not raise_exception
-  end
-
-  it "creation when existing record has nil left column" do
-    assert_nothing_raised do
-      Broken.create!
-    end
-  end
-
-  describe "quoted column names" do
-    it "quoted_left_column_name" do
-      quoted = Default.connection.quote_column_name('lft')
-      Default.quoted_left_column_name.should == quoted
-      Default.new.quoted_left_column_name.should == quoted
-    end
-
-    it "quoted_right_column_name" do
-      quoted = Default.connection.quote_column_name('rgt')
-      Default.quoted_right_column_name.should == quoted
-      Default.new.quoted_right_column_name.should == quoted
-    end
-
-    it "quoted_depth_column_name" do
-      quoted = Default.connection.quote_column_name('depth')
-      Default.quoted_depth_column_name.should == quoted
-      Default.new.quoted_depth_column_name.should == quoted
-    end
-
-    it "quoted_order_column_name" do
-      quoted = Default.connection.quote_column_name('lft')
-      Default.quoted_order_column_name.should == quoted
-      Default.new.quoted_order_column_name.should == quoted
-    end
-  end
-
-  describe "protected columns" do
-    it "left_column_protected_from_assignment" do
-      lambda {
-        Category.new.lft = 1
-      }.should raise_exception(ActiveRecord::ActiveRecordError)
-    end
-
-    it "right_column_protected_from_assignment" do
-      lambda {
-        Category.new.rgt = 1
-      }.should raise_exception(ActiveRecord::ActiveRecordError)
-    end
-
-    it "depth_column_protected_from_assignment" do
-      lambda {
-        Category.new.depth = 1
-      }.should raise_exception(ActiveRecord::ActiveRecordError)
-    end
-  end
-
-  describe "scope" do
-    it "scoped_appends_id" do
-      ScopedCategory.acts_as_nested_set_options[:scope].should == :organization_id
-    end
   end
 
   describe "hierarchical structure" do
@@ -240,34 +119,34 @@ describe "AwesomeNestedSet" do
 
   describe "depth" do
     context "in general" do
-      let(:lawyers) { Category.create!(:name => "lawyers") }
-      let(:us) { Category.create!(:name => "United States") }
-      let(:new_york) { Category.create!(:name => "New York") }
-      let(:patent) { Category.create!(:name => "Patent Law") }
+      let(:ceo) { Category.create!(:name => "CEO") }
+      let(:district_manager) { Category.create!(:name => "District Manager") }
+      let(:store_manager) { Category.create!(:name => "Store Manager") }
+      let(:cashier) { Category.create!(:name => "Cashier") }
 
       before(:each) do
-        # lawyers > us > new_york > patent
-        us.move_to_child_of(lawyers)
-        new_york.move_to_child_of(us)
-        patent.move_to_child_of(new_york)
-        [lawyers, us, new_york, patent].each(&:reload)
+        # ceo > district_manager > store_manager > cashier
+        district_manager.move_to_child_of(ceo)
+        store_manager.move_to_child_of(district_manager)
+        cashier.move_to_child_of(store_manager)
+        [ceo, district_manager, store_manager, cashier].each(&:reload)
       end
 
       it "updates depth when moved into child position" do
-        lawyers.depth.should == 0
-        us.depth.should == 1
-        new_york.depth.should == 2
-        patent.depth.should == 3
+        ceo.depth.should == 0
+        district_manager.depth.should == 1
+        store_manager.depth.should == 2
+        cashier.depth.should == 3
       end
 
       it "updates depth of all descendants when parent is moved" do
-        # lawyers
-        # us > new_york > patent
-        us.move_to_right_of(lawyers)
-        [lawyers, us, new_york, patent].each(&:reload)
-        us.depth.should == 0
-        new_york.depth.should == 1
-        patent.depth.should == 2
+        # ceo
+        # district_manager > store_manager > cashier
+        district_manager.move_to_right_of(ceo)
+        [ceo, district_manager, store_manager, cashier].each(&:reload)
+        district_manager.depth.should == 0
+        store_manager.depth.should == 1
+        cashier.depth.should == 2
       end
     end
 
@@ -759,72 +638,6 @@ describe "AwesomeNestedSet" do
     Category.valid?.should be_true
   end
 
-  it "multi_scoped_no_duplicates_for_columns?" do
-    lambda {
-      Note.no_duplicates_for_columns?
-    }.should_not raise_exception
-  end
-
-  it "multi_scoped_all_roots_valid?" do
-    lambda {
-      Note.all_roots_valid?
-    }.should_not raise_exception
-  end
-
-  it "multi_scoped" do
-    note1 = Note.create!(:body => "A", :notable_id => 2, :notable_type => 'Category')
-    note2 = Note.create!(:body => "B", :notable_id => 2, :notable_type => 'Category')
-    note3 = Note.create!(:body => "C", :notable_id => 2, :notable_type => 'Default')
-
-    [note1, note2].should == note1.self_and_siblings
-    [note3].should == note3.self_and_siblings
-  end
-
-  it "multi_scoped_rebuild" do
-    root = Note.create!(:body => "A", :notable_id => 3, :notable_type => 'Category')
-    child1 = Note.create!(:body => "B", :notable_id => 3, :notable_type => 'Category')
-    child2 = Note.create!(:body => "C", :notable_id => 3, :notable_type => 'Category')
-
-    child1.move_to_child_of root
-    child2.move_to_child_of root
-
-    Note.update_all('lft = null, rgt = null')
-    Note.rebuild!
-
-    Note.roots.find_by_body('A').should == root
-    [child1, child2].should == Note.roots.find_by_body('A').children
-  end
-
-  it "same_scope_with_multi_scopes" do
-    lambda {
-      notes(:scope1).same_scope?(notes(:child_1))
-    }.should_not raise_exception
-    notes(:scope1).same_scope?(notes(:child_1)).should be_true
-    notes(:child_1).same_scope?(notes(:scope1)).should be_true
-    notes(:scope1).same_scope?(notes(:scope2)).should be_false
-  end
-
-  it "quoting_of_multi_scope_column_names" do
-    ## Proper Array Assignment for different DBs as per their quoting column behavior
-    if Note.connection.adapter_name.match(/oracle/i)
-      expected_quoted_scope_column_names = ["\"NOTABLE_ID\"", "\"NOTABLE_TYPE\""]
-    elsif Note.connection.adapter_name.match(/mysql/i)
-      expected_quoted_scope_column_names = ["`notable_id`", "`notable_type`"]
-    else
-      expected_quoted_scope_column_names = ["\"notable_id\"", "\"notable_type\""]
-    end
-    Note.quoted_scope_column_names.should == expected_quoted_scope_column_names
-  end
-
-  it "equal_in_same_scope" do
-    notes(:scope1).should == notes(:scope1)
-    notes(:scope1).should_not == notes(:child_1)
-  end
-
-  it "equal_in_different_scopes" do
-    notes(:scope1).should_not == notes(:scope2)
-  end
-
   it "delete_does_not_invalidate" do
     Category.acts_as_nested_set_options[:dependent] = :delete
     categories(:child_2).destroy
@@ -978,135 +791,6 @@ describe "AwesomeNestedSet" do
     end
   end
 
-  describe "counter_cache" do
-
-    it "should allow use of a counter cache for children" do
-      note1 = things(:parent1)
-      note1.children.count.should == 2
-    end
-
-    it "should increment the counter cache on create" do
-      note1 = things(:parent1)
-      note1.children.count.should == 2
-      note1[:children_count].should == 2
-      note1.children.create :body => 'Child 3'
-      note1.children.count.should == 3
-      note1.reload
-      note1[:children_count].should == 3
-    end
-
-    it "should decrement the counter cache on destroy" do
-      note1 = things(:parent1)
-      note1.children.count.should == 2
-      note1[:children_count].should == 2
-      note1.children.last.destroy
-      note1.children.count.should == 1
-      note1.reload
-      note1[:children_count].should == 1
-    end
-  end
-
-  describe "association callbacks on children" do
-    it "should call the appropriate callbacks on the children :has_many association " do
-      root = DefaultWithCallbacks.create
-      root.should_not be_new_record
-
-      child = root.children.build
-
-      root.before_add.should == child
-      root.after_add.should  == child
-
-      root.before_remove.should_not == child
-      root.after_remove.should_not  == child
-
-      child.save.should be_true
-      root.children.delete(child).should be_true
-
-      root.before_remove.should == child
-      root.after_remove.should  == child
-    end
-  end
-
-  describe 'rebuilding tree with a default scope ordering' do
-    it "doesn't throw exception" do
-      expect { Position.rebuild! }.not_to raise_error
-    end
-  end
-
-  describe 'creating roots with a default scope ordering' do
-    it "assigns rgt and lft correctly" do
-      alpha = Order.create(:name => 'Alpha')
-      gamma = Order.create(:name => 'Gamma')
-      omega = Order.create(:name => 'Omega')
-
-      alpha.lft.should == 1
-      alpha.rgt.should == 2
-      gamma.lft.should == 3
-      gamma.rgt.should == 4
-      omega.lft.should == 5
-      omega.rgt.should == 6
-    end
-  end
-
-  describe 'moving node from one scoped tree to another' do
-    xit "moves single node correctly" do
-      root1 = Note.create!(:body => "A-1", :notable_id => 4, :notable_type => 'Category')
-      child1_1 = Note.create!(:body => "B-1", :notable_id => 4, :notable_type => 'Category')
-      child1_2 = Note.create!(:body => "C-1", :notable_id => 4, :notable_type => 'Category')
-      child1_1.move_to_child_of root1
-      child1_2.move_to_child_of root1
-
-      root2 = Note.create!(:body => "A-2", :notable_id => 5, :notable_type => 'Category')
-      child2_1 = Note.create!(:body => "B-2", :notable_id => 5, :notable_type => 'Category')
-      child2_2 = Note.create!(:body => "C-2", :notable_id => 5, :notable_type => 'Category')
-      child2_1.move_to_child_of root2
-      child2_2.move_to_child_of root2
-
-      child1_1.update_attributes!(:notable_id => 5)
-      child1_1.move_to_child_of root2
-
-      root1.children.should == [child1_2]
-      root2.children.should == [child2_1, child2_2, child1_1]
-
-      Note.valid?.should == true
-    end
-
-    xit "moves node with children correctly" do
-      root1 = Note.create!(:body => "A-1", :notable_id => 4, :notable_type => 'Category')
-      child1_1 = Note.create!(:body => "B-1", :notable_id => 4, :notable_type => 'Category')
-      child1_2 = Note.create!(:body => "C-1", :notable_id => 4, :notable_type => 'Category')
-      child1_1.move_to_child_of root1
-      child1_2.move_to_child_of child1_1
-
-      root2 = Note.create!(:body => "A-2", :notable_id => 5, :notable_type => 'Category')
-      child2_1 = Note.create!(:body => "B-2", :notable_id => 5, :notable_type => 'Category')
-      child2_2 = Note.create!(:body => "C-2", :notable_id => 5, :notable_type => 'Category')
-      child2_1.move_to_child_of root2
-      child2_2.move_to_child_of root2
-
-      child1_1.update_attributes!(:notable_id => 5)
-      child1_1.move_to_child_of root2
-
-      root1.children.should == []
-      root2.children.should == [child2_1, child2_2, child1_1]
-      child1_1.children should == [child1_2]
-      root2.siblings.should == [child2_1, child2_2, child1_1, child1_2]
-
-      Note.valid?.should == true
-    end
-  end
-
-  describe 'specifying custom sort column' do
-    it "should sort by the default sort column" do
-      Category.order_column.should == 'lft'
-    end
-
-    it "should sort by custom sort column" do
-      OrderedCategory.acts_as_nested_set_options[:order_column].should == 'name'
-      OrderedCategory.order_column.should == 'name'
-    end
-  end
-
   describe 'associate_parents' do
     it 'assigns parent' do
       root = Category.root
@@ -1120,13 +804,6 @@ describe "AwesomeNestedSet" do
       categories = root.self_and_descendants
       categories = Category.associate_parents categories
       expect(categories[0].children.first).to be categories[1]
-    end
-  end
-
-  describe 'table inheritance' do
-    it 'allows creation of a subclass pointing to a superclass' do
-      subclass1 = Subclass1.create(name: "Subclass1")
-      Subclass2.create(name: "Subclass2", parent_id: subclass1.id)
     end
   end
 

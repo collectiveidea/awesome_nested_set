@@ -97,6 +97,33 @@ end
 
 class User < ActiveRecord::Base
   acts_as_nested_set :parent_column => 'parent_uuid', :primary_column => 'uuid'
+
+  validates_presence_of :name
+
+  # Setup a callback that we can switch to true or false per-test
+  set_callback :move, :before, :custom_before_move
+  cattr_accessor :test_allows_move
+  @@test_allows_move = true
+  def custom_before_move
+    @@test_allows_move
+  end
+
+  def to_s
+    name
+  end
+
+  def recurse &block
+    block.call self, lambda{
+      self.children.each do |child|
+        child.recurse &block
+      end
+    }
+  end
+end
+
+class ScopedUser < ActiveRecord::Base
+  self.table_name = 'users'
+  acts_as_nested_set :parent_column => 'parent_uuid', :primary_column => 'uuid', :scope => :organization
 end
 
 class Superclass < ActiveRecord::Base

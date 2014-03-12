@@ -87,5 +87,6 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :lft, :integer
     t.column :rgt, :integer
     t.column :depth, :integer
+    t.column :organization_id, :integer
   end
 end
