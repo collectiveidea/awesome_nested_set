@@ -28,11 +28,6 @@ describe "User" do
       new_user.root.should == new_user
     end
 
-    it "root when not persisted and parent_column_name value is set" do
-      last_user = User.last
-      User.new(Default.parent_column_name => last_user.uuid).root.should == last_user.root
-    end
-
     it "root?" do
       users(:top_level).root?.should be_true
       users(:top_level_2).root?.should be_true
