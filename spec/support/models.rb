@@ -99,6 +99,10 @@ class User < ActiveRecord::Base
   acts_as_nested_set :parent_column => 'parent_uuid', :primary_column => 'uuid'
 
   validates_presence_of :name
+  validates_presence_of :uuid
+  validates_uniqueness_of :uuid
+
+  after_initialize :ensure_uuid
 
   # Setup a callback that we can switch to true or false per-test
   set_callback :move, :before, :custom_before_move
@@ -118,6 +122,10 @@ class User < ActiveRecord::Base
         child.recurse &block
       end
     }
+  end
+
+  def ensure_uuid
+    self.uuid ||= SecureRandom.hex
   end
 end
 
