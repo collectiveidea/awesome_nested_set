@@ -214,7 +214,7 @@ module CollectiveIdea #:nodoc:
           if target.is_a? self.class.base_class
             target.reload
           elsif position != :root
-            nested_set_scope.where(primary_column_name.to_sym => target).first!
+            nested_set_scope.where(primary_column_name => target).first!
           end
         end
       end

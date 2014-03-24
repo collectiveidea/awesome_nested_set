@@ -49,7 +49,7 @@ module CollectiveIdea #:nodoc:
            case_condition_for_direction(:quoted_left_column_name) +
            case_condition_for_direction(:quoted_right_column_name) +
            case_condition_for_parent,
-           {:a => a, :b => b, :c => c, :d => d, :primary_id => instance.primary_id, :new_parent => new_parent}
+           {:a => a, :b => b, :c => c, :d => d, :primary_id => instance.primary_id, :new_parent_id => new_parent_id}
           ]
         end
 
@@ -65,7 +65,7 @@ module CollectiveIdea #:nodoc:
 
         def case_condition_for_parent
           "#{quoted_parent_column_name} = CASE " +
-            "WHEN #{quoted_primary_column_name} = :primary_id THEN :new_parent " +
+            "WHEN #{quoted_primary_column_name} = :primary_id THEN :new_parent_id " +
             "ELSE #{quoted_parent_column_name} END"
         end
 
@@ -79,7 +79,7 @@ module CollectiveIdea #:nodoc:
           position == :root
         end
 
-        def new_parent
+        def new_parent_id
           case position
           when :child then target.primary_id
           when :root  then nil
