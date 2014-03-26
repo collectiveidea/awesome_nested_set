@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "AwesomeNestedSet" do
   before(:all) do
-    self.class.fixtures :categories, :departments, :notes, :things, :brokens
+    self.class.fixtures :categories, :departments, :notes, :things, :brokens, :users
   end
 
   describe "defaults" do
@@ -16,6 +16,10 @@ describe "AwesomeNestedSet" do
 
     it "should have parent_column_default" do
       Default.acts_as_nested_set_options[:parent_column].should == 'parent_id'
+    end
+
+    it " should have a primary_column_default" do
+      Default.acts_as_nested_set_options[:primary_column].should == 'id'
     end
 
     it "should have scope_default" do
@@ -49,6 +53,13 @@ describe "AwesomeNestedSet" do
       RenamedColumns.parent_column_name.should == 'mother_id'
       RenamedColumns.new.parent_column_name.should == 'mother_id'
     end
+
+    it "should have primary_column_name" do
+      Default.primary_column_name.should == 'id'
+      Default.new.primary_column_name.should == 'id'
+      User.primary_column_name.should == 'uuid'
+      User.new.primary_column_name.should == 'uuid'
+    end
   end
 
   it "creation_with_altered_column_names" do
@@ -63,140 +74,147 @@ describe "AwesomeNestedSet" do
     end
   end
 
-  it "quoted_left_column_name" do
-    quoted = Default.connection.quote_column_name('lft')
-    Default.quoted_left_column_name.should == quoted
-    Default.new.quoted_left_column_name.should == quoted
-  end
+  describe "quoted column names" do
+    it "quoted_left_column_name" do
+      quoted = Default.connection.quote_column_name('lft')
+      Default.quoted_left_column_name.should == quoted
+      Default.new.quoted_left_column_name.should == quoted
+    end
 
-  it "quoted_right_column_name" do
-    quoted = Default.connection.quote_column_name('rgt')
-    Default.quoted_right_column_name.should == quoted
-    Default.new.quoted_right_column_name.should == quoted
-  end
+    it "quoted_right_column_name" do
+      quoted = Default.connection.quote_column_name('rgt')
+      Default.quoted_right_column_name.should == quoted
+      Default.new.quoted_right_column_name.should == quoted
+    end
 
-  it "quoted_depth_column_name" do
-    quoted = Default.connection.quote_column_name('depth')
-    Default.quoted_depth_column_name.should == quoted
-    Default.new.quoted_depth_column_name.should == quoted
-  end
+    it "quoted_depth_column_name" do
+      quoted = Default.connection.quote_column_name('depth')
+      Default.quoted_depth_column_name.should == quoted
+      Default.new.quoted_depth_column_name.should == quoted
+    end
 
-  it "quoted_order_column_name" do
-    quoted = Default.connection.quote_column_name('lft')
-    Default.quoted_order_column_name.should == quoted
-    Default.new.quoted_order_column_name.should == quoted
-  end
-
-  it "left_column_protected_from_assignment" do
-    lambda {
-      Category.new.lft = 1
-    }.should raise_exception(ActiveRecord::ActiveRecordError)
-  end
-
-  it "right_column_protected_from_assignment" do
-    lambda {
-      Category.new.rgt = 1
-    }.should raise_exception(ActiveRecord::ActiveRecordError)
-  end
-
-  it "depth_column_protected_from_assignment" do
-    lambda {
-      Category.new.depth = 1
-    }.should raise_exception(ActiveRecord::ActiveRecordError)
-  end
-
-  it "scoped_appends_id" do
-    ScopedCategory.acts_as_nested_set_options[:scope].should == :organization_id
-  end
-
-  it "roots_class_method" do
-    found_by_us = Category.where(:parent_id => nil).to_a
-    found_by_roots = Category.roots.to_a
-    found_by_us.length.should == found_by_roots.length
-    found_by_us.each do |root|
-      found_by_roots.should include(root)
+    it "quoted_order_column_name" do
+      quoted = Default.connection.quote_column_name('lft')
+      Default.quoted_order_column_name.should == quoted
+      Default.new.quoted_order_column_name.should == quoted
     end
   end
 
-  it "root_class_method" do
-    Category.root.should == categories(:top_level)
+  describe "protected columns" do
+    it "left_column_protected_from_assignment" do
+      lambda {
+        Category.new.lft = 1
+      }.should raise_exception(ActiveRecord::ActiveRecordError)
+    end
+
+    it "right_column_protected_from_assignment" do
+      lambda {
+        Category.new.rgt = 1
+      }.should raise_exception(ActiveRecord::ActiveRecordError)
+    end
+
+    it "depth_column_protected_from_assignment" do
+      lambda {
+        Category.new.depth = 1
+      }.should raise_exception(ActiveRecord::ActiveRecordError)
+    end
   end
 
-  it "root" do
-    categories(:child_3).root.should == categories(:top_level)
+  describe "scope" do
+    it "scoped_appends_id" do
+      ScopedCategory.acts_as_nested_set_options[:scope].should == :organization_id
+    end
   end
 
-  it "root when not persisted and parent_column_name value is self" do
-    new_category = Category.new
-    new_category.root.should == new_category
-  end
+  describe "hierarchical structure" do
+    it "roots_class_method" do
+      found_by_us = Category.where(:parent_id => nil).to_a
+      found_by_roots = Category.roots.to_a
+      found_by_us.length.should == found_by_roots.length
+      found_by_us.each do |root|
+        found_by_roots.should include(root)
+      end
+    end
 
-  it "root when not persisted and parent_column_name value is set" do
-    last_category = Category.last
-    Category.new(Default.parent_column_name => last_category.id).root.should == last_category.root
-  end
+    it "root_class_method" do
+      Category.root.should == categories(:top_level)
+    end
 
-  it "root?" do
-    categories(:top_level).root?.should be_true
-    categories(:top_level_2).root?.should be_true
-  end
+    it "root" do
+      categories(:child_3).root.should == categories(:top_level)
+    end
 
-  it "leaves_class_method" do
-    Category.where("#{Category.right_column_name} - #{Category.left_column_name} = 1").to_a.should == Category.leaves.to_a
-    Category.leaves.count.should == 4
-    Category.leaves.should include(categories(:child_1))
-    Category.leaves.should include(categories(:child_2_1))
-    Category.leaves.should include(categories(:child_3))
-    Category.leaves.should include(categories(:top_level_2))
-  end
+    it "root when not persisted and parent_column_name value is self" do
+      new_category = Category.new
+      new_category.root.should == new_category
+    end
 
-  it "leaf" do
-    categories(:child_1).leaf?.should be_true
-    categories(:child_2_1).leaf?.should be_true
-    categories(:child_3).leaf?.should be_true
-    categories(:top_level_2).leaf?.should be_true
+    it "root when not persisted and parent_column_name value is set" do
+      last_category = Category.last
+      Category.new(Default.parent_column_name => last_category.id).root.should == last_category.root
+    end
 
-    categories(:top_level).leaf?.should be_false
-    categories(:child_2).leaf?.should be_false
-    Category.new.leaf?.should be_false
-  end
+    it "root?" do
+      categories(:top_level).root?.should be_true
+      categories(:top_level_2).root?.should be_true
+    end
 
+    it "leaves_class_method" do
+      Category.where("#{Category.right_column_name} - #{Category.left_column_name} = 1").to_a.should == Category.leaves.to_a
+      Category.leaves.count.should == 4
+      Category.leaves.should include(categories(:child_1))
+      Category.leaves.should include(categories(:child_2_1))
+      Category.leaves.should include(categories(:child_3))
+      Category.leaves.should include(categories(:top_level_2))
+    end
 
-  it "parent" do
-    categories(:child_2_1).parent.should == categories(:child_2)
-  end
+    it "leaf" do
+      categories(:child_1).leaf?.should be_true
+      categories(:child_2_1).leaf?.should be_true
+      categories(:child_3).leaf?.should be_true
+      categories(:top_level_2).leaf?.should be_true
 
-  it "self_and_ancestors" do
-    child = categories(:child_2_1)
-    self_and_ancestors = [categories(:top_level), categories(:child_2), child]
-    child.self_and_ancestors.should == self_and_ancestors
-  end
+      categories(:top_level).leaf?.should be_false
+      categories(:child_2).leaf?.should be_false
+      Category.new.leaf?.should be_false
+    end
 
-  it "ancestors" do
-    child = categories(:child_2_1)
-    ancestors = [categories(:top_level), categories(:child_2)]
-    ancestors.should == child.ancestors
-  end
+    it "parent" do
+      categories(:child_2_1).parent.should == categories(:child_2)
+    end
 
-  it "self_and_siblings" do
-    child = categories(:child_2)
-    self_and_siblings = [categories(:child_1), child, categories(:child_3)]
-    self_and_siblings.should == child.self_and_siblings
-    lambda do
-      tops = [categories(:top_level), categories(:top_level_2)]
-      assert_equal tops, categories(:top_level).self_and_siblings
-    end.should_not raise_exception
-  end
+    it "self_and_ancestors" do
+      child = categories(:child_2_1)
+      self_and_ancestors = [categories(:top_level), categories(:child_2), child]
+      child.self_and_ancestors.should == self_and_ancestors
+    end
 
-  it "siblings" do
-    child = categories(:child_2)
-    siblings = [categories(:child_1), categories(:child_3)]
-    siblings.should == child.siblings
-  end
+    it "ancestors" do
+      child = categories(:child_2_1)
+      ancestors = [categories(:top_level), categories(:child_2)]
+      ancestors.should == child.ancestors
+    end
 
-  it "leaves" do
-    leaves = [categories(:child_1), categories(:child_2_1), categories(:child_3)]
-    categories(:top_level).leaves.should == leaves
+    it "self_and_siblings" do
+      child = categories(:child_2)
+      self_and_siblings = [categories(:child_1), child, categories(:child_3)]
+      self_and_siblings.should == child.self_and_siblings
+      lambda do
+        tops = [categories(:top_level), categories(:top_level_2)]
+        assert_equal tops, categories(:top_level).self_and_siblings
+      end.should_not raise_exception
+    end
+
+    it "siblings" do
+      child = categories(:child_2)
+      siblings = [categories(:child_1), categories(:child_3)]
+      siblings.should == child.siblings
+    end
+
+    it "leaves" do
+      leaves = [categories(:child_1), categories(:child_2_1), categories(:child_3)]
+      categories(:top_level).leaves.should == leaves
+    end
   end
 
   describe "level" do
@@ -221,44 +239,46 @@ describe "AwesomeNestedSet" do
   end
 
   describe "depth" do
-    let(:lawyers) { Category.create!(:name => "lawyers") }
-    let(:us) { Category.create!(:name => "United States") }
-    let(:new_york) { Category.create!(:name => "New York") }
-    let(:patent) { Category.create!(:name => "Patent Law") }
+    context "in general" do
+      let(:lawyers) { Category.create!(:name => "lawyers") }
+      let(:us) { Category.create!(:name => "United States") }
+      let(:new_york) { Category.create!(:name => "New York") }
+      let(:patent) { Category.create!(:name => "Patent Law") }
 
-    before(:each) do
-      # lawyers > us > new_york > patent
-      us.move_to_child_of(lawyers)
-      new_york.move_to_child_of(us)
-      patent.move_to_child_of(new_york)
-      [lawyers, us, new_york, patent].each(&:reload)
+      before(:each) do
+        # lawyers > us > new_york > patent
+        us.move_to_child_of(lawyers)
+        new_york.move_to_child_of(us)
+        patent.move_to_child_of(new_york)
+        [lawyers, us, new_york, patent].each(&:reload)
+      end
+
+      it "updates depth when moved into child position" do
+        lawyers.depth.should == 0
+        us.depth.should == 1
+        new_york.depth.should == 2
+        patent.depth.should == 3
+      end
+
+      it "updates depth of all descendants when parent is moved" do
+        # lawyers
+        # us > new_york > patent
+        us.move_to_right_of(lawyers)
+        [lawyers, us, new_york, patent].each(&:reload)
+        us.depth.should == 0
+        new_york.depth.should == 1
+        patent.depth.should == 2
+      end
     end
 
-    it "updates depth when moved into child position" do
-      lawyers.depth.should == 0
-      us.depth.should == 1
-      new_york.depth.should == 2
-      patent.depth.should == 3
+    it "is magic and does not apply when column is missing" do
+      lambda { NoDepth.create!(:name => "shallow") }.should_not raise_error
+      lambda { NoDepth.first.save }.should_not raise_error
+      lambda { NoDepth.rebuild! }.should_not raise_error
+
+      NoDepth.method_defined?(:depth).should be_false
+      NoDepth.first.respond_to?(:depth).should be_false
     end
-
-    it "updates depth of all descendants when parent is moved" do
-      # lawyers
-      # us > new_york > patent
-      us.move_to_right_of(lawyers)
-      [lawyers, us, new_york, patent].each(&:reload)
-      us.depth.should == 0
-      new_york.depth.should == 1
-      patent.depth.should == 2
-    end
-  end
-
-  it "depth is magic and does not apply when column is missing" do
-    lambda { NoDepth.create!(:name => "shallow") }.should_not raise_error
-    lambda { NoDepth.first.save }.should_not raise_error
-    lambda { NoDepth.rebuild! }.should_not raise_error
-
-    NoDepth.method_defined?(:depth).should be_false
-    NoDepth.first.respond_to?(:depth).should be_false
   end
 
   it "has_children?" do

@@ -42,7 +42,7 @@ module CollectiveIdea #:nodoc:
         end
 
         def node_children(node)
-          model.where(["#{quoted_parent_column_full_name} = ? #{scope_for_rebuild.call(node)}", node]).
+          model.where(["#{quoted_parent_column_full_name} = ? #{scope_for_rebuild.call(node)}", node.primary_id]).
                 order(order_for_rebuild)
         end
 

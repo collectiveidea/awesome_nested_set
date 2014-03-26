@@ -32,7 +32,7 @@ module CollectiveIdea #:nodoc:
           items.each do |root|
             result += root.class.associate_parents(root.self_and_descendants).map do |i|
               if mover.nil? || mover.new_record? || mover.move_possible?(i)
-                [yield(i), i.id]
+                [yield(i), i.primary_id]
               end
             end.compact
           end

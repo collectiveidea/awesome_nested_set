@@ -12,7 +12,7 @@ module CollectiveIdea #:nodoc:
             in_tenacious_transaction do
               reload_nested_set
               # select the rows in the model that extend past the deletion point and apply a lock
-              nested_set_scope.right_of(left).select(id).lock(true)
+              nested_set_scope.right_of(left).select(primary_id).lock(true)
 
               return false unless destroy_or_delete_descendants
 

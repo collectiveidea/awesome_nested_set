@@ -33,6 +33,7 @@ module CollectiveIdea #:nodoc:
         delegate :left, :right, :left_column_name, :right_column_name,
                  :quoted_left_column_name, :quoted_right_column_name,
                  :quoted_parent_column_name, :parent_column_name, :nested_set_scope,
+                 :primary_column_name, :quoted_primary_column_name, :primary_id,
                  :to => :instance
 
         delegate :arel_table, :class, :to => :instance, :prefix => true
@@ -48,7 +49,7 @@ module CollectiveIdea #:nodoc:
            case_condition_for_direction(:quoted_left_column_name) +
            case_condition_for_direction(:quoted_right_column_name) +
            case_condition_for_parent,
-           {:a => a, :b => b, :c => c, :d => d, :id => instance.id, :new_parent => new_parent}
+           {:a => a, :b => b, :c => c, :d => d, :primary_id => instance.primary_id, :new_parent_id => new_parent_id}
           ]
         end
 
@@ -64,23 +65,23 @@ module CollectiveIdea #:nodoc:
 
         def case_condition_for_parent
           "#{quoted_parent_column_name} = CASE " +
-            "WHEN #{instance_base_class.primary_key} = :id THEN :new_parent " +
+            "WHEN #{quoted_primary_column_name} = :primary_id THEN :new_parent_id " +
             "ELSE #{quoted_parent_column_name} END"
         end
 
         def lock_nodes_between!(left_bound, right_bound)
           # select the rows in the model between a and d, and apply a lock
           instance_base_class.right_of(left_bound).left_of_right_side(right_bound).
-                              select(:id).lock(true)
+                              select(primary_column_name).lock(true)
         end
 
         def root
           position == :root
         end
 
-        def new_parent
+        def new_parent_id
           case position
-          when :child then target.id
+          when :child then target.primary_id
           when :root  then nil
           else target[parent_column_name]
           end
