@@ -180,7 +180,7 @@ module CollectiveIdea #:nodoc:
             # set left
             node[left_column_name] = indices[scope.call(node)] += 1
             # find
-            find(:all, :conditions => ["#{quoted_parent_column_name} = ? #{scope.call(node)}", node], :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each{|n| set_left_and_rights.call(n) }
+            find(:all, :conditions => ["#{quoted_parent_column_name} = ? #{scope.call(node)}", node.send(self.primary_key)], :order => "#{quoted_left_column_name}, #{quoted_right_column_name}, id").each{|n| set_left_and_rights.call(n) }
             # set right
             node[right_column_name] = indices[scope.call(node)] += 1
             node.save!
