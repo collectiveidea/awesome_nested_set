@@ -25,7 +25,8 @@ module CollectiveIdea #:nodoc:
           lock_nodes_between! a, d
 
           nested_set_scope.where(where_statement(a, d)).
-                           update_all(conditions(a, b, c, d))
+            update_all( conditions(a, b, c, d,
+                                   @instance.respond_to?(:updated_at) ? Time.now.utc : nil))
         end
 
         private
@@ -43,13 +44,19 @@ module CollectiveIdea #:nodoc:
             or(instance_arel_table[right_column_name].in(left_bound..right_bound))
         end
 
-        def conditions(a, b, c, d)
+        def conditions(a, b, c, d, current_time)
           [
            case_condition_for_direction(:quoted_left_column_name) +
            case_condition_for_direction(:quoted_right_column_name) +
-           case_condition_for_parent,
-           {:a => a, :b => b, :c => c, :d => d, :id => instance.id, :new_parent => new_parent}
+           case_condition_for_parent +
+           update_clause_for_updated_at(current_time),
+           {:a => a, :b => b, :c => c, :d => d, :id => instance.id,
+            :new_parent => new_parent, :current_time => current_time}
           ]
+        end
+
+        def update_clause_for_updated_at(current_time)
+          current_time ? ", updated_at = :current_time" : ""
         end
 
         def case_condition_for_direction(column_name)
