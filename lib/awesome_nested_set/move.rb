@@ -28,7 +28,7 @@ module CollectiveIdea #:nodoc:
                            update_all(conditions(a, b, c, d))
           if @instance.respond_to? :updated_at
             nested_set_scope.where(where_statement(a, d)).
-                             update_all(updated_at: Time.now.utc)
+                             update_all(:updated_at => Time.now.utc)
           end
         end
 
