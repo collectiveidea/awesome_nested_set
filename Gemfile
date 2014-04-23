@@ -18,11 +18,6 @@ platforms :ruby do
   gem 'pg'
 end
 
-platforms :rbx do
-  gem 'rubysl', '~> 2.0'
-  gem 'rubysl-test-unit'
-end
-
 # Add Oracle Adapters
 # gem 'ruby-oci8'
 # gem 'activerecord-oracle_enhanced-adapter'
