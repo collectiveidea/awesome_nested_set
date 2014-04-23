@@ -21,6 +21,10 @@ load(File.join(plugin_test_dir, "db", "schema.rb"))
 require 'awesome_nested_set'
 require 'support/models'
 
+begin
+  require 'action_view'
+rescue LoadError; end # action_view doesn't exist in Rails 4.0, but we need this for the tests to run with Rails 4.1
+
 require 'action_controller'
 require 'rspec/rails'
 require 'database_cleaner'
