@@ -2,7 +2,7 @@ gem 'combustion', :github => 'pat/combustion', :branch => 'master'
 
 source 'https://rubygems.org'
 
-gemspec :path => File.expand_path('../', __FILE__)
+gemspec
 
 platforms :jruby do
   gem 'activerecord-jdbcsqlite3-adapter', '>= 1.3.0.beta2'
@@ -18,11 +18,6 @@ platforms :ruby do
   gem 'pg'
 end
 
-platforms :rbx do
-  gem 'rubysl', '~> 2.0'
-  gem 'rubysl-test-unit'
-end
-
 # Add Oracle Adapters
 # gem 'ruby-oci8'
 # gem 'activerecord-oracle_enhanced-adapter'
@@ -30,3 +25,6 @@ end
 # Debuggers
 gem 'pry'
 gem 'pry-nav'
+
+gem "appraisal"
+

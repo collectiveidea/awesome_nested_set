@@ -69,9 +69,9 @@ describe "AwesomeNestedSet" do
   end
 
   it "creation when existing record has nil left column" do
-    assert_nothing_raised do
+    lambda {
       Broken.create!
-    end
+    }.should_not raise_exception
   end
 
   describe "quoted column names" do

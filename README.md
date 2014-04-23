@@ -1,5 +1,9 @@
 # AwesomeNestedSet
 
+[![Build Status][Build Status Image]][Build Status]
+[Build Status Image]: https://travis-ci.org/collectiveidea/awesome_nested_set.png?branch=master
+[Build Status]: https://travis-ci.org/collectiveidea/awesome_nested_set
+
 Awesome Nested Set is an implementation of the nested set pattern for ActiveRecord models.
 It is a replacement for acts_as_nested_set and BetterNestedSet, but more awesome.
 
