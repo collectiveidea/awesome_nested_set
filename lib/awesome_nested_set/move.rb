@@ -24,9 +24,9 @@ module CollectiveIdea #:nodoc:
 
           lock_nodes_between! a, d
 
-          nested_set_scope.where(where_statement(a, d)).
-            update_all( conditions(a, b, c, d,
-                                   @instance.respond_to?(:updated_at) ? Time.now.utc : nil))
+          nested_set_scope.where(where_statement(a, d)).update_all(
+            conditions(a, b, c, d)
+          )
         end
 
         private
@@ -44,19 +44,25 @@ module CollectiveIdea #:nodoc:
             or(instance_arel_table[right_column_name].in(left_bound..right_bound))
         end
 
-        def conditions(a, b, c, d, current_time)
-          [
-           case_condition_for_direction(:quoted_left_column_name) +
-           case_condition_for_direction(:quoted_right_column_name) +
-           case_condition_for_parent +
-           update_clause_for_updated_at(current_time),
-           {:a => a, :b => b, :c => c, :d => d, :id => instance.id,
-            :new_parent => new_parent, :current_time => current_time}
-          ]
-        end
+        def conditions(a, b, c, d)
+          _conditions = case_condition_for_direction(:quoted_left_column_name) +
+                        case_condition_for_direction(:quoted_right_column_name) +
+                        case_condition_for_parent
 
-        def update_clause_for_updated_at(current_time)
-          current_time ? ", updated_at = :current_time" : ""
+          # We want the record to be 'touched' if it timestamps.
+          if @instance.respond_to?(:updated_at)
+            _conditions << ", updated_at = :timestamp"
+          end
+
+          [
+            _conditions,
+            {
+              :a => a, :b => b, :c => c, :d => d,
+              :id => instance.id,
+              :new_parent => new_parent,
+              :timestamp => Time.now.utc
+            }
+          ]
         end
 
         def case_condition_for_direction(column_name)
