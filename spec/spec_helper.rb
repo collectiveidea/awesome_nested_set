@@ -11,7 +11,7 @@ ActiveRecord::Base.logger = Logger.new(plugin_test_dir + "/debug.log")
 require 'yaml'
 require 'erb'
 ActiveRecord::Base.configurations = YAML::load(ERB.new(IO.read(plugin_test_dir + "/db/database.yml")).result)
-ActiveRecord::Base.establish_connection(ENV["DB"] ||= "sqlite3mem")
+ActiveRecord::Base.establish_connection((ENV["DB"] ||= "sqlite3mem").to_sym)
 ActiveRecord::Migration.verbose = false
 
 require 'combustion/database'
