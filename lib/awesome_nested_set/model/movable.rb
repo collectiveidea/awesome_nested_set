@@ -104,8 +104,7 @@ module CollectiveIdea #:nodoc:
 
           def after_move_to(target, position)
             target.reload_nested_set if target
-            self.set_depth!
-            self.descendants.each(&:save)
+            self.set_depth_for_self_and_descendants!
             self.reload_nested_set
           end
 

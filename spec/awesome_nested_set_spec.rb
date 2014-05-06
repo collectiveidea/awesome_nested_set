@@ -244,13 +244,18 @@ describe "AwesomeNestedSet" do
       let(:us) { Category.create!(:name => "United States") }
       let(:new_york) { Category.create!(:name => "New York") }
       let(:patent) { Category.create!(:name => "Patent Law") }
+      let(:ch) { Category.create!(:name => "Switzerland") }
+      let(:bern) { Category.create!(:name => "Bern") }
 
       before(:each) do
         # lawyers > us > new_york > patent
+        #         > ch > bern
         us.move_to_child_of(lawyers)
         new_york.move_to_child_of(us)
         patent.move_to_child_of(new_york)
-        [lawyers, us, new_york, patent].each(&:reload)
+        ch.move_to_child_of(lawyers)
+        bern.move_to_child_of(ch)
+        [lawyers, us, new_york, patent, ch, bern].each(&:reload)
       end
 
       it "updates depth when moved into child position" do
@@ -258,16 +263,40 @@ describe "AwesomeNestedSet" do
         us.depth.should == 1
         new_york.depth.should == 2
         patent.depth.should == 3
+        ch.depth.should == 1
+        bern.depth.should == 2
       end
 
-      it "updates depth of all descendants when parent is moved" do
+      it "decreases depth of all descendants when parent is moved up" do
         # lawyers
         # us > new_york > patent
         us.move_to_right_of(lawyers)
-        [lawyers, us, new_york, patent].each(&:reload)
+        [lawyers, us, new_york, patent, ch, bern].each(&:reload)
         us.depth.should == 0
         new_york.depth.should == 1
         patent.depth.should == 2
+        ch.depth.should == 1
+        bern.depth.should == 2
+      end
+
+      it "keeps depth of all descendants when parent is moved right" do
+        us.move_to_right_of(ch)
+        [lawyers, us, new_york, patent, ch, bern].each(&:reload)
+        us.depth.should == 1
+        new_york.depth.should == 2
+        patent.depth.should == 3
+        ch.depth.should == 1
+        bern.depth.should == 2
+      end
+
+      it "increases depth of all descendants when parent is moved down" do
+        us.move_to_child_of(bern)
+        [lawyers, us, new_york, patent, ch, bern].each(&:reload)
+        us.depth.should == 3
+        new_york.depth.should == 4
+        patent.depth.should == 5
+        ch.depth.should == 1
+        bern.depth.should == 2
       end
     end
 
