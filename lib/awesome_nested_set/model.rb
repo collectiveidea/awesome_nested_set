@@ -190,10 +190,35 @@ module CollectiveIdea #:nodoc:
 
           in_tenacious_transaction do
             reload
-            nested_set_scope.primary_key_scope(primary_id).
-              update_all(["#{quoted_depth_column_name} = ?", level])
+            update_depth(level)
           end
-          self[depth_column_name] = self.level
+        end
+
+        def set_depth_for_self_and_descendants!
+          return unless has_depth_column?
+
+          in_tenacious_transaction do
+            reload
+            self_and_descendants.select(primary_column_name).lock(true)
+            old_depth = self[depth_column_name] || 0
+            new_depth = level
+            update_depth(new_depth)
+            change_descendants_depth!(new_depth - old_depth)
+            new_depth
+          end
+        end
+
+        def update_depth(depth)
+          nested_set_scope.primary_key_scope(primary_id).
+              update_all(["#{quoted_depth_column_name} = ?", depth])
+          self[depth_column_name] = depth
+        end
+
+        def change_descendants_depth!(diff)
+          if !leaf? && diff != 0
+            sign = "++-"[diff <=> 0]
+            descendants.update_all("#{quoted_depth_column_name} = #{quoted_depth_column_name} #{sign} #{diff.abs}")
+          end
         end
 
         def set_default_left_and_right
