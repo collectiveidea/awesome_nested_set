@@ -7,7 +7,7 @@
 Awesome Nested Set is an implementation of the nested set pattern for ActiveRecord models.
 It is a replacement for acts_as_nested_set and BetterNestedSet, but more awesome.
 
-Version 2 supports Rails 3. Gem versions prior to 2.0 support Rails 2.
+Version 2 supports Rails 3 and Rails 4. Gem versions prior to 2.0 support Rails 2.
 
 ## What makes this so awesome?
 
