@@ -154,11 +154,11 @@ end
 
 ## Add to your existing project
 
-Create a migration to add fields:
-
 To make use of `awesome_nested_set`, your model needs to have 3 fields:
 `lft`, `rgt`, and `parent_id`. The names of these fields are configurable.
 You can also have an optional field, `depth`:
+
+Create a migration to add fields:
 
 ```ruby
 class CreateCategories < ActiveRecord::Migration
