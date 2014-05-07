@@ -151,6 +151,49 @@ class Category < ActiveRecord::Base
 end
 ```
 
+
+## Add to your existing project
+
+Create a migration to add fields:
+
+To make use of `awesome_nested_set`, your model needs to have 3 fields:
+`lft`, `rgt`, and `parent_id`. The names of these fields are configurable.
+You can also have an optional field, `depth`:
+
+```ruby
+class CreateCategories < ActiveRecord::Migration
+
+  def self.up
+    add_column :categories, :parent_id, :integer # Comment this line if your project already have this column
+    # Category.where(parent_id: 0).update_all(parent_id: nil) # Uncomment this line if your project already have :parent_id
+    add_column :categories, :lft      , :integer
+    add_column :categories, :rgt      , :integer
+    add_column :categories, :depth    , :integer  # this is optional.
+
+    # This is necessary to update :lft and :rgt columns
+    Category.rebuild!
+  end
+
+  def self.down
+    remove_column :categories, :parent_id
+    remove_column :categories, :lft
+    remove_column :categories, :rgt
+    remove_column :categories, :depth  # this is optional.
+  end
+
+end
+```
+
+Enable the nested set functionality by declaring `acts_as_nested_set` on your model
+
+```ruby
+class Category < ActiveRecord::Base
+  acts_as_nested_set
+end
+```
+
+Ready, your project now run with `awesome_nested_set` gem!
+
 ## Conversion from other trees
 
 Coming from acts_as_tree or another system where you only have a parent_id? No problem. Simply add the lft & rgt fields as above, and then run:
