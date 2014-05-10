@@ -29,7 +29,7 @@ module CollectiveIdea #:nodoc:
             move_to node, :left
           end
 
-          # Move the node to the left of another node
+          # Move the node to the right of another node
           def move_to_right_of(node)
             move_to node, :right
           end
