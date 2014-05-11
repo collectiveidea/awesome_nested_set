@@ -1197,4 +1197,11 @@ describe "AwesomeNestedSet" do
       end
     end
   end
+
+  describe 'find_or_create_by for STI nodes' do
+    it "creates the child nodes without ActiveRecord::RecordNotFound Exception" do
+      parent = Subclass1.find_or_create_by name: "Parent Node"
+      child = Subclass2.find_or_create_by name: "Child Node", parent_id: parent.id
+    end
+  end
 end
