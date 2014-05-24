@@ -63,6 +63,10 @@ module CollectiveIdea #:nodoc:
           "#{quoted_table_name}.#{quoted_primary_column_name}"
         end
 
+        def quoted_order_column_full_name
+          "#{quoted_table_name}.#{quoted_order_column_name}"
+        end
+
         def quoted_left_column_full_name
           "#{quoted_table_name}.#{quoted_left_column_name}"
         end
