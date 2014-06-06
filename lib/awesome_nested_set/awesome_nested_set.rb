@@ -55,7 +55,8 @@ module CollectiveIdea #:nodoc:
         acts_as_nested_set_relate_parent!
         acts_as_nested_set_relate_children!
 
-        attr_accessor :skip_before_destroy
+        attr_accessor :skip_destroy_descendants
+        attr_accessor :skip_update_siblings_for_remaining_nodes
 
         acts_as_nested_set_prevent_assignment_to_reserved_columns!
         acts_as_nested_set_define_callbacks!
@@ -68,6 +69,7 @@ module CollectiveIdea #:nodoc:
         before_save    :store_new_parent
         after_save     :move_to_new_parent, :set_depth!
         before_destroy :destroy_descendants
+        after_destroy  :update_siblings_for_remaining_nodes
 
         define_model_callbacks :move
       end
