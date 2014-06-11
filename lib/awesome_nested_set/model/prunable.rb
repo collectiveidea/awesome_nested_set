@@ -16,6 +16,9 @@ module CollectiveIdea #:nodoc:
 
               return false unless destroy_or_delete_descendants
 
+              # Reload is needed because children may have updated their parent (self) during deletion.
+              reload
+
               # Don't allow multiple calls to destroy to corrupt the set
               self.skip_destroy_descendants = true
             end
