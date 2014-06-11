@@ -24,9 +24,13 @@ module CollectiveIdea #:nodoc:
 
           lock_nodes_between! a, d
 
-          nested_set_scope.where(where_statement(a, d)).update_all(
-            conditions(a, b, c, d)
-          )
+          # move nodes to the right starting with the right most nodes to avoid
+          # unique constraint violations
+          nested_set_scope.
+            unscope(:order).
+            order(instance_arel_table[:lft].desc).
+            where(where_statement(a, d)).
+            update_all(conditions(a, b, c, d))
         end
 
         private
