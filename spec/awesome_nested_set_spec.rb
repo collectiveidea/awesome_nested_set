@@ -539,6 +539,23 @@ describe "AwesomeNestedSet" do
       categories(:child_2).right.should == 7
     end
 
+    it "move downward within current parent" do
+      categories(:child_1).move_to_child_with_index(categories(:top_level), 1)
+      categories(:child_1).parent_id.should == categories(:top_level).id
+      categories(:child_1).left.should == 6
+      categories(:child_1).right.should == 7
+      categories(:child_2).reload
+      categories(:child_2).parent_id.should == categories(:top_level).id
+      categories(:child_2).left.should == 2
+      categories(:child_2).right.should == 5
+    end
+
+    it "move to the same position within current parent" do
+      categories(:child_1).move_to_child_with_index(categories(:top_level), 0)
+      categories(:child_1).parent_id.should == categories(:top_level).id
+      categories(:child_1).left.should == 2
+      categories(:child_1).right.should == 3
+    end
   end
 
   it "move_to_child_of_appends_to_end" do
