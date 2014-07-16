@@ -14,6 +14,8 @@ module CollectiveIdea #:nodoc:
             retry_count = 0
             begin
               transaction(&block)
+            rescue CollectiveIdea::Acts::NestedSet::Move::ImpossibleMove
+              raise
             rescue ActiveRecord::StatementInvalid => error
               raise OpenTransactionsIsNotZero.new(error.message) unless connection.open_transactions.zero?
               raise unless error.message =~ /Deadlock found when trying to get lock|Lock wait timeout exceeded/

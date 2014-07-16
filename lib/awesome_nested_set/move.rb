@@ -110,9 +110,12 @@ module CollectiveIdea #:nodoc:
           [bound, other_bound]
         end
 
+        class ImpossibleMove < ActiveRecord::StatementInvalid
+        end
+
         def prevent_impossible_move
           if !root && !instance.move_possible?(target)
-            raise ActiveRecord::ActiveRecordError, "Impossible move, target node cannot be inside moved tree."
+            raise ImpossibleMove, "Impossible move, target node cannot be inside moved tree."
           end
         end
 
