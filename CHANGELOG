@@ -1,3 +1,4 @@
+3.0.0
 * Support Rails 4.1 [Micah Geisel]
 * Support dependent: restrict_with_error [Tiago Moraes]
 * Added information to the README regarding indexes to be added for performance [bdarfler]
