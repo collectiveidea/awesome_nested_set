@@ -19,7 +19,7 @@ task :build do
 end
 
 task :release => :build do
-  system "gem push awesome_nested_set-#{ActsAsGeocodable::VERSION}.gem"
+  system "gem push awesome_nested_set-#{AwesomeNestedSet::VERSION}.gem"
 end
 
 require 'rdoc/task'
