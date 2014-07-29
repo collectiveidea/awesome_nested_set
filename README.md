@@ -1,19 +1,17 @@
-# AwesomeNestedSet
+# Awesome Nested Set
 
-[![Build Status][Build Status Image]][Build Status]
-[Build Status Image]: https://travis-ci.org/collectiveidea/awesome_nested_set.png?branch=master
-[Build Status]: https://travis-ci.org/collectiveidea/awesome_nested_set
+[![Build Status](https://travis-ci.org/collectiveidea/awesome_nested_set.png?branch=master)](https://travis-ci.org/collectiveidea/awesome_nested_set) [![Code Climate](https://codeclimate.com/github/collectiveidea/awesome_nested_set.png)](https://codeclimate.com/github/collectiveidea/awesome_nested_set) [![Dependency Status](https://gemnasium.com/collectiveidea/awesome_nested_set.svg)](https://gemnasium.com/collectiveidea/awesome_nested_set)
+
 
 Awesome Nested Set is an implementation of the nested set pattern for ActiveRecord models.
 It is a replacement for acts_as_nested_set and BetterNestedSet, but more awesome.
 
-Version 2 supports Rails 3 and Rails 4. Gem versions prior to 2.0 support Rails 2.
+Version 3 supports Rails 3 and Rails 4. Gem versions prior to 2.0 support Rails 2.
 
 ## What makes this so awesome?
 
 This is a new implementation of nested set based off of BetterNestedSet that fixes some bugs, removes tons of duplication, adds a few useful methods, and adds STI support.
 
-[![Code Climate](https://codeclimate.com/github/collectiveidea/awesome_nested_set.png)](https://codeclimate.com/github/collectiveidea/awesome_nested_set)
 
 ## Installation
 
@@ -227,4 +225,4 @@ You can learn more about nested sets at: http://threebit.net/tutorials/nestedset
 
 Please see the ['Contributing' document](CONTRIBUTING.md).
 
-Copyright © 2008 - 2013 Collective Idea, released under the MIT license
+Copyright © 2008 - 2014 Collective Idea, released under the MIT license
