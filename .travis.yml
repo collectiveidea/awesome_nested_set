@@ -1,5 +1,6 @@
 language: ruby
 script: bundle exec rspec spec
+sudo: false
 env:
   - DB=sqlite3
   - DB=sqlite3mem
