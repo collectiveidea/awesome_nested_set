@@ -21,7 +21,7 @@ describe "Helper" do
       actual = nested_set_options(Category.all) do |c|
         "#{'-' * c.level} #{c.name}"
       end
-      actual.should == expected
+      expect(actual).to eq(expected)
     end
 
     it "test_nested_set_options_with_mover" do
@@ -34,7 +34,7 @@ describe "Helper" do
       actual = nested_set_options(Category.all, categories(:child_2)) do |c|
         "#{'-' * c.level} #{c.name}"
       end
-      actual.should == expected
+      expect(actual).to eq(expected)
     end
 
     it "test_nested_set_options_with_class_as_argument" do
@@ -49,7 +49,7 @@ describe "Helper" do
       actual = nested_set_options(Category) do |c|
         "#{'-' * c.level} #{c.name}"
       end
-      actual.should == expected
+      expect(actual).to eq(expected)
     end
 
     it "test_nested_set_options_with_class_as_argument_with_mover" do
@@ -62,7 +62,7 @@ describe "Helper" do
       actual = nested_set_options(Category, categories(:child_2)) do |c|
         "#{'-' * c.level} #{c.name}"
       end
-      actual.should == expected
+      expect(actual).to eq(expected)
     end
 
     it "test_nested_set_options_with_array_as_argument_without_mover" do
@@ -77,9 +77,9 @@ describe "Helper" do
       actual = nested_set_options(Category.all) do |c|
         "#{'-' * c.level} #{c.name}"
       end
-      actual.length.should == expected.length
+      expect(actual.length).to eq(expected.length)
       expected.flatten.each do |node|
-        actual.flatten.should include(node)
+        expect(actual.flatten).to include(node)
       end
     end
 
@@ -93,9 +93,9 @@ describe "Helper" do
       actual = nested_set_options(Category.all, categories(:child_2)) do |c|
         "#{'-' * c.level} #{c.name}"
       end
-      actual.length.should == expected.length
+      expect(actual.length).to eq(expected.length)
       expected.flatten.each do |node|
-        actual.flatten.should include(node)
+        expect(actual.flatten).to include(node)
       end
     end
   end

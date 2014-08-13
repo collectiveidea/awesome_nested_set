@@ -7,122 +7,122 @@ describe "AwesomeNestedSet" do
 
   describe "defaults" do
     it "should have left_column_default" do
-      Default.acts_as_nested_set_options[:left_column].should == 'lft'
+      expect(Default.acts_as_nested_set_options[:left_column]).to eq('lft')
     end
 
     it "should have right_column_default" do
-      Default.acts_as_nested_set_options[:right_column].should == 'rgt'
+      expect(Default.acts_as_nested_set_options[:right_column]).to eq('rgt')
     end
 
     it "should have parent_column_default" do
-      Default.acts_as_nested_set_options[:parent_column].should == 'parent_id'
+      expect(Default.acts_as_nested_set_options[:parent_column]).to eq('parent_id')
     end
 
     it " should have a primary_column_default" do
-      Default.acts_as_nested_set_options[:primary_column].should == 'id'
+      expect(Default.acts_as_nested_set_options[:primary_column]).to eq('id')
     end
 
     it "should have scope_default" do
-      Default.acts_as_nested_set_options[:scope].should be_nil
+      expect(Default.acts_as_nested_set_options[:scope]).to be_nil
     end
 
     it "should have left_column_name" do
-      Default.left_column_name.should == 'lft'
-      Default.new.left_column_name.should == 'lft'
-      RenamedColumns.left_column_name.should == 'red'
-      RenamedColumns.new.left_column_name.should == 'red'
+      expect(Default.left_column_name).to eq('lft')
+      expect(Default.new.left_column_name).to eq('lft')
+      expect(RenamedColumns.left_column_name).to eq('red')
+      expect(RenamedColumns.new.left_column_name).to eq('red')
     end
 
     it "should have right_column_name" do
-      Default.right_column_name.should == 'rgt'
-      Default.new.right_column_name.should == 'rgt'
-      RenamedColumns.right_column_name.should == 'black'
-      RenamedColumns.new.right_column_name.should == 'black'
+      expect(Default.right_column_name).to eq('rgt')
+      expect(Default.new.right_column_name).to eq('rgt')
+      expect(RenamedColumns.right_column_name).to eq('black')
+      expect(RenamedColumns.new.right_column_name).to eq('black')
     end
 
     it "has a depth_column_name" do
-      Default.depth_column_name.should == 'depth'
-      Default.new.depth_column_name.should == 'depth'
-      RenamedColumns.depth_column_name.should == 'pitch'
-      RenamedColumns.depth_column_name.should == 'pitch'
+      expect(Default.depth_column_name).to eq('depth')
+      expect(Default.new.depth_column_name).to eq('depth')
+      expect(RenamedColumns.depth_column_name).to eq('pitch')
+      expect(RenamedColumns.depth_column_name).to eq('pitch')
     end
 
     it "should have parent_column_name" do
-      Default.parent_column_name.should == 'parent_id'
-      Default.new.parent_column_name.should == 'parent_id'
-      RenamedColumns.parent_column_name.should == 'mother_id'
-      RenamedColumns.new.parent_column_name.should == 'mother_id'
+      expect(Default.parent_column_name).to eq('parent_id')
+      expect(Default.new.parent_column_name).to eq('parent_id')
+      expect(RenamedColumns.parent_column_name).to eq('mother_id')
+      expect(RenamedColumns.new.parent_column_name).to eq('mother_id')
     end
 
     it "should have primary_column_name" do
-      Default.primary_column_name.should == 'id'
-      Default.new.primary_column_name.should == 'id'
-      User.primary_column_name.should == 'uuid'
-      User.new.primary_column_name.should == 'uuid'
+      expect(Default.primary_column_name).to eq('id')
+      expect(Default.new.primary_column_name).to eq('id')
+      expect(User.primary_column_name).to eq('uuid')
+      expect(User.new.primary_column_name).to eq('uuid')
     end
   end
 
   it "creation_with_altered_column_names" do
-    lambda {
+    expect {
       RenamedColumns.create!()
-    }.should_not raise_exception
+    }.not_to raise_exception
   end
 
   it "creation when existing record has nil left column" do
-    lambda {
+    expect {
       Broken.create!
-    }.should_not raise_exception
+    }.not_to raise_exception
   end
 
   describe "quoted column names" do
     it "quoted_left_column_name" do
       quoted = Default.connection.quote_column_name('lft')
-      Default.quoted_left_column_name.should == quoted
-      Default.new.quoted_left_column_name.should == quoted
+      expect(Default.quoted_left_column_name).to eq(quoted)
+      expect(Default.new.quoted_left_column_name).to eq(quoted)
     end
 
     it "quoted_right_column_name" do
       quoted = Default.connection.quote_column_name('rgt')
-      Default.quoted_right_column_name.should == quoted
-      Default.new.quoted_right_column_name.should == quoted
+      expect(Default.quoted_right_column_name).to eq(quoted)
+      expect(Default.new.quoted_right_column_name).to eq(quoted)
     end
 
     it "quoted_depth_column_name" do
       quoted = Default.connection.quote_column_name('depth')
-      Default.quoted_depth_column_name.should == quoted
-      Default.new.quoted_depth_column_name.should == quoted
+      expect(Default.quoted_depth_column_name).to eq(quoted)
+      expect(Default.new.quoted_depth_column_name).to eq(quoted)
     end
 
     it "quoted_order_column_name" do
       quoted = Default.connection.quote_column_name('lft')
-      Default.quoted_order_column_name.should == quoted
-      Default.new.quoted_order_column_name.should == quoted
+      expect(Default.quoted_order_column_name).to eq(quoted)
+      expect(Default.new.quoted_order_column_name).to eq(quoted)
     end
   end
 
   describe "protected columns" do
     it "left_column_protected_from_assignment" do
-      lambda {
+      expect {
         Category.new.lft = 1
-      }.should raise_exception(ActiveRecord::ActiveRecordError)
+      }.to raise_exception(ActiveRecord::ActiveRecordError)
     end
 
     it "right_column_protected_from_assignment" do
-      lambda {
+      expect {
         Category.new.rgt = 1
-      }.should raise_exception(ActiveRecord::ActiveRecordError)
+      }.to raise_exception(ActiveRecord::ActiveRecordError)
     end
 
     it "depth_column_protected_from_assignment" do
-      lambda {
+      expect {
         Category.new.depth = 1
-      }.should raise_exception(ActiveRecord::ActiveRecordError)
+      }.to raise_exception(ActiveRecord::ActiveRecordError)
     end
   end
 
   describe "scope" do
     it "scoped_appends_id" do
-      ScopedCategory.acts_as_nested_set_options[:scope].should == :organization_id
+      expect(ScopedCategory.acts_as_nested_set_options[:scope]).to eq(:organization_id)
     end
   end
 
@@ -130,98 +130,98 @@ describe "AwesomeNestedSet" do
     it "roots_class_method" do
       found_by_us = Category.where(:parent_id => nil).to_a
       found_by_roots = Category.roots.to_a
-      found_by_us.length.should == found_by_roots.length
+      expect(found_by_us.length).to eq(found_by_roots.length)
       found_by_us.each do |root|
-        found_by_roots.should include(root)
+        expect(found_by_roots).to include(root)
       end
     end
 
     it "root_class_method" do
-      Category.root.should == categories(:top_level)
+      expect(Category.root).to eq(categories(:top_level))
     end
 
     it "root" do
-      categories(:child_3).root.should == categories(:top_level)
+      expect(categories(:child_3).root).to eq(categories(:top_level))
     end
 
     it "root when not persisted and parent_column_name value is self" do
       new_category = Category.new
-      new_category.root.should == new_category
+      expect(new_category.root).to eq(new_category)
     end
 
     it "root when not persisted and parent_column_name value is set" do
       last_category = Category.last
-      Category.new(Default.parent_column_name => last_category.id).root.should == last_category.root
+      expect(Category.new(Default.parent_column_name => last_category.id).root).to eq(last_category.root)
     end
 
     it "root?" do
-      categories(:top_level).root?.should be_true
-      categories(:top_level_2).root?.should be_true
+      expect(categories(:top_level).root?).to be_truthy
+      expect(categories(:top_level_2).root?).to be_truthy
     end
 
     it "leaves_class_method" do
-      Category.where("#{Category.right_column_name} - #{Category.left_column_name} = 1").to_a.should == Category.leaves.to_a
-      Category.leaves.count.should == 4
-      Category.leaves.should include(categories(:child_1))
-      Category.leaves.should include(categories(:child_2_1))
-      Category.leaves.should include(categories(:child_3))
-      Category.leaves.should include(categories(:top_level_2))
+      expect(Category.where("#{Category.right_column_name} - #{Category.left_column_name} = 1").to_a).to eq(Category.leaves.to_a)
+      expect(Category.leaves.count).to eq(4)
+      expect(Category.leaves).to include(categories(:child_1))
+      expect(Category.leaves).to include(categories(:child_2_1))
+      expect(Category.leaves).to include(categories(:child_3))
+      expect(Category.leaves).to include(categories(:top_level_2))
     end
 
     it "leaf" do
-      categories(:child_1).leaf?.should be_true
-      categories(:child_2_1).leaf?.should be_true
-      categories(:child_3).leaf?.should be_true
-      categories(:top_level_2).leaf?.should be_true
+      expect(categories(:child_1).leaf?).to be_truthy
+      expect(categories(:child_2_1).leaf?).to be_truthy
+      expect(categories(:child_3).leaf?).to be_truthy
+      expect(categories(:top_level_2).leaf?).to be_truthy
 
-      categories(:top_level).leaf?.should be_false
-      categories(:child_2).leaf?.should be_false
-      Category.new.leaf?.should be_false
+      expect(categories(:top_level).leaf?).to be_falsey
+      expect(categories(:child_2).leaf?).to be_falsey
+      expect(Category.new.leaf?).to be_falsey
     end
 
     it "parent" do
-      categories(:child_2_1).parent.should == categories(:child_2)
+      expect(categories(:child_2_1).parent).to eq(categories(:child_2))
     end
 
     it "self_and_ancestors" do
       child = categories(:child_2_1)
       self_and_ancestors = [categories(:top_level), categories(:child_2), child]
-      child.self_and_ancestors.should == self_and_ancestors
+      expect(child.self_and_ancestors).to eq(self_and_ancestors)
     end
 
     it "ancestors" do
       child = categories(:child_2_1)
       ancestors = [categories(:top_level), categories(:child_2)]
-      ancestors.should == child.ancestors
+      expect(ancestors).to eq(child.ancestors)
     end
 
     it "self_and_siblings" do
       child = categories(:child_2)
       self_and_siblings = [categories(:child_1), child, categories(:child_3)]
-      self_and_siblings.should == child.self_and_siblings
-      lambda do
+      expect(self_and_siblings).to eq(child.self_and_siblings)
+      expect do
         tops = [categories(:top_level), categories(:top_level_2)]
         assert_equal tops, categories(:top_level).self_and_siblings
-      end.should_not raise_exception
+      end.not_to raise_exception
     end
 
     it "siblings" do
       child = categories(:child_2)
       siblings = [categories(:child_1), categories(:child_3)]
-      siblings.should == child.siblings
+      expect(siblings).to eq(child.siblings)
     end
 
     it "leaves" do
       leaves = [categories(:child_1), categories(:child_2_1), categories(:child_3)]
-      categories(:top_level).leaves.should == leaves
+      expect(categories(:top_level).leaves).to eq(leaves)
     end
   end
 
   describe "level" do
     it "returns the correct level" do
-      categories(:top_level).level.should == 0
-      categories(:child_1).level.should == 1
-      categories(:child_2_1).level.should == 2
+      expect(categories(:top_level).level).to eq(0)
+      expect(categories(:child_1).level).to eq(1)
+      expect(categories(:child_2_1).level).to eq(2)
     end
 
     context "given parent associations are loaded" do
@@ -230,9 +230,9 @@ describe "AwesomeNestedSet" do
         if child.respond_to?(:association)
           child.association(:parent).load_target
           child.parent.association(:parent).load_target
-          child.level.should == 1
+          expect(child.level).to eq(1)
         else
-          pending 'associations not used where child#association is not a method'
+          skip 'associations not used where child#association is not a method'
         end
       end
     end
@@ -259,12 +259,12 @@ describe "AwesomeNestedSet" do
       end
 
       it "updates depth when moved into child position" do
-        lawyers.depth.should == 0
-        us.depth.should == 1
-        new_york.depth.should == 2
-        patent.depth.should == 3
-        ch.depth.should == 1
-        bern.depth.should == 2
+        expect(lawyers.depth).to eq(0)
+        expect(us.depth).to eq(1)
+        expect(new_york.depth).to eq(2)
+        expect(patent.depth).to eq(3)
+        expect(ch.depth).to eq(1)
+        expect(bern.depth).to eq(2)
       end
 
       it "decreases depth of all descendants when parent is moved up" do
@@ -272,48 +272,48 @@ describe "AwesomeNestedSet" do
         # us > new_york > patent
         us.move_to_right_of(lawyers)
         [lawyers, us, new_york, patent, ch, bern].each(&:reload)
-        us.depth.should == 0
-        new_york.depth.should == 1
-        patent.depth.should == 2
-        ch.depth.should == 1
-        bern.depth.should == 2
+        expect(us.depth).to eq(0)
+        expect(new_york.depth).to eq(1)
+        expect(patent.depth).to eq(2)
+        expect(ch.depth).to eq(1)
+        expect(bern.depth).to eq(2)
       end
 
       it "keeps depth of all descendants when parent is moved right" do
         us.move_to_right_of(ch)
         [lawyers, us, new_york, patent, ch, bern].each(&:reload)
-        us.depth.should == 1
-        new_york.depth.should == 2
-        patent.depth.should == 3
-        ch.depth.should == 1
-        bern.depth.should == 2
+        expect(us.depth).to eq(1)
+        expect(new_york.depth).to eq(2)
+        expect(patent.depth).to eq(3)
+        expect(ch.depth).to eq(1)
+        expect(bern.depth).to eq(2)
       end
 
       it "increases depth of all descendants when parent is moved down" do
         us.move_to_child_of(bern)
         [lawyers, us, new_york, patent, ch, bern].each(&:reload)
-        us.depth.should == 3
-        new_york.depth.should == 4
-        patent.depth.should == 5
-        ch.depth.should == 1
-        bern.depth.should == 2
+        expect(us.depth).to eq(3)
+        expect(new_york.depth).to eq(4)
+        expect(patent.depth).to eq(5)
+        expect(ch.depth).to eq(1)
+        expect(bern.depth).to eq(2)
       end
     end
 
     it "is magic and does not apply when column is missing" do
-      lambda { NoDepth.create!(:name => "shallow") }.should_not raise_error
-      lambda { NoDepth.first.save }.should_not raise_error
-      lambda { NoDepth.rebuild! }.should_not raise_error
+      expect { NoDepth.create!(:name => "shallow") }.not_to raise_error
+      expect { NoDepth.first.save }.not_to raise_error
+      expect { NoDepth.rebuild! }.not_to raise_error
 
-      NoDepth.method_defined?(:depth).should be_false
-      NoDepth.first.respond_to?(:depth).should be_false
+      expect(NoDepth.method_defined?(:depth)).to be_falsey
+      expect(NoDepth.first.respond_to?(:depth)).to be_falsey
     end
   end
 
   it "has_children?" do
-    categories(:child_2_1).children.empty?.should be_true
-    categories(:child_2).children.empty?.should be_false
-    categories(:top_level).children.empty?.should be_false
+    expect(categories(:child_2_1).children.empty?).to be_truthy
+    expect(categories(:child_2).children.empty?).to be_falsey
+    expect(categories(:top_level).children.empty?).to be_falsey
   end
 
   it "self_and_descendants" do
@@ -325,8 +325,8 @@ describe "AwesomeNestedSet" do
       categories(:child_2_1),
       categories(:child_3)
     ]
-    self_and_descendants.should == parent.self_and_descendants
-    self_and_descendants.count.should == parent.self_and_descendants.count
+    expect(self_and_descendants).to eq(parent.self_and_descendants)
+    expect(self_and_descendants.count).to eq(parent.self_and_descendants.count)
   end
 
   it "descendants" do
@@ -337,9 +337,9 @@ describe "AwesomeNestedSet" do
     patent.move_to_child_of(us)
     lawyers.reload
 
-    lawyers.children.size.should == 1
-    us.children.size.should == 1
-    lawyers.descendants.size.should == 2
+    expect(lawyers.children.size).to eq(1)
+    expect(us.children.size).to eq(1)
+    expect(lawyers.descendants.size).to eq(2)
   end
 
   it "self_and_descendants" do
@@ -350,274 +350,274 @@ describe "AwesomeNestedSet" do
       categories(:child_2_1),
       categories(:child_3)
     ]
-    descendants.should == parent.descendants
+    expect(descendants).to eq(parent.descendants)
   end
 
   it "children" do
     category = categories(:top_level)
-    category.children.each {|c| category.id.should == c.parent_id }
+    category.children.each {|c| expect(category.id).to eq(c.parent_id) }
   end
 
   it "order_of_children" do
     categories(:child_2).move_left
-    categories(:child_2).should == categories(:top_level).children[0]
-    categories(:child_1).should == categories(:top_level).children[1]
-    categories(:child_3).should == categories(:top_level).children[2]
+    expect(categories(:child_2)).to eq(categories(:top_level).children[0])
+    expect(categories(:child_1)).to eq(categories(:top_level).children[1])
+    expect(categories(:child_3)).to eq(categories(:top_level).children[2])
   end
 
   it "is_or_is_ancestor_of?" do
-    categories(:top_level).is_or_is_ancestor_of?(categories(:child_1)).should be_true
-    categories(:top_level).is_or_is_ancestor_of?(categories(:child_2_1)).should be_true
-    categories(:child_2).is_or_is_ancestor_of?(categories(:child_2_1)).should be_true
-    categories(:child_2_1).is_or_is_ancestor_of?(categories(:child_2)).should be_false
-    categories(:child_1).is_or_is_ancestor_of?(categories(:child_2)).should be_false
-    categories(:child_1).is_or_is_ancestor_of?(categories(:child_1)).should be_true
+    expect(categories(:top_level).is_or_is_ancestor_of?(categories(:child_1))).to be_truthy
+    expect(categories(:top_level).is_or_is_ancestor_of?(categories(:child_2_1))).to be_truthy
+    expect(categories(:child_2).is_or_is_ancestor_of?(categories(:child_2_1))).to be_truthy
+    expect(categories(:child_2_1).is_or_is_ancestor_of?(categories(:child_2))).to be_falsey
+    expect(categories(:child_1).is_or_is_ancestor_of?(categories(:child_2))).to be_falsey
+    expect(categories(:child_1).is_or_is_ancestor_of?(categories(:child_1))).to be_truthy
   end
 
   it "is_ancestor_of?" do
-    categories(:top_level).is_ancestor_of?(categories(:child_1)).should be_true
-    categories(:top_level).is_ancestor_of?(categories(:child_2_1)).should be_true
-    categories(:child_2).is_ancestor_of?(categories(:child_2_1)).should be_true
-    categories(:child_2_1).is_ancestor_of?(categories(:child_2)).should be_false
-    categories(:child_1).is_ancestor_of?(categories(:child_2)).should be_false
-    categories(:child_1).is_ancestor_of?(categories(:child_1)).should be_false
+    expect(categories(:top_level).is_ancestor_of?(categories(:child_1))).to be_truthy
+    expect(categories(:top_level).is_ancestor_of?(categories(:child_2_1))).to be_truthy
+    expect(categories(:child_2).is_ancestor_of?(categories(:child_2_1))).to be_truthy
+    expect(categories(:child_2_1).is_ancestor_of?(categories(:child_2))).to be_falsey
+    expect(categories(:child_1).is_ancestor_of?(categories(:child_2))).to be_falsey
+    expect(categories(:child_1).is_ancestor_of?(categories(:child_1))).to be_falsey
   end
 
   it "is_or_is_ancestor_of_with_scope" do
     root = ScopedCategory.root
     child = root.children.first
-    root.is_or_is_ancestor_of?(child).should be_true
+    expect(root.is_or_is_ancestor_of?(child)).to be_truthy
     child.update_attribute :organization_id, 'different'
-    root.is_or_is_ancestor_of?(child).should be_false
+    expect(root.is_or_is_ancestor_of?(child)).to be_falsey
   end
 
   it "is_or_is_descendant_of?" do
-    categories(:child_1).is_or_is_descendant_of?(categories(:top_level)).should be_true
-    categories(:child_2_1).is_or_is_descendant_of?(categories(:top_level)).should be_true
-    categories(:child_2_1).is_or_is_descendant_of?(categories(:child_2)).should be_true
-    categories(:child_2).is_or_is_descendant_of?(categories(:child_2_1)).should be_false
-    categories(:child_2).is_or_is_descendant_of?(categories(:child_1)).should be_false
-    categories(:child_1).is_or_is_descendant_of?(categories(:child_1)).should be_true
+    expect(categories(:child_1).is_or_is_descendant_of?(categories(:top_level))).to be_truthy
+    expect(categories(:child_2_1).is_or_is_descendant_of?(categories(:top_level))).to be_truthy
+    expect(categories(:child_2_1).is_or_is_descendant_of?(categories(:child_2))).to be_truthy
+    expect(categories(:child_2).is_or_is_descendant_of?(categories(:child_2_1))).to be_falsey
+    expect(categories(:child_2).is_or_is_descendant_of?(categories(:child_1))).to be_falsey
+    expect(categories(:child_1).is_or_is_descendant_of?(categories(:child_1))).to be_truthy
   end
 
   it "is_descendant_of?" do
-    categories(:child_1).is_descendant_of?(categories(:top_level)).should be_true
-    categories(:child_2_1).is_descendant_of?(categories(:top_level)).should be_true
-    categories(:child_2_1).is_descendant_of?(categories(:child_2)).should be_true
-    categories(:child_2).is_descendant_of?(categories(:child_2_1)).should be_false
-    categories(:child_2).is_descendant_of?(categories(:child_1)).should be_false
-    categories(:child_1).is_descendant_of?(categories(:child_1)).should be_false
+    expect(categories(:child_1).is_descendant_of?(categories(:top_level))).to be_truthy
+    expect(categories(:child_2_1).is_descendant_of?(categories(:top_level))).to be_truthy
+    expect(categories(:child_2_1).is_descendant_of?(categories(:child_2))).to be_truthy
+    expect(categories(:child_2).is_descendant_of?(categories(:child_2_1))).to be_falsey
+    expect(categories(:child_2).is_descendant_of?(categories(:child_1))).to be_falsey
+    expect(categories(:child_1).is_descendant_of?(categories(:child_1))).to be_falsey
   end
 
   it "is_or_is_descendant_of_with_scope" do
     root = ScopedCategory.root
     child = root.children.first
-    child.is_or_is_descendant_of?(root).should be_true
+    expect(child.is_or_is_descendant_of?(root)).to be_truthy
     child.update_attribute :organization_id, 'different'
-    child.is_or_is_descendant_of?(root).should be_false
+    expect(child.is_or_is_descendant_of?(root)).to be_falsey
   end
 
   it "same_scope?" do
     root = ScopedCategory.root
     child = root.children.first
-    child.same_scope?(root).should be_true
+    expect(child.same_scope?(root)).to be_truthy
     child.update_attribute :organization_id, 'different'
-    child.same_scope?(root).should be_false
+    expect(child.same_scope?(root)).to be_falsey
   end
 
   it "left_sibling" do
-    categories(:child_1).should == categories(:child_2).left_sibling
-    categories(:child_2).should == categories(:child_3).left_sibling
+    expect(categories(:child_1)).to eq(categories(:child_2).left_sibling)
+    expect(categories(:child_2)).to eq(categories(:child_3).left_sibling)
   end
 
   it "left_sibling_of_root" do
-    categories(:top_level).left_sibling.should be_nil
+    expect(categories(:top_level).left_sibling).to be_nil
   end
 
   it "left_sibling_without_siblings" do
-    categories(:child_2_1).left_sibling.should be_nil
+    expect(categories(:child_2_1).left_sibling).to be_nil
   end
 
   it "left_sibling_of_leftmost_node" do
-    categories(:child_1).left_sibling.should be_nil
+    expect(categories(:child_1).left_sibling).to be_nil
   end
 
   it "right_sibling" do
-    categories(:child_3).should == categories(:child_2).right_sibling
-    categories(:child_2).should == categories(:child_1).right_sibling
+    expect(categories(:child_3)).to eq(categories(:child_2).right_sibling)
+    expect(categories(:child_2)).to eq(categories(:child_1).right_sibling)
   end
 
   it "right_sibling_of_root" do
-    categories(:top_level_2).should == categories(:top_level).right_sibling
-    categories(:top_level_2).right_sibling.should be_nil
+    expect(categories(:top_level_2)).to eq(categories(:top_level).right_sibling)
+    expect(categories(:top_level_2).right_sibling).to be_nil
   end
 
   it "right_sibling_without_siblings" do
-    categories(:child_2_1).right_sibling.should be_nil
+    expect(categories(:child_2_1).right_sibling).to be_nil
   end
 
   it "right_sibling_of_rightmost_node" do
-    categories(:child_3).right_sibling.should be_nil
+    expect(categories(:child_3).right_sibling).to be_nil
   end
 
   it "move_left" do
     categories(:child_2).move_left
-    categories(:child_2).left_sibling.should be_nil
-    categories(:child_1).should == categories(:child_2).right_sibling
-    Category.valid?.should be_true
+    expect(categories(:child_2).left_sibling).to be_nil
+    expect(categories(:child_1)).to eq(categories(:child_2).right_sibling)
+    expect(Category.valid?).to be_truthy
   end
 
   it "move_right" do
     categories(:child_2).move_right
-    categories(:child_2).right_sibling.should be_nil
-    categories(:child_3).should == categories(:child_2).left_sibling
-    Category.valid?.should be_true
+    expect(categories(:child_2).right_sibling).to be_nil
+    expect(categories(:child_3)).to eq(categories(:child_2).left_sibling)
+    expect(Category.valid?).to be_truthy
   end
 
   it "move_to_left_of" do
     categories(:child_3).move_to_left_of(categories(:child_1))
-    categories(:child_3).left_sibling.should be_nil
-    categories(:child_1).should == categories(:child_3).right_sibling
-    Category.valid?.should be_true
+    expect(categories(:child_3).left_sibling).to be_nil
+    expect(categories(:child_1)).to eq(categories(:child_3).right_sibling)
+    expect(Category.valid?).to be_truthy
   end
 
   it "move_to_right_of" do
     categories(:child_1).move_to_right_of(categories(:child_3))
-    categories(:child_1).right_sibling.should be_nil
-    categories(:child_3).should == categories(:child_1).left_sibling
-    Category.valid?.should be_true
+    expect(categories(:child_1).right_sibling).to be_nil
+    expect(categories(:child_3)).to eq(categories(:child_1).left_sibling)
+    expect(Category.valid?).to be_truthy
   end
 
   it "move_to_root" do
     categories(:child_2).move_to_root
-    categories(:child_2).parent.should be_nil
-    categories(:child_2).level.should == 0
-    categories(:child_2_1).level.should == 1
-    categories(:child_2).left.should == 9
-    categories(:child_2).right.should == 12
-    Category.valid?.should be_true
+    expect(categories(:child_2).parent).to be_nil
+    expect(categories(:child_2).level).to eq(0)
+    expect(categories(:child_2_1).level).to eq(1)
+    expect(categories(:child_2).left).to eq(9)
+    expect(categories(:child_2).right).to eq(12)
+    expect(Category.valid?).to be_truthy
   end
 
   it "move_to_child_of" do
     categories(:child_1).move_to_child_of(categories(:child_3))
-    categories(:child_3).id.should == categories(:child_1).parent_id
-    Category.valid?.should be_true
+    expect(categories(:child_3).id).to eq(categories(:child_1).parent_id)
+    expect(Category.valid?).to be_truthy
   end
 
   describe "#move_to_child_with_index" do
     it "move to a node without child" do
       categories(:child_1).move_to_child_with_index(categories(:child_3), 0)
-      categories(:child_3).id.should == categories(:child_1).parent_id
-      categories(:child_1).left.should == 7
-      categories(:child_1).right.should == 8
-      categories(:child_3).left.should == 6
-      categories(:child_3).right.should == 9
-      Category.valid?.should be_true
+      expect(categories(:child_3).id).to eq(categories(:child_1).parent_id)
+      expect(categories(:child_1).left).to eq(7)
+      expect(categories(:child_1).right).to eq(8)
+      expect(categories(:child_3).left).to eq(6)
+      expect(categories(:child_3).right).to eq(9)
+      expect(Category.valid?).to be_truthy
     end
 
     it "move to a node to the left child" do
       categories(:child_1).move_to_child_with_index(categories(:child_2), 0)
-      categories(:child_1).parent_id.should == categories(:child_2).id
-      categories(:child_2_1).left.should == 5
-      categories(:child_2_1).right.should == 6
-      categories(:child_1).left.should == 3
-      categories(:child_1).right.should == 4
+      expect(categories(:child_1).parent_id).to eq(categories(:child_2).id)
+      expect(categories(:child_2_1).left).to eq(5)
+      expect(categories(:child_2_1).right).to eq(6)
+      expect(categories(:child_1).left).to eq(3)
+      expect(categories(:child_1).right).to eq(4)
       categories(:child_2).reload
-      categories(:child_2).left.should == 2
-      categories(:child_2).right.should == 7
+      expect(categories(:child_2).left).to eq(2)
+      expect(categories(:child_2).right).to eq(7)
     end
 
     it "move to a node to the right child" do
       categories(:child_1).move_to_child_with_index(categories(:child_2), 1)
-      categories(:child_1).parent_id.should == categories(:child_2).id
-      categories(:child_2_1).left.should == 3
-      categories(:child_2_1).right.should == 4
-      categories(:child_1).left.should == 5
-      categories(:child_1).right.should == 6
+      expect(categories(:child_1).parent_id).to eq(categories(:child_2).id)
+      expect(categories(:child_2_1).left).to eq(3)
+      expect(categories(:child_2_1).right).to eq(4)
+      expect(categories(:child_1).left).to eq(5)
+      expect(categories(:child_1).right).to eq(6)
       categories(:child_2).reload
-      categories(:child_2).left.should == 2
-      categories(:child_2).right.should == 7
+      expect(categories(:child_2).left).to eq(2)
+      expect(categories(:child_2).right).to eq(7)
     end
 
     it "move downward within current parent" do
       categories(:child_1).move_to_child_with_index(categories(:top_level), 1)
-      categories(:child_1).parent_id.should == categories(:top_level).id
-      categories(:child_1).left.should == 6
-      categories(:child_1).right.should == 7
+      expect(categories(:child_1).parent_id).to eq(categories(:top_level).id)
+      expect(categories(:child_1).left).to eq(6)
+      expect(categories(:child_1).right).to eq(7)
       categories(:child_2).reload
-      categories(:child_2).parent_id.should == categories(:top_level).id
-      categories(:child_2).left.should == 2
-      categories(:child_2).right.should == 5
+      expect(categories(:child_2).parent_id).to eq(categories(:top_level).id)
+      expect(categories(:child_2).left).to eq(2)
+      expect(categories(:child_2).right).to eq(5)
     end
 
     it "move to the same position within current parent" do
       categories(:child_1).move_to_child_with_index(categories(:top_level), 0)
-      categories(:child_1).parent_id.should == categories(:top_level).id
-      categories(:child_1).left.should == 2
-      categories(:child_1).right.should == 3
+      expect(categories(:child_1).parent_id).to eq(categories(:top_level).id)
+      expect(categories(:child_1).left).to eq(2)
+      expect(categories(:child_1).right).to eq(3)
     end
   end
 
   it "move_to_child_of_appends_to_end" do
     child = Category.create! :name => 'New Child'
     child.move_to_child_of categories(:top_level)
-    child.should == categories(:top_level).children.last
+    expect(child).to eq(categories(:top_level).children.last)
   end
 
   it "subtree_move_to_child_of" do
-    categories(:child_2).left.should == 4
-    categories(:child_2).right.should == 7
+    expect(categories(:child_2).left).to eq(4)
+    expect(categories(:child_2).right).to eq(7)
 
-    categories(:child_1).left.should == 2
-    categories(:child_1).right.should == 3
+    expect(categories(:child_1).left).to eq(2)
+    expect(categories(:child_1).right).to eq(3)
 
     categories(:child_2).move_to_child_of(categories(:child_1))
-    Category.valid?.should be_true
-    categories(:child_1).id.should == categories(:child_2).parent_id
+    expect(Category.valid?).to be_truthy
+    expect(categories(:child_1).id).to eq(categories(:child_2).parent_id)
 
-    categories(:child_2).left.should == 3
-    categories(:child_2).right.should == 6
-    categories(:child_1).left.should == 2
-    categories(:child_1).right.should == 7
+    expect(categories(:child_2).left).to eq(3)
+    expect(categories(:child_2).right).to eq(6)
+    expect(categories(:child_1).left).to eq(2)
+    expect(categories(:child_1).right).to eq(7)
   end
 
   it "slightly_difficult_move_to_child_of" do
-    categories(:top_level_2).left.should == 11
-    categories(:top_level_2).right.should == 12
+    expect(categories(:top_level_2).left).to eq(11)
+    expect(categories(:top_level_2).right).to eq(12)
 
     # create a new top-level node and move single-node top-level tree inside it.
     new_top = Category.create(:name => 'New Top')
-    new_top.left.should == 13
-    new_top.right.should == 14
+    expect(new_top.left).to eq(13)
+    expect(new_top.right).to eq(14)
 
     categories(:top_level_2).move_to_child_of(new_top)
 
-    Category.valid?.should be_true
-    new_top.id.should == categories(:top_level_2).parent_id
+    expect(Category.valid?).to be_truthy
+    expect(new_top.id).to eq(categories(:top_level_2).parent_id)
 
-    categories(:top_level_2).left.should == 12
-    categories(:top_level_2).right.should == 13
-    new_top.left.should == 11
-    new_top.right.should == 14
+    expect(categories(:top_level_2).left).to eq(12)
+    expect(categories(:top_level_2).right).to eq(13)
+    expect(new_top.left).to eq(11)
+    expect(new_top.right).to eq(14)
   end
 
   it "difficult_move_to_child_of" do
-    categories(:top_level).left.should == 1
-    categories(:top_level).right.should == 10
-    categories(:child_2_1).left.should == 5
-    categories(:child_2_1).right.should == 6
+    expect(categories(:top_level).left).to eq(1)
+    expect(categories(:top_level).right).to eq(10)
+    expect(categories(:child_2_1).left).to eq(5)
+    expect(categories(:child_2_1).right).to eq(6)
 
     # create a new top-level node and move an entire top-level tree inside it.
     new_top = Category.create(:name => 'New Top')
     categories(:top_level).move_to_child_of(new_top)
     categories(:child_2_1).reload
-    Category.valid?.should be_true
-    new_top.id.should == categories(:top_level).parent_id
+    expect(Category.valid?).to be_truthy
+    expect(new_top.id).to eq(categories(:top_level).parent_id)
 
-    categories(:top_level).left.should == 4
-    categories(:top_level).right.should == 13
-    categories(:child_2_1).left.should == 8
-    categories(:child_2_1).right.should == 9
+    expect(categories(:top_level).left).to eq(4)
+    expect(categories(:top_level).right).to eq(13)
+    expect(categories(:child_2_1).left).to eq(8)
+    expect(categories(:child_2_1).right).to eq(9)
   end
 
   #rebuild swaps the position of the 2 children when added using move_to_child twice onto same parent
@@ -633,7 +633,7 @@ describe "AwesomeNestedSet" do
     Category.update_all('lft = null, rgt = null')
     Category.rebuild!
 
-    Category.roots.last.to_text.should == output
+    expect(Category.roots.last.to_text).to eq(output)
   end
 
   # doing move_to_child twice onto same parent from the furthest right first
@@ -649,7 +649,7 @@ describe "AwesomeNestedSet" do
     Category.update_all('lft = null, rgt = null')
     Category.rebuild!
 
-    Category.roots.last.to_text.should == output
+    expect(Category.roots.last.to_text).to eq(output)
   end
 
   it "should_move_to_ordered_child" do
@@ -693,99 +693,99 @@ describe "AwesomeNestedSet" do
     Category.update_all('lft = null, rgt = null')
     Category.rebuild!(false)
 
-    Category.roots.last.to_text.should == output
+    expect(Category.roots.last.to_text).to eq(output)
   end
 
   it "valid_with_null_lefts" do
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
     Category.update_all('lft = null')
-    Category.valid?.should be_false
+    expect(Category.valid?).to be_falsey
   end
 
   it "valid_with_null_rights" do
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
     Category.update_all('rgt = null')
-    Category.valid?.should be_false
+    expect(Category.valid?).to be_falsey
   end
 
   it "valid_with_missing_intermediate_node" do
     # Even though child_2_1 will still exist, it is a sign of a sloppy delete, not an invalid tree.
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
     Category.delete(categories(:child_2).id)
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
   end
 
   it "valid_with_overlapping_and_rights" do
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
     categories(:top_level_2)['lft'] = 0
     categories(:top_level_2).save
-    Category.valid?.should be_false
+    expect(Category.valid?).to be_falsey
   end
 
   it "rebuild" do
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
     before_text = Category.root.to_text
     Category.update_all('lft = null, rgt = null')
     Category.rebuild!
-    Category.valid?.should be_true
-    before_text.should == Category.root.to_text
+    expect(Category.valid?).to be_truthy
+    expect(before_text).to eq(Category.root.to_text)
   end
 
   it "move_possible_for_sibling" do
-    categories(:child_2).move_possible?(categories(:child_1)).should be_true
+    expect(categories(:child_2).move_possible?(categories(:child_1))).to be_truthy
   end
 
   it "move_not_possible_to_self" do
-    categories(:top_level).move_possible?(categories(:top_level)).should be_false
+    expect(categories(:top_level).move_possible?(categories(:top_level))).to be_falsey
   end
 
   it "move_not_possible_to_parent" do
     categories(:top_level).descendants.each do |descendant|
-      categories(:top_level).move_possible?(descendant).should be_false
-      descendant.move_possible?(categories(:top_level)).should be_true
+      expect(categories(:top_level).move_possible?(descendant)).to be_falsey
+      expect(descendant.move_possible?(categories(:top_level))).to be_truthy
     end
   end
 
   it "is_or_is_ancestor_of?" do
     [:child_1, :child_2, :child_2_1, :child_3].each do |c|
-      categories(:top_level).is_or_is_ancestor_of?(categories(c)).should be_true
+      expect(categories(:top_level).is_or_is_ancestor_of?(categories(c))).to be_truthy
     end
-    categories(:top_level).is_or_is_ancestor_of?(categories(:top_level_2)).should be_false
+    expect(categories(:top_level).is_or_is_ancestor_of?(categories(:top_level_2))).to be_falsey
   end
 
   it "left_and_rights_valid_with_blank_left" do
-    Category.left_and_rights_valid?.should be_true
+    expect(Category.left_and_rights_valid?).to be_truthy
     categories(:child_2)[:lft] = nil
     categories(:child_2).save(:validate => false)
-    Category.left_and_rights_valid?.should be_false
+    expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_blank_right" do
-    Category.left_and_rights_valid?.should be_true
+    expect(Category.left_and_rights_valid?).to be_truthy
     categories(:child_2)[:rgt] = nil
     categories(:child_2).save(:validate => false)
-    Category.left_and_rights_valid?.should be_false
+    expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_equal" do
-    Category.left_and_rights_valid?.should be_true
+    expect(Category.left_and_rights_valid?).to be_truthy
     categories(:top_level_2)[:lft] = categories(:top_level_2)[:rgt]
     categories(:top_level_2).save(:validate => false)
-    Category.left_and_rights_valid?.should be_false
+    expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_left_equal_to_parent" do
-    Category.left_and_rights_valid?.should be_true
+    expect(Category.left_and_rights_valid?).to be_truthy
     categories(:child_2)[:lft] = categories(:top_level)[:lft]
     categories(:child_2).save(:validate => false)
-    Category.left_and_rights_valid?.should be_false
+    expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_right_equal_to_parent" do
-    Category.left_and_rights_valid?.should be_true
+    expect(Category.left_and_rights_valid?).to be_truthy
     categories(:child_2)[:rgt] = categories(:top_level)[:rgt]
     categories(:child_2).save(:validate => false)
-    Category.left_and_rights_valid?.should be_false
+    expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "moving_dirty_objects_doesnt_invalidate_tree" do
@@ -796,25 +796,25 @@ describe "AwesomeNestedSet" do
     nodes = [r1, r2, r3, r4]
 
     r2.move_to_child_of(r1)
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
 
     r3.move_to_child_of(r1)
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
 
     r4.move_to_child_of(r2)
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
   end
 
   it "multi_scoped_no_duplicates_for_columns?" do
-    lambda {
+    expect {
       Note.no_duplicates_for_columns?
-    }.should_not raise_exception
+    }.not_to raise_exception
   end
 
   it "multi_scoped_all_roots_valid?" do
-    lambda {
+    expect {
       Note.all_roots_valid?
-    }.should_not raise_exception
+    }.not_to raise_exception
   end
 
   it "multi_scoped" do
@@ -822,8 +822,8 @@ describe "AwesomeNestedSet" do
     note2 = Note.create!(:body => "B", :notable_id => 2, :notable_type => 'Category')
     note3 = Note.create!(:body => "C", :notable_id => 2, :notable_type => 'Default')
 
-    [note1, note2].should == note1.self_and_siblings
-    [note3].should == note3.self_and_siblings
+    expect([note1, note2]).to eq(note1.self_and_siblings)
+    expect([note3]).to eq(note3.self_and_siblings)
   end
 
   it "multi_scoped_rebuild" do
@@ -837,17 +837,17 @@ describe "AwesomeNestedSet" do
     Note.update_all('lft = null, rgt = null')
     Note.rebuild!
 
-    Note.roots.find_by_body('A').should == root
-    [child1, child2].should == Note.roots.find_by_body('A').children
+    expect(Note.roots.find_by_body('A')).to eq(root)
+    expect([child1, child2]).to eq(Note.roots.find_by_body('A').children)
   end
 
   it "same_scope_with_multi_scopes" do
-    lambda {
+    expect {
       notes(:scope1).same_scope?(notes(:child_1))
-    }.should_not raise_exception
-    notes(:scope1).same_scope?(notes(:child_1)).should be_true
-    notes(:child_1).same_scope?(notes(:scope1)).should be_true
-    notes(:scope1).same_scope?(notes(:scope2)).should be_false
+    }.not_to raise_exception
+    expect(notes(:scope1).same_scope?(notes(:child_1))).to be_truthy
+    expect(notes(:child_1).same_scope?(notes(:scope1))).to be_truthy
+    expect(notes(:scope1).same_scope?(notes(:scope2))).to be_falsey
   end
 
   it "quoting_of_multi_scope_column_names" do
@@ -859,62 +859,62 @@ describe "AwesomeNestedSet" do
     else
       expected_quoted_scope_column_names = ["\"notable_id\"", "\"notable_type\""]
     end
-    Note.quoted_scope_column_names.should == expected_quoted_scope_column_names
+    expect(Note.quoted_scope_column_names).to eq(expected_quoted_scope_column_names)
   end
 
   it "equal_in_same_scope" do
-    notes(:scope1).should == notes(:scope1)
-    notes(:scope1).should_not == notes(:child_1)
+    expect(notes(:scope1)).to eq(notes(:scope1))
+    expect(notes(:scope1)).not_to eq(notes(:child_1))
   end
 
   it "equal_in_different_scopes" do
-    notes(:scope1).should_not == notes(:scope2)
+    expect(notes(:scope1)).not_to eq(notes(:scope2))
   end
 
   it "delete_does_not_invalidate" do
     Category.acts_as_nested_set_options[:dependent] = :delete
     categories(:child_2).destroy
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
   end
 
   it "destroy_does_not_invalidate" do
     Category.acts_as_nested_set_options[:dependent] = :destroy
     categories(:child_2).destroy
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
   end
 
   it "destroy_multiple_times_does_not_invalidate" do
     Category.acts_as_nested_set_options[:dependent] = :destroy
     categories(:child_2).destroy
     categories(:child_2).destroy
-    Category.valid?.should be_true
+    expect(Category.valid?).to be_truthy
   end
 
   it "assigning_parent_id_on_create" do
     category = Category.create!(:name => "Child", :parent_id => categories(:child_2).id)
-    categories(:child_2).should == category.parent
-    categories(:child_2).id.should == category.parent_id
-    category.left.should_not be_nil
-    category.right.should_not be_nil
-    Category.valid?.should be_true
+    expect(categories(:child_2)).to eq(category.parent)
+    expect(categories(:child_2).id).to eq(category.parent_id)
+    expect(category.left).not_to be_nil
+    expect(category.right).not_to be_nil
+    expect(Category.valid?).to be_truthy
   end
 
   it "assigning_parent_on_create" do
     category = Category.create!(:name => "Child", :parent => categories(:child_2))
-    categories(:child_2).should == category.parent
-    categories(:child_2).id.should == category.parent_id
-    category.left.should_not be_nil
-    category.right.should_not be_nil
-    Category.valid?.should be_true
+    expect(categories(:child_2)).to eq(category.parent)
+    expect(categories(:child_2).id).to eq(category.parent_id)
+    expect(category.left).not_to be_nil
+    expect(category.right).not_to be_nil
+    expect(Category.valid?).to be_truthy
   end
 
   it "assigning_parent_id_to_nil_on_create" do
     category = Category.create!(:name => "New Root", :parent_id => nil)
-    category.parent.should be_nil
-    category.parent_id.should be_nil
-    category.left.should_not be_nil
-    category.right.should_not be_nil
-    Category.valid?.should be_true
+    expect(category.parent).to be_nil
+    expect(category.parent_id).to be_nil
+    expect(category.left).not_to be_nil
+    expect(category.right).not_to be_nil
+    expect(Category.valid?).to be_truthy
   end
 
   it "assigning_parent_id_on_update" do
@@ -923,9 +923,9 @@ describe "AwesomeNestedSet" do
     category.save
     category.reload
     categories(:child_3).reload
-    categories(:child_3).should == category.parent
-    categories(:child_3).id.should == category.parent_id
-    Category.valid?.should be_true
+    expect(categories(:child_3)).to eq(category.parent)
+    expect(categories(:child_3).id).to eq(category.parent_id)
+    expect(Category.valid?).to be_truthy
   end
 
   it "assigning_parent_on_update" do
@@ -934,35 +934,35 @@ describe "AwesomeNestedSet" do
     category.save
     category.reload
     categories(:child_3).reload
-    categories(:child_3).should == category.parent
-    categories(:child_3).id.should ==  category.parent_id
-    Category.valid?.should be_true
+    expect(categories(:child_3)).to eq(category.parent)
+    expect(categories(:child_3).id).to eq(category.parent_id)
+    expect(Category.valid?).to be_truthy
   end
 
   it "assigning_parent_id_to_nil_on_update" do
     category = categories(:child_2_1)
     category.parent_id = nil
     category.save
-    category.parent.should be_nil
-    category.parent_id.should be_nil
-    Category.valid?.should be_true
+    expect(category.parent).to be_nil
+    expect(category.parent_id).to be_nil
+    expect(Category.valid?).to be_truthy
   end
 
   it "creating_child_from_parent" do
     category = categories(:child_2).children.create!(:name => "Child")
-    categories(:child_2).should == category.parent
-    categories(:child_2).id.should == category.parent_id
-    category.left.should_not be_nil
-    category.right.should_not be_nil
-    Category.valid?.should be_true
+    expect(categories(:child_2)).to eq(category.parent)
+    expect(categories(:child_2).id).to eq(category.parent_id)
+    expect(category.left).not_to be_nil
+    expect(category.right).not_to be_nil
+    expect(Category.valid?).to be_truthy
   end
 
   def check_structure(entries, structure)
     structure = structure.dup
     Category.each_with_level(entries) do |category, level|
       expected_level, expected_name = structure.shift
-      expected_name.should == category.name
-      expected_level.should == level
+      expect(expected_name).to eq(category.name)
+      expect(expected_level).to eq(level)
     end
   end
 
@@ -1007,20 +1007,20 @@ describe "AwesomeNestedSet" do
 
   describe "before_move_callback" do
     it "should fire the callback" do
-      categories(:child_2).should_receive(:custom_before_move)
+      expect(categories(:child_2)).to receive(:custom_before_move)
       categories(:child_2).move_to_root
     end
 
     it "should stop move when callback returns false" do
       Category.test_allows_move = false
-      categories(:child_3).move_to_root.should be_false
-      categories(:child_3).root?.should be_false
+      expect(categories(:child_3).move_to_root).to be_falsey
+      expect(categories(:child_3).root?).to be_falsey
     end
 
     it "should not halt save actions" do
       Category.test_allows_move = false
       categories(:child_3).parent_id = nil
-      categories(:child_3).save.should be_true
+      expect(categories(:child_3).save).to be_truthy
     end
   end
 
@@ -1028,48 +1028,48 @@ describe "AwesomeNestedSet" do
 
     it "should allow use of a counter cache for children" do
       note1 = things(:parent1)
-      note1.children.count.should == 2
+      expect(note1.children.count).to eq(2)
     end
 
     it "should increment the counter cache on create" do
       note1 = things(:parent1)
-      note1.children.count.should == 2
-      note1[:children_count].should == 2
+      expect(note1.children.count).to eq(2)
+      expect(note1[:children_count]).to eq(2)
       note1.children.create :body => 'Child 3'
-      note1.children.count.should == 3
+      expect(note1.children.count).to eq(3)
       note1.reload
-      note1[:children_count].should == 3
+      expect(note1[:children_count]).to eq(3)
     end
 
     it "should decrement the counter cache on destroy" do
       note1 = things(:parent1)
-      note1.children.count.should == 2
-      note1[:children_count].should == 2
+      expect(note1.children.count).to eq(2)
+      expect(note1[:children_count]).to eq(2)
       note1.children.last.destroy
-      note1.children.count.should == 1
+      expect(note1.children.count).to eq(1)
       note1.reload
-      note1[:children_count].should == 1
+      expect(note1[:children_count]).to eq(1)
     end
   end
 
   describe "association callbacks on children" do
     it "should call the appropriate callbacks on the children :has_many association " do
       root = DefaultWithCallbacks.create
-      root.should_not be_new_record
+      expect(root).not_to be_new_record
 
       child = root.children.build
 
-      root.before_add.should == child
-      root.after_add.should  == child
+      expect(root.before_add).to eq(child)
+      expect(root.after_add).to  eq(child)
 
-      root.before_remove.should_not == child
-      root.after_remove.should_not  == child
+      expect(root.before_remove).not_to eq(child)
+      expect(root.after_remove).not_to  eq(child)
 
-      child.save.should be_true
-      root.children.delete(child).should be_true
+      expect(child.save).to be_truthy
+      expect(root.children.delete(child)).to be_truthy
 
-      root.before_remove.should == child
-      root.after_remove.should  == child
+      expect(root.before_remove).to eq(child)
+      expect(root.after_remove).to  eq(child)
     end
   end
 
@@ -1085,12 +1085,12 @@ describe "AwesomeNestedSet" do
       gamma = Order.create(:name => 'Gamma')
       omega = Order.create(:name => 'Omega')
 
-      alpha.lft.should == 1
-      alpha.rgt.should == 2
-      gamma.lft.should == 3
-      gamma.rgt.should == 4
-      omega.lft.should == 5
-      omega.rgt.should == 6
+      expect(alpha.lft).to eq(1)
+      expect(alpha.rgt).to eq(2)
+      expect(gamma.lft).to eq(3)
+      expect(gamma.rgt).to eq(4)
+      expect(omega.lft).to eq(5)
+      expect(omega.rgt).to eq(6)
     end
   end
 
@@ -1111,10 +1111,10 @@ describe "AwesomeNestedSet" do
       child1_1.update_attributes!(:notable_id => 5)
       child1_1.move_to_child_of root2
 
-      root1.children.should == [child1_2]
-      root2.children.should == [child2_1, child2_2, child1_1]
+      expect(root1.children).to eq([child1_2])
+      expect(root2.children).to eq([child2_1, child2_2, child1_1])
 
-      Note.valid?.should == true
+      expect(Note.valid?).to eq(true)
     end
 
     xit "moves node with children correctly" do
@@ -1133,23 +1133,23 @@ describe "AwesomeNestedSet" do
       child1_1.update_attributes!(:notable_id => 5)
       child1_1.move_to_child_of root2
 
-      root1.children.should == []
-      root2.children.should == [child2_1, child2_2, child1_1]
-      child1_1.children should == [child1_2]
-      root2.siblings.should == [child2_1, child2_2, child1_1, child1_2]
+      expect(root1.children).to eq([])
+      expect(root2.children).to eq([child2_1, child2_2, child1_1])
+      child1_1.children is_expected.to eq([child1_2])
+      expect(root2.siblings).to eq([child2_1, child2_2, child1_1, child1_2])
 
-      Note.valid?.should == true
+      expect(Note.valid?).to eq(true)
     end
   end
 
   describe 'specifying custom sort column' do
     it "should sort by the default sort column" do
-      Category.order_column.should == 'lft'
+      expect(Category.order_column).to eq('lft')
     end
 
     it "should sort by custom sort column" do
-      OrderedCategory.acts_as_nested_set_options[:order_column].should == 'name'
-      OrderedCategory.order_column.should == 'name'
+      expect(OrderedCategory.acts_as_nested_set_options[:order_column]).to eq('name')
+      expect(OrderedCategory.order_column).to eq('name')
     end
   end
 

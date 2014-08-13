@@ -1,5 +1,3 @@
-gem 'combustion', :github => 'pat/combustion', :branch => 'master'
-
 source 'https://rubygems.org'
 
 gemspec
@@ -27,4 +25,3 @@ gem 'pry'
 gem 'pry-nav'
 
 gem "appraisal"
-
