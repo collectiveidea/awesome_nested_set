@@ -1,6 +1,7 @@
 language: ruby
 script: bundle exec rspec spec
 sudo: false
+cache: bundler
 env:
   - DB=sqlite3
   - DB=sqlite3mem
