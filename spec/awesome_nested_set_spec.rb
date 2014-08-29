@@ -1185,6 +1185,14 @@ describe "AwesomeNestedSet" do
       expect(Category.where(parent_id: root.id)).to be_empty
     end
 
+    it "properly destroy association's objects and its children and nodes" do
+      Category.acts_as_nested_set_options[:dependent] = :destroy
+      user = User.first
+      note_ids = user.note_ids
+      user.notes.destroy_all
+      expect(Note.where(id: note_ids, user_id: user.id).count).to be_zero
+    end
+
     it 'delete should delete children and node' do
       Category.acts_as_nested_set_options[:dependent] = :delete
       root = Category.root

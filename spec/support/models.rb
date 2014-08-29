@@ -1,5 +1,7 @@
 class Note < ActiveRecord::Base
   acts_as_nested_set :scope => [:notable_id, :notable_type]
+
+  belongs_to :user, inverse_of: :notes
 end
 
 class Default < ActiveRecord::Base
@@ -103,6 +105,8 @@ class User < ActiveRecord::Base
   validates_uniqueness_of :uuid
 
   after_initialize :ensure_uuid
+
+  has_many :notes, dependent: :destroy, inverse_of: :user
 
   # Setup a callback that we can switch to true or false per-test
   set_callback :move, :before, :custom_before_move

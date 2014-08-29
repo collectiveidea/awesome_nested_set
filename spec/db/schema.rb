@@ -21,6 +21,7 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :depth, :integer
     t.column :notable_id, :integer
     t.column :notable_type, :string
+    t.column :user_id, :integer
   end
 
   create_table :renamed_columns, :force => true do |t|
