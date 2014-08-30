@@ -5,6 +5,7 @@ scope1:
   rgt: 10
   notable_id: 1
   notable_type: Category
+  user_id: 1
 child_1:
   id: 2
   body: Child 1
@@ -13,6 +14,7 @@ child_1:
   rgt: 3
   notable_id: 1
   notable_type: Category
+  user_id: 1
 child_2:
   id: 3
   body: Child 2
@@ -21,6 +23,7 @@ child_2:
   rgt: 7
   notable_id: 1
   notable_type: Category
+  user_id: 1
 child_3:
   id: 4
   body: Child 3
@@ -29,6 +32,7 @@ child_3:
   rgt: 9
   notable_id: 1
   notable_type: Category
+  user_id: 1
 scope2:
   id: 5
   body: Top Level 2

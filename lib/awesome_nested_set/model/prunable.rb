@@ -10,7 +10,15 @@ module CollectiveIdea #:nodoc:
             return if right.nil? || left.nil? || skip_before_destroy
 
             in_tenacious_transaction do
-              reload_nested_set
+              # Rescue from +ActiveRecord::RecordNotFound+ error as there may be a case
+              # that an +object+ has already been destroyed by its parent, but objects that are
+              # in memory are not aware about this.
+              begin
+                reload_nested_set
+              rescue ActiveRecord::RecordNotFound
+                self.skip_before_destroy = true
+                return true
+              end
               # select the rows in the model that extend past the deletion point and apply a lock
               nested_set_scope.right_of(left).select(primary_id).lock(true)
 
