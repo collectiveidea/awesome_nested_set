@@ -4,6 +4,10 @@ class Note < ActiveRecord::Base
   belongs_to :user, inverse_of: :notes
 end
 
+class DefaultScopedModel < ActiveRecord::Base
+  acts_as_nested_set
+end
+
 class Default < ActiveRecord::Base
   self.table_name = 'categories'
   acts_as_nested_set
