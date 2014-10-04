@@ -148,6 +148,17 @@ module CollectiveIdea #:nodoc:
           self.class.base_class.nested_set_scope options
         end
 
+        # Separate an other `nested_set_scope` for unscoped model
+        # because normal query still need activerecord `default_scope`
+        # Only activerecord callbacks need unscoped model to handle the nested set records
+        # And class level `nested_set_scope` seems just for query `root` `child` .. etc
+        # I think we don't have to provide unscoped `nested_set_scope` in class level.
+        def nested_set_scope_without_default_scope(*args)
+          self.class.unscoped do
+            nested_set_scope(*args)
+          end
+        end
+
         def to_text
           self_and_descendants.map do |node|
             "#{'*'*(node.level+1)} #{node.primary_id} #{node.to_s} (#{node.parent_id}, #{node.left}, #{node.right})"
