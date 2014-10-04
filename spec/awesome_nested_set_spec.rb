@@ -1,8 +1,8 @@
-require 'spec_helper'
+# require 'spec_helper'
 
 describe "AwesomeNestedSet" do
   before(:all) do
-    self.class.fixtures :categories, :departments, :notes, :things, :brokens, :users
+    self.class.fixtures :categories, :departments, :notes, :things, :brokens, :users, :default_scoped_models
   end
 
   describe "defaults" do
@@ -1219,6 +1219,23 @@ describe "AwesomeNestedSet" do
         Category.acts_as_nested_set_options[:dependent] = :restrict_with_error
         leaf = Category.last
         assert_equal leaf, leaf.destroy
+      end
+    end
+    describe "model with default_scope" do
+      before(:all) do
+        self.class.fixtures :categories
+      end
+
+      it "should have correct #lft & #rgt" do
+        parent = DefaultScopedModel.find(6)
+        
+        DefaultScopedModel.send(:default_scope, Proc.new { parent.reload.self_and_descendants })
+
+        children = parent.children.create(name: 'Helloworld')
+            
+        DefaultScopedModel.unscoped do
+          expect(children.is_descendant_of?(parent.reload)).to be true
+        end
       end
     end
   end
