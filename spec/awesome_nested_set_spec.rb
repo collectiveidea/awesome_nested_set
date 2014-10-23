@@ -1201,10 +1201,18 @@ describe "AwesomeNestedSet" do
       expect(Category.where(parent_id: root.id)).to be_empty
     end
 
-    it 'restrict_with_exception should raise exception' do
-      Category.acts_as_nested_set_options[:dependent] = :restrict_with_exception
-      root = Category.root
-      expect { root.destroy! }.to raise_error  ActiveRecord::DeleteRestrictionError, 'Cannot delete record because of dependent children'
+    describe 'restrict_with_exception' do
+      it 'raises an exception' do
+        Category.acts_as_nested_set_options[:dependent] = :restrict_with_exception
+        root = Category.root
+        expect { root.destroy! }.to raise_error  ActiveRecord::DeleteRestrictionError, 'Cannot delete record because of dependent children'
+      end
+      
+      it 'deletes the leaf' do
+        Category.acts_as_nested_set_options[:dependent] = :restrict_with_exception
+        leaf = Category.last
+        assert_equal leaf, leaf.destroy
+      end
     end
 
     describe 'restrict_with_error' do

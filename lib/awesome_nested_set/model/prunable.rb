@@ -43,6 +43,7 @@ module CollectiveIdea #:nodoc:
               end
             elsif acts_as_nested_set_options[:dependent] == :restrict_with_exception
               raise ActiveRecord::DeleteRestrictionError.new(:children) unless leaf?
+              return true
             elsif acts_as_nested_set_options[:dependent] == :restrict_with_error
               unless leaf?
                 record = self.class.human_attribute_name(:children).downcase
