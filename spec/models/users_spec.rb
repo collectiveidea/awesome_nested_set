@@ -819,10 +819,18 @@ describe "User", :type => :model do
       expect(User.where(parent_uuid: root.uuid)).to be_empty
     end
 
-    it 'restrict_with_exception should raise exception' do
-      User.acts_as_nested_set_options[:dependent] = :restrict_with_exception
-      root = User.root
-      expect { root.destroy! }.to raise_error  ActiveRecord::DeleteRestrictionError, 'Cannot delete record because of dependent children'
+    describe 'restrict_with_exception' do
+      it 'raises an exception' do
+        User.acts_as_nested_set_options[:dependent] = :restrict_with_exception
+        root = User.root
+        expect { root.destroy! }.to raise_error  ActiveRecord::DeleteRestrictionError, 'Cannot delete record because of dependent children'
+      end
+
+      it 'deletes the leaf' do
+        User.acts_as_nested_set_options[:dependent] = :restrict_with_exception
+        leaf = User.last
+        assert_equal leaf, leaf.destroy
+      end
     end
 
     describe 'restrict_with_error' do
