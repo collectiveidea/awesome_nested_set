@@ -29,7 +29,7 @@ module CollectiveIdea #:nodoc:
 
         def join_scope
           join_arel = arel_table.join(parent, Arel::Nodes::OuterJoin).on(parent[primary_column_name].eq(arel_table[parent_column_name]))
-          self.scope = scope.joins(join_arel.join_sql)
+          self.scope = scope.joins(join_arel.join_sources)
         end
 
         def filter_scope
