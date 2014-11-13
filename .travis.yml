@@ -2,6 +2,8 @@ language: ruby
 script: bundle exec rspec spec
 sudo: false
 cache: bundler
+install:
+  - bundle install --retry=3
 env:
   - DB=sqlite3
   - DB=sqlite3mem
