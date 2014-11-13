@@ -2,6 +2,7 @@ language: ruby
 script: bundle exec rspec spec
 sudo: false
 cache: bundler
+# Per https://github.com/travis-ci/travis-ci/issues/2821
 install:
   - bundle install --retry=3
 env:
