@@ -672,10 +672,10 @@ describe "AwesomeNestedSet" do
     node3.move_to_ordered_child_of(node1, "name", false) # decending
     node1.reload
 
-    assert_equal node1, node3.parent
-    assert_equal 2, node1.children.count
-    assert_equal node3.name, node1.children[0].name
-    assert_equal node2.name, node1.children[1].name
+    expect(node3.parent).to eq(node1)
+    expect(node1.children.count).to be(2)
+    expect(node1.children[0].name).to eq(node3.name)
+    expect(node1.children[1].name).to eq(node2.name)
   end
 
   it "should be able to rebuild without validating each record" do
@@ -1207,11 +1207,11 @@ describe "AwesomeNestedSet" do
         root = Category.root
         expect { root.destroy! }.to raise_error  ActiveRecord::DeleteRestrictionError, 'Cannot delete record because of dependent children'
       end
-      
+
       it 'deletes the leaf' do
         Category.acts_as_nested_set_options[:dependent] = :restrict_with_exception
         leaf = Category.last
-        assert_equal leaf, leaf.destroy
+        expect(leaf.destroy).to eq(leaf)
       end
     end
 
@@ -1220,13 +1220,13 @@ describe "AwesomeNestedSet" do
         Category.acts_as_nested_set_options[:dependent] = :restrict_with_error
         root = Category.root
         root.destroy
-        assert_equal ["Cannot delete record because dependent children exist"], root.errors[:base]
+        expect(root.errors[:base]).to eq(["Cannot delete record because dependent children exist"])
       end
 
       it 'deletes the leaf' do
         Category.acts_as_nested_set_options[:dependent] = :restrict_with_error
         leaf = Category.last
-        assert_equal leaf, leaf.destroy
+        expect(leaf.destroy).to eq(leaf)
       end
     end
   end
