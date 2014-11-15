@@ -23,19 +23,22 @@ gem 'awesome_nested_set'
 
 ## Usage
 
-To make use of `awesome_nested_set`, your model needs to have 3 fields:
+To make use of `awesome_nested_set` your model needs to have 3 fields:
 `lft`, `rgt`, and `parent_id`. The names of these fields are configurable.
-You can also have an optional field, `depth`:
+You can also have optional fields: `depth` and `children_count`. These fields are configurable.
 
 ```ruby
 class CreateCategories < ActiveRecord::Migration
   def self.up
     create_table :categories do |t|
       t.string :name
-      t.integer :parent_id
-      t.integer :lft
-      t.integer :rgt
-      t.integer :depth # this is optional.
+      t.integer :parent_id, :null => true, :index => true
+      t.integer :lft, :null => false, :index => true
+      t.integer :rgt, :null => false, :index => true
+      
+      # optional fields
+      t.integer :depth, :null => false
+      t.integer :children_count, :null => false
     end
   end
 
