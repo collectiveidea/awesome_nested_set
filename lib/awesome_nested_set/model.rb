@@ -51,7 +51,7 @@ module CollectiveIdea #:nodoc:
           end
 
           # Iterates over tree elements and determines the current level in the tree.
-          # Only accepts default ordering, odering by an other column than lft
+          # Only accepts default ordering, odering by an other column than left
           # does not work. This method is much more efficent than calling level
           # because it doesn't require any additional database queries.
           #

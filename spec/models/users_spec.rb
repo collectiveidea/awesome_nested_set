@@ -458,7 +458,7 @@ describe "User", :type => :model do
     root3.move_to_child_of root1
 
     output = User.roots.last.to_text
-    User.update_all('lft = null, rgt = null')
+    User.update_all('left = null, right = null')
     User.rebuild!
 
     expect(User.roots.last.to_text).to eq(output)
@@ -474,7 +474,7 @@ describe "User", :type => :model do
     node3.move_to_child_of node1
 
     output = User.roots.last.to_text
-    User.update_all('lft = null, rgt = null')
+    User.update_all('left = null, right = null')
     User.rebuild!
 
     expect(User.roots.last.to_text).to eq(output)
@@ -518,7 +518,7 @@ describe "User", :type => :model do
     root2.save!(:validate => false)
 
     output = User.roots.last.to_text
-    User.update_all('lft = null, rgt = null')
+    User.update_all('left = null, right = null')
     User.rebuild!(false)
 
     expect(User.roots.last.to_text).to eq(output)
@@ -526,13 +526,13 @@ describe "User", :type => :model do
 
   it "valid_with_null_lefts" do
     expect(User.valid?).to be_truthy
-    User.update_all('lft = null')
+    User.update_all('left = null')
     expect(User.valid?).to be_falsey
   end
 
   it "valid_with_null_rights" do
     expect(User.valid?).to be_truthy
-    User.update_all('rgt = null')
+    User.update_all('right = null')
     expect(User.valid?).to be_falsey
   end
 
@@ -545,7 +545,7 @@ describe "User", :type => :model do
 
   it "valid_with_overlapping_and_rights" do
     expect(User.valid?).to be_truthy
-    users(:top_level_2)['lft'] = 0
+    users(:top_level_2)['left'] = 0
     users(:top_level_2).save
     expect(User.valid?).to be_falsey
   end
@@ -553,7 +553,7 @@ describe "User", :type => :model do
   it "rebuild" do
     expect(User.valid?).to be_truthy
     before_text = User.root.to_text
-    User.update_all('lft = null, rgt = null')
+    User.update_all('left = null, right = null')
     User.rebuild!
     expect(User.valid?).to be_truthy
     expect(before_text).to eq(User.root.to_text)
@@ -583,35 +583,35 @@ describe "User", :type => :model do
 
   it "left_and_rights_valid_with_blank_left" do
     expect(User.left_and_rights_valid?).to be_truthy
-    users(:child_2)[:lft] = nil
+    users(:child_2)[:left] = nil
     users(:child_2).save(:validate => false)
     expect(User.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_blank_right" do
     expect(User.left_and_rights_valid?).to be_truthy
-    users(:child_2)[:rgt] = nil
+    users(:child_2)[:right] = nil
     users(:child_2).save(:validate => false)
     expect(User.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_equal" do
     expect(User.left_and_rights_valid?).to be_truthy
-    users(:top_level_2)[:lft] = users(:top_level_2)[:rgt]
+    users(:top_level_2)[:left] = users(:top_level_2)[:right]
     users(:top_level_2).save(:validate => false)
     expect(User.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_left_equal_to_parent" do
     expect(User.left_and_rights_valid?).to be_truthy
-    users(:child_2)[:lft] = users(:top_level)[:lft]
+    users(:child_2)[:left] = users(:top_level)[:left]
     users(:child_2).save(:validate => false)
     expect(User.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_right_equal_to_parent" do
     expect(User.left_and_rights_valid?).to be_truthy
-    users(:child_2)[:rgt] = users(:top_level)[:rgt]
+    users(:child_2)[:right] = users(:top_level)[:right]
     users(:child_2).save(:validate => false)
     expect(User.left_and_rights_valid?).to be_falsey
   end

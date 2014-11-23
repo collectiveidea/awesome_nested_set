@@ -7,11 +7,11 @@ describe "AwesomeNestedSet" do
 
   describe "defaults" do
     it "should have left_column_default" do
-      expect(Default.acts_as_nested_set_options[:left_column]).to eq('lft')
+      expect(Default.acts_as_nested_set_options[:left_column]).to eq('left')
     end
 
     it "should have right_column_default" do
-      expect(Default.acts_as_nested_set_options[:right_column]).to eq('rgt')
+      expect(Default.acts_as_nested_set_options[:right_column]).to eq('right')
     end
 
     it "should have parent_column_default" do
@@ -27,15 +27,15 @@ describe "AwesomeNestedSet" do
     end
 
     it "should have left_column_name" do
-      expect(Default.left_column_name).to eq('lft')
-      expect(Default.new.left_column_name).to eq('lft')
+      expect(Default.left_column_name).to eq('left')
+      expect(Default.new.left_column_name).to eq('left')
       expect(RenamedColumns.left_column_name).to eq('red')
       expect(RenamedColumns.new.left_column_name).to eq('red')
     end
 
     it "should have right_column_name" do
-      expect(Default.right_column_name).to eq('rgt')
-      expect(Default.new.right_column_name).to eq('rgt')
+      expect(Default.right_column_name).to eq('right')
+      expect(Default.new.right_column_name).to eq('right')
       expect(RenamedColumns.right_column_name).to eq('black')
       expect(RenamedColumns.new.right_column_name).to eq('black')
     end
@@ -76,13 +76,13 @@ describe "AwesomeNestedSet" do
 
   describe "quoted column names" do
     it "quoted_left_column_name" do
-      quoted = Default.connection.quote_column_name('lft')
+      quoted = Default.connection.quote_column_name('left')
       expect(Default.quoted_left_column_name).to eq(quoted)
       expect(Default.new.quoted_left_column_name).to eq(quoted)
     end
 
     it "quoted_right_column_name" do
-      quoted = Default.connection.quote_column_name('rgt')
+      quoted = Default.connection.quote_column_name('right')
       expect(Default.quoted_right_column_name).to eq(quoted)
       expect(Default.new.quoted_right_column_name).to eq(quoted)
     end
@@ -94,7 +94,7 @@ describe "AwesomeNestedSet" do
     end
 
     it "quoted_order_column_name" do
-      quoted = Default.connection.quote_column_name('lft')
+      quoted = Default.connection.quote_column_name('left')
       expect(Default.quoted_order_column_name).to eq(quoted)
       expect(Default.new.quoted_order_column_name).to eq(quoted)
     end
@@ -103,13 +103,13 @@ describe "AwesomeNestedSet" do
   describe "protected columns" do
     it "left_column_protected_from_assignment" do
       expect {
-        Category.new.lft = 1
+        Category.new.left = 1
       }.to raise_exception(ActiveRecord::ActiveRecordError)
     end
 
     it "right_column_protected_from_assignment" do
       expect {
-        Category.new.rgt = 1
+        Category.new.right = 1
       }.to raise_exception(ActiveRecord::ActiveRecordError)
     end
 
@@ -630,7 +630,7 @@ describe "AwesomeNestedSet" do
     root3.move_to_child_of root1
 
     output = Category.roots.last.to_text
-    Category.update_all('lft = null, rgt = null')
+    Category.update_all('left = null, right = null')
     Category.rebuild!
 
     expect(Category.roots.last.to_text).to eq(output)
@@ -646,7 +646,7 @@ describe "AwesomeNestedSet" do
     node3.move_to_child_of node1
 
     output = Category.roots.last.to_text
-    Category.update_all('lft = null, rgt = null')
+    Category.update_all('left = null, right = null')
     Category.rebuild!
 
     expect(Category.roots.last.to_text).to eq(output)
@@ -690,7 +690,7 @@ describe "AwesomeNestedSet" do
     root2.save!(:validate => false)
 
     output = Category.roots.last.to_text
-    Category.update_all('lft = null, rgt = null')
+    Category.update_all('left = null, right = null')
     Category.rebuild!(false)
 
     expect(Category.roots.last.to_text).to eq(output)
@@ -698,13 +698,13 @@ describe "AwesomeNestedSet" do
 
   it "valid_with_null_lefts" do
     expect(Category.valid?).to be_truthy
-    Category.update_all('lft = null')
+    Category.update_all('left = null')
     expect(Category.valid?).to be_falsey
   end
 
   it "valid_with_null_rights" do
     expect(Category.valid?).to be_truthy
-    Category.update_all('rgt = null')
+    Category.update_all('right = null')
     expect(Category.valid?).to be_falsey
   end
 
@@ -717,7 +717,7 @@ describe "AwesomeNestedSet" do
 
   it "valid_with_overlapping_and_rights" do
     expect(Category.valid?).to be_truthy
-    categories(:top_level_2)['lft'] = 0
+    categories(:top_level_2)['left'] = 0
     categories(:top_level_2).save
     expect(Category.valid?).to be_falsey
   end
@@ -725,7 +725,7 @@ describe "AwesomeNestedSet" do
   it "rebuild" do
     expect(Category.valid?).to be_truthy
     before_text = Category.root.to_text
-    Category.update_all('lft = null, rgt = null')
+    Category.update_all('left = null, right = null')
     Category.rebuild!
     expect(Category.valid?).to be_truthy
     expect(before_text).to eq(Category.root.to_text)
@@ -755,35 +755,35 @@ describe "AwesomeNestedSet" do
 
   it "left_and_rights_valid_with_blank_left" do
     expect(Category.left_and_rights_valid?).to be_truthy
-    categories(:child_2)[:lft] = nil
+    categories(:child_2)[:left] = nil
     categories(:child_2).save(:validate => false)
     expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_blank_right" do
     expect(Category.left_and_rights_valid?).to be_truthy
-    categories(:child_2)[:rgt] = nil
+    categories(:child_2)[:right] = nil
     categories(:child_2).save(:validate => false)
     expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_equal" do
     expect(Category.left_and_rights_valid?).to be_truthy
-    categories(:top_level_2)[:lft] = categories(:top_level_2)[:rgt]
+    categories(:top_level_2)[:left] = categories(:top_level_2)[:right]
     categories(:top_level_2).save(:validate => false)
     expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_left_equal_to_parent" do
     expect(Category.left_and_rights_valid?).to be_truthy
-    categories(:child_2)[:lft] = categories(:top_level)[:lft]
+    categories(:child_2)[:left] = categories(:top_level)[:left]
     categories(:child_2).save(:validate => false)
     expect(Category.left_and_rights_valid?).to be_falsey
   end
 
   it "left_and_rights_valid_with_right_equal_to_parent" do
     expect(Category.left_and_rights_valid?).to be_truthy
-    categories(:child_2)[:rgt] = categories(:top_level)[:rgt]
+    categories(:child_2)[:right] = categories(:top_level)[:right]
     categories(:child_2).save(:validate => false)
     expect(Category.left_and_rights_valid?).to be_falsey
   end
@@ -834,7 +834,7 @@ describe "AwesomeNestedSet" do
     child1.move_to_child_of root
     child2.move_to_child_of root
 
-    Note.update_all('lft = null, rgt = null')
+    Note.update_all('left = null, right = null')
     Note.rebuild!
 
     expect(Note.roots.find_by_body('A')).to eq(root)
@@ -1080,17 +1080,17 @@ describe "AwesomeNestedSet" do
   end
 
   describe 'creating roots with a default scope ordering' do
-    it "assigns rgt and lft correctly" do
+    it "assigns right and left correctly" do
       alpha = Order.create(:name => 'Alpha')
       gamma = Order.create(:name => 'Gamma')
       omega = Order.create(:name => 'Omega')
 
-      expect(alpha.lft).to eq(1)
-      expect(alpha.rgt).to eq(2)
-      expect(gamma.lft).to eq(3)
-      expect(gamma.rgt).to eq(4)
-      expect(omega.lft).to eq(5)
-      expect(omega.rgt).to eq(6)
+      expect(alpha.left).to eq(1)
+      expect(alpha.right).to eq(2)
+      expect(gamma.left).to eq(3)
+      expect(gamma.right).to eq(4)
+      expect(omega.left).to eq(5)
+      expect(omega.right).to eq(6)
     end
   end
 
@@ -1144,7 +1144,7 @@ describe "AwesomeNestedSet" do
 
   describe 'specifying custom sort column' do
     it "should sort by the default sort column" do
-      expect(Category.order_column).to eq('lft')
+      expect(Category.order_column).to eq('left')
     end
 
     it "should sort by custom sort column" do

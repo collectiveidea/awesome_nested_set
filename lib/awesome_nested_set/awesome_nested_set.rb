@@ -25,8 +25,8 @@ module CollectiveIdea #:nodoc:
       #
       # * +:parent_column+ - specifies the column name to use for keeping the position integer (default: parent_id)
       # * +:primary_column+ - specifies the column name to use as the inverse of the parent column (default: id)
-      # * +:left_column+ - column name for left boundry data, default "lft"
-      # * +:right_column+ - column name for right boundry data, default "rgt"
+      # * +:left_column+ - column name for left boundry data, default "left"
+      # * +:right_column+ - column name for right boundry data, default "right"
       # * +:depth_column+ - column name for the depth data, default "depth"
       # * +:scope+ - restricts what is to be considered a list. Given a symbol, it'll attach "_id"
       #   (if it hasn't been already) and use that as the foreign key restriction. You
@@ -63,7 +63,7 @@ module CollectiveIdea #:nodoc:
 
       private
       def acts_as_nested_set_define_callbacks!
-        # on creation, set automatically lft and rgt to the end of the tree
+        # on creation, set automatically left and right to the end of the tree
         before_create  :set_default_left_and_right
         before_save    :store_new_parent
         after_save     :move_to_new_parent, :set_depth!
@@ -105,8 +105,8 @@ module CollectiveIdea #:nodoc:
         {
           :parent_column => 'parent_id',
           :primary_column => 'id',
-          :left_column => 'lft',
-          :right_column => 'rgt',
+          :left_column => 'left',
+          :right_column => 'right',
           :depth_column => 'depth',
           :dependent => :delete_all, # or :destroy
           :polymorphic => false,
