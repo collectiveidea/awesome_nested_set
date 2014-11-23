@@ -28,7 +28,7 @@
 2.1.3
 * Update child depth when parent node is moved. [Amanda Wagener]
 * Added move_to_child_with_index. [Ben Zhang]
-* Optimised self_and_descendants for when there's an index on lft. [Mark Torrance]
+* Optimised self_and_descendants for when there's an index on left. [Mark Torrance]
 * Added support for an unsaved record to return the right 'root'. [Philip Arndt]
 
 2.1.2
@@ -47,7 +47,7 @@
 * Added in the association callbacks to the children :has_many association. [Michael Deering]
 * Modified helper to allow using array of objects as argument. [Rahmat Budiharso]
 * Fixed cases where we were calling attr_protected. [Jacob Swanner]
-* Fixed nil cases involving lft and rgt. [Stuart Coyle] and [Patrick Morgan]
+* Fixed nil cases involving left and right. [Stuart Coyle] and [Patrick Morgan]
 
 2.0.2
 * Fixed deprecation warning under Rails 3.1 [Philip Arndt]

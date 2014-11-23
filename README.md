@@ -24,7 +24,7 @@ gem 'awesome_nested_set'
 ## Usage
 
 To make use of `awesome_nested_set` your model needs to have 3 fields:
-`lft`, `rgt`, and `parent_id`. The names of these fields are configurable.
+`left`, `right`, and `parent_id`. The names of these fields are configurable.
 You can also have optional fields: `depth` and `children_count`. These fields are configurable.
 
 ```ruby
@@ -33,8 +33,8 @@ class CreateCategories < ActiveRecord::Migration
     create_table :categories do |t|
       t.string :name
       t.integer :parent_id, :null => true, :index => true
-      t.integer :lft, :null => false, :index => true
-      t.integer :rgt, :null => false, :index => true
+      t.integer :left, :null => false, :index => true
+      t.integer :right, :null => false, :index => true
       
       # optional fields
       t.integer :depth, :null => false
@@ -63,8 +63,8 @@ Run `rake rdoc` to generate the API docs and see [CollectiveIdea::Acts::NestedSe
 You can pass various options to `acts_as_nested_set` macro. Configuration options are:
 
 * `parent_column`: specifies the column name to use for keeping the position integer (default: parent_id)
-* `left_column`: column name for left boundry data (default: lft)
-* `right_column`: column name for right boundry data (default: rgt)
+* `left_column`: column name for left boundry data (default: left)
+* `right_column`: column name for right boundry data (default: right)
 * `depth_column`: column name for the depth data default (default: depth)
 * `scope`: restricts what is to be considered a list. Given a symbol, it'll attach “_id” (if it hasn't been already) and use that as the foreign key restriction. You can also pass an array to scope by multiple attributes. Example: `acts_as_nested_set :scope => [:notable_id, :notable_type]`
 * `dependent`: behavior for cascading destroy. If set to :destroy, all the child objects are destroyed alongside this object by calling their destroy method. If set to :delete_all (default), all the child objects are deleted without calling their destroy method.
@@ -75,7 +75,7 @@ See [CollectiveIdea::Acts::NestedSet::Model::ClassMethods](/lib/awesome_nested_s
 
 ## Indexes
 
-It is highly recommended that you add an index to the `rgt` column on your models. Every insertion requires finding the next `rgt` value to use and this can be slow for large tables without an index. It is probably best to index the other fields as well (`parent_id`, `lft`, `depth`).
+It is highly recommended that you add an index to the `right` column on your models. Every insertion requires finding the next `right` value to use and this can be slow for large tables without an index. It is probably best to index the other fields as well (`parent_id`, `left`, `depth`).
 
 ## Callbacks
 
@@ -143,12 +143,12 @@ class Category < ActiveRecord::Base
 end
 ```
 
-If for some reason that is not possible, you will probably want to protect the `lft` and `rgt` attributes:
+If for some reason that is not possible, you will probably want to protect the `left` and `right` attributes:
 
 ```ruby
 class Category < ActiveRecord::Base
   acts_as_nested_set
-  attr_protected :lft, :rgt
+  attr_protected :left, :right
 end
 ```
 
@@ -156,7 +156,7 @@ end
 ## Add to your existing project
 
 To make use of `awesome_nested_set`, your model needs to have 3 fields:
-`lft`, `rgt`, and `parent_id`. The names of these fields are configurable.
+`left`, `right`, and `parent_id`. The names of these fields are configurable.
 You can also have an optional field, `depth`.
 
 Create a migration to add fields:
@@ -167,18 +167,18 @@ class AddNestedToCategories < ActiveRecord::Migration
   def self.up
     add_column :categories, :parent_id, :integer # Comment this line if your project already has this column
     # Category.where(parent_id: 0).update_all(parent_id: nil) # Uncomment this line if your project already has :parent_id
-    add_column :categories, :lft      , :integer
-    add_column :categories, :rgt      , :integer
+    add_column :categories, :left      , :integer
+    add_column :categories, :right      , :integer
     add_column :categories, :depth    , :integer  # this is optional.
 
-    # This is necessary to update :lft and :rgt columns
+    # This is necessary to update :left and :right columns
     Category.rebuild!
   end
 
   def self.down
     remove_column :categories, :parent_id
-    remove_column :categories, :lft
-    remove_column :categories, :rgt
+    remove_column :categories, :left
+    remove_column :categories, :right
     remove_column :categories, :depth  # this is optional.
   end
 
@@ -198,7 +198,7 @@ Your project is now ready to run with the `awesome_nested_set` gem!
 
 ## Conversion from other trees
 
-Coming from acts_as_tree or another system where you only have a parent_id? No problem. Simply add the lft & rgt fields as above, and then run:
+Coming from acts_as_tree or another system where you only have a parent_id? No problem. Simply add the left & right fields as above, and then run:
 
 ```ruby
 Category.rebuild!
