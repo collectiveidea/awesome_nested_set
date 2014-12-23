@@ -171,7 +171,7 @@ module CollectiveIdea #:nodoc:
         end
 
         def right_most_node
-          @right_most_node ||= self.class.base_class.unscoped.nested_set_scope(
+          @right_most_node ||= nested_set_scope(
             :order => "#{quoted_right_column_full_name} desc"
           ).first
         end
