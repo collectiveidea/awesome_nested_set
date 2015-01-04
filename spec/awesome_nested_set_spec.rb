@@ -1242,5 +1242,18 @@ describe "AwesomeNestedSet" do
         end
       end
     end
+    describe "model with default_scope" do
+      it "should have correct #lft & #rgt" do
+        parent = DefaultScopedModel.find(6)
+        
+        DefaultScopedModel.send(:default_scope, Proc.new { parent.reload.self_and_descendants })
+
+        children = parent.children.create(name: 'Helloworld')
+
+        DefaultScopedModel.unscoped do
+          expect(children.is_descendant_of?(parent.reload)).to be true
+        end
+      end
+    end
   end
 end
