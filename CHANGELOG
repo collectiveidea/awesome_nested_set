@@ -1,3 +1,10 @@
+3.0.2
+* Fix `dependent: :restrict_with_exception` not allowing a delete to occur. [Brendan Kilfoil]
+* Replace `Arel::SelectManager#join_sql` with `Arel::SelectManager#join_sources` as `Arel::Node#joins` accepts AST as well. [Swanand Pagnis]
+* Corrected nested_set_scope usage. [Finbarr Taylor] [#292](https://github.com/collectiveidea/awesome_nested_set/pull/292)
+* Fix bug: when model with default_scope make #lft and #rgt wrong [eddie](https://github.com/afunction) [#281](https://github.com/collectiveidea/awesome_nested_set/pull/281)
+* [Compare to 3.0.1](https://github.com/collectiveidea/awesome_nested_set/compare/v3.0.1...v3.0.2)
+
 3.0.1
 * Fixed `dependent: :destroy` when called from associated object. #162 [Kuldeep Aggarwal]
 * [Compare to 3.0.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.0.0...v3.0.1)
