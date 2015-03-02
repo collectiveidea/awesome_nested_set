@@ -63,8 +63,8 @@ Run `rake rdoc` to generate the API docs and see [CollectiveIdea::Acts::NestedSe
 You can pass various options to `acts_as_nested_set` macro. Configuration options are:
 
 * `parent_column`: specifies the column name to use for keeping the position integer (default: parent_id)
-* `left_column`: column name for left boundry data (default: lft)
-* `right_column`: column name for right boundry data (default: rgt)
+* `left_column`: column name for left boundary data (default: lft)
+* `right_column`: column name for right boundary data (default: rgt)
 * `depth_column`: column name for the depth data default (default: depth)
 * `scope`: restricts what is to be considered a list. Given a symbol, it'll attach “_id” (if it hasn't been already) and use that as the foreign key restriction. You can also pass an array to scope by multiple attributes. Example: `acts_as_nested_set :scope => [:notable_id, :notable_type]`
 * `dependent`: behavior for cascading destroy. If set to :destroy, all the child objects are destroyed alongside this object by calling their destroy method. If set to :delete_all (default), all the child objects are deleted without calling their destroy method.
