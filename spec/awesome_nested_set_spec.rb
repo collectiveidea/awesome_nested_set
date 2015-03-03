@@ -387,7 +387,7 @@ describe "AwesomeNestedSet" do
     root = ScopedCategory.root
     child = root.children.first
     expect(root.is_or_is_ancestor_of?(child)).to be_truthy
-    child.update_attribute :organization_id, 'different'
+    child.update_attribute :organization_id, 999999999
     expect(root.is_or_is_ancestor_of?(child)).to be_falsey
   end
 
@@ -413,7 +413,7 @@ describe "AwesomeNestedSet" do
     root = ScopedCategory.root
     child = root.children.first
     expect(child.is_or_is_descendant_of?(root)).to be_truthy
-    child.update_attribute :organization_id, 'different'
+    child.update_attribute :organization_id, 999999999
     expect(child.is_or_is_descendant_of?(root)).to be_falsey
   end
 
@@ -421,7 +421,7 @@ describe "AwesomeNestedSet" do
     root = ScopedCategory.root
     child = root.children.first
     expect(child.same_scope?(root)).to be_truthy
-    child.update_attribute :organization_id, 'different'
+    child.update_attribute :organization_id, 999999999
     expect(child.same_scope?(root)).to be_falsey
   end
 
@@ -1232,7 +1232,7 @@ describe "AwesomeNestedSet" do
     describe "model with default_scope" do
       it "should have correct #lft & #rgt" do
         parent = DefaultScopedModel.find(6)
-        
+
         DefaultScopedModel.send(:default_scope, Proc.new { parent.reload.self_and_descendants })
 
         children = parent.children.create(name: 'Helloworld')

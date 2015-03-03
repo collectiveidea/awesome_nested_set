@@ -232,7 +232,7 @@ describe "User", :type => :model do
     root = ScopedUser.root
     child = root.children.first
     expect(root.is_or_is_ancestor_of?(child)).to be_truthy
-    child.update_attribute :organization_id, 'different'
+    child.update_attribute :organization_id, 999999999
     expect(root.is_or_is_ancestor_of?(child)).to be_falsey
   end
 
@@ -258,7 +258,7 @@ describe "User", :type => :model do
     root = ScopedUser.root
     child = root.children.first
     expect(child.is_or_is_descendant_of?(root)).to be_truthy
-    child.update_attribute :organization_id, 'different'
+    child.update_attribute :organization_id, 999999999
     expect(child.is_or_is_descendant_of?(root)).to be_falsey
   end
 
@@ -266,7 +266,7 @@ describe "User", :type => :model do
     root = ScopedUser.root
     child = root.children.first
     expect(child.same_scope?(root)).to be_truthy
-    child.update_attribute :organization_id, 'different'
+    child.update_attribute :organization_id, 999999999
     expect(child.same_scope?(root)).to be_falsey
   end
 
@@ -539,7 +539,7 @@ describe "User", :type => :model do
   it "valid_with_missing_intermediate_node" do
     # Even though child_2_1 will still exist, it is a sign of a sloppy delete, not an invalid tree.
     expect(User.valid?).to be_truthy
-    User.delete(users(:child_2).uuid)
+    User.where(uuid: users(:child_2).uuid).delete_all
     expect(User.valid?).to be_truthy
   end
 
@@ -807,7 +807,7 @@ describe "User", :type => :model do
       User.acts_as_nested_set_options[:dependent] = :destroy
       root = User.root
       root.destroy!
-      expect(User.where(id: root.uuid)).to be_empty
+      expect(User.where(uuid: root.uuid)).to be_empty
       expect(User.where(parent_uuid: root.uuid)).to be_empty
     end
 
@@ -815,7 +815,7 @@ describe "User", :type => :model do
       User.acts_as_nested_set_options[:dependent] = :delete
       root = User.root
       root.destroy!
-      expect(User.where(id: root.uuid)).to be_empty
+      expect(User.where(uuid: root.uuid)).to be_empty
       expect(User.where(parent_uuid: root.uuid)).to be_empty
     end
 
