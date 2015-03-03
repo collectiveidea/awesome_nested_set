@@ -37,8 +37,8 @@ class CreateCategories < ActiveRecord::Migration
       t.integer :rgt, :null => false, :index => true
 
       # optional fields
-      t.integer :depth, :null => false
-      t.integer :children_count, :null => false
+      t.integer :depth, null: false, default: 0
+      t.integer :children_count, null: false, default: 0
     end
   end
 
