@@ -2,15 +2,14 @@ language: ruby
 script: bundle exec rspec spec
 sudo: false
 cache: bundler
-# Per https://github.com/travis-ci/travis-ci/issues/2821
-install:
-  - bundle install --retry=3
 env:
   - DB=sqlite3
   - DB=sqlite3mem
   - DB=postgresql
   - DB=mysql
 rvm:
+  - 2.2
+  - 2.1
   - 2.0.0
   - 1.9.3
   - rbx-2
@@ -18,3 +17,4 @@ rvm:
 gemfile:
   - gemfiles/rails_4.0.gemfile
   - gemfiles/rails_4.1.gemfile
+  - gemfiles/rails_4.2.gemfile

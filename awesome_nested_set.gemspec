@@ -12,9 +12,10 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/collectiveidea/awesome_nested_set}
   s.rdoc_options = ["--main", "README.md", "--inline-source", "--line-numbers"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.6}
   s.summary = %q{An awesome nested set implementation for Active Record}
   s.license = %q{MIT}
+
+  s.required_ruby_version = ">= 1.9.3"
 
   s.add_runtime_dependency 'activerecord', '>= 4.0.0', '< 5'
 
