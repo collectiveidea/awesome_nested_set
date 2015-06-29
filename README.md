@@ -212,6 +212,8 @@ Category.rebuild!
 
 Your tree will be converted to a valid nested set. Awesome!
 
+Note: You can use `Category.rebuild!(false)` to skip model validations when performing the rebuild.
+
 ## View Helper
 
 The view helper is called #nested_set_options.
