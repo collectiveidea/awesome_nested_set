@@ -21,4 +21,9 @@ platforms :ruby do
   gem "pg"
 end
 
+group :test do
+  gem "simplecov"
+  gem 'codecov', :require => false
+end
+
 gemspec :path => "../"
