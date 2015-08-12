@@ -1,3 +1,6 @@
+3.1.0
+* Ensure that nested_set queries respect the model's default_scope. [oesgalha](https://github.com/oesgalha)
+
 3.0.5
 * Fix .all_roots_valid? method when model is ordered by default
 
