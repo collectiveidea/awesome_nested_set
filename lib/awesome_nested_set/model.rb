@@ -145,7 +145,7 @@ module CollectiveIdea #:nodoc:
             end
           end
 
-          self.class.base_class.unscoped.nested_set_scope options
+          self.class.base_class.nested_set_scope options
         end
 
         # Separate an other `nested_set_scope` for unscoped model
@@ -154,7 +154,7 @@ module CollectiveIdea #:nodoc:
         # And class level `nested_set_scope` seems just for query `root` `child` .. etc
         # I think we don't have to provide unscoped `nested_set_scope` in class level.
         def nested_set_scope_without_default_scope(*args)
-          self.class.unscoped do
+          self.class.base_class.unscoped do
             nested_set_scope(*args)
           end
         end
@@ -182,7 +182,7 @@ module CollectiveIdea #:nodoc:
         end
 
         def right_most_node
-          @right_most_node ||= nested_set_scope(
+          @right_most_node ||= nested_set_scope_without_default_scope(
             :order => "#{quoted_right_column_full_name} desc"
           ).first
         end

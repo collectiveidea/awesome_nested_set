@@ -1233,6 +1233,7 @@ describe "AwesomeNestedSet" do
       it "should have correct #lft & #rgt" do
         parent = DefaultScopedModel.find(6)
 
+        DefaultScopedModel.send(:default_scopes=, [])
         DefaultScopedModel.send(:default_scope, Proc.new { parent.reload.self_and_descendants })
 
         children = parent.children.create(name: 'Helloworld')
@@ -1240,6 +1241,21 @@ describe "AwesomeNestedSet" do
         DefaultScopedModel.unscoped do
           expect(children.is_descendant_of?(parent.reload)).to be true
         end
+      end
+
+      it "should respect the default_scope" do
+        DefaultScopedModel.send(:default_scopes=, [])
+        DefaultScopedModel.send(:default_scope, -> { DefaultScopedModel.where(draft: false) })
+
+        no_parents = DefaultScopedModel.find(1)
+
+        expect(no_parents.self_and_ancestors.count).to eq(1)
+
+        no_parents.draft = true
+        no_parents.save
+
+        other_root = DefaultScopedModel.create!(name: 'Another root')
+        expect(other_root.self_and_ancestors.count).to eq(1)
       end
     end
   end
