@@ -1,3 +1,7 @@
+3.0.3
+* Add :nullify option to :dependent functionality to orphan children rather
+than destroy them.
+
 3.0.2
 * Fix `dependent: :restrict_with_exception` not allowing a delete to occur. [Brendan Kilfoil]
 * Replace `Arel::SelectManager#join_sql` with `Arel::SelectManager#join_sources` as `Arel::Node#joins` accepts AST as well. [Swanand Pagnis]

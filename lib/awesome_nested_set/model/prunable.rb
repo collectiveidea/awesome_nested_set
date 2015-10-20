@@ -51,7 +51,9 @@ module CollectiveIdea #:nodoc:
                 return false
               end
               return true
-            else
+             elsif acts_as_nested_set_options[:dependent] == :nullify
+               descendants.update_all(parent_id: nil)
+             else
               descendants.delete_all
             end
           end

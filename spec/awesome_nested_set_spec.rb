@@ -1201,6 +1201,15 @@ describe "AwesomeNestedSet" do
       expect(Category.where(parent_id: root.id)).to be_empty
     end
 
+    it 'nullify should nullify child parent IDs rather than deleting' do
+      Category.acts_as_nested_set_options[:dependent] = :nullify
+      root = Category.root
+      child_ids = root.child_ids
+      root.destroy!
+      expect(Category.where(id: child_ids)).to_not be_empty
+      expect(Category.where(parent_id: root.id)).to be_empty
+    end
+
     describe 'restrict_with_exception' do
       it 'raises an exception' do
         Category.acts_as_nested_set_options[:dependent] = :restrict_with_exception
