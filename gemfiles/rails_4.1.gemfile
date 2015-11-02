@@ -17,7 +17,7 @@ end
 
 platforms :ruby do
   gem "sqlite3"
-  gem "mysql2", nil
+  gem "mysql2", "< 0.4.0"
   gem "pg"
 end
 

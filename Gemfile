@@ -12,7 +12,7 @@ end
 
 platforms :ruby do
   gem 'sqlite3'
-  gem 'mysql2', (MYSQL2_VERSION if defined? MYSQL2_VERSION)
+  gem 'mysql2', "< 0.4.0"
   gem 'pg'
 end
 
