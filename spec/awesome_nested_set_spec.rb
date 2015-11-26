@@ -1050,6 +1050,74 @@ describe "AwesomeNestedSet" do
       note1.reload
       expect(note1[:children_count]).to eq(1)
     end
+
+    it 'decrements counter cache of previous parent when moving to root' do
+      prev_parent = things(:parent1)
+      note1 = things(:child_2)
+      expect {
+        note1.move_to_root
+        prev_parent.reload
+      }.to change { prev_parent.children_count }.by -1
+    end
+
+    it 'decrements counter cache of previous parent when moving to child of other' do
+      prev_parent = things(:parent1)
+      note1 = things(:child_1)
+      target = things(:child_2)
+      expect {
+        note1.move_to_child_of(target)
+        prev_parent.reload
+      }.to change { prev_parent.children_count }.by -1
+    end
+
+    it 'increments counter cache of current parent when moving to child of other' do
+      note1 = things(:child_1)
+      target = things(:child_2)
+      expect {
+        note1.move_to_child_of(target)
+        target.reload
+      }.to change { target.children_count }.by 1
+    end
+
+    it 'decrements counter cache of previous parent when moving to left of other' do
+      prev_parent = things(:parent1)
+      note1 = things(:child_1)
+      target = things(:child_2_1)
+      expect {
+        note1.move_to_left_of(target)
+        prev_parent.reload
+      }.to change { prev_parent.children_count }.by -1
+    end
+
+    it 'increments counter cache of current parent when moving to left of other' do
+      note1 = things(:child_1)
+      parent_target = things(:child_2)
+      target = things(:child_2_1)
+      expect {
+        note1.move_to_left_of(target)
+        parent_target.reload
+      }.to change { parent_target.children_count }.by 1
+    end
+
+    it 'decrements counter cache of previous parent when moving to right of other' do
+      prev_parent = things(:parent1)
+      note1 = things(:child_1)
+      target = things(:child_2_1)
+      expect {
+        note1.move_to_right_of(target)
+        prev_parent.reload
+      }.to change { prev_parent.children_count }.by -1
+    end
+
+    it 'increments counter cache of current parent when moving to right of other' do
+      note1 = things(:child_1)
+      parent_target = things(:child_2)
+      target = things(:child_2_1)
+      expect {
+        note1.move_to_right_of(target)
+        parent_target.reload
+      }.to change { parent_target.children_count }.by 1
+    end
   end
 
   describe "association callbacks on children" do
