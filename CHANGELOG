@@ -1,3 +1,6 @@
+3.0.4
+* Reuse the current model's connection when available [Tim Bugai] [#322](https://github.com/collectiveidea/awesome_nested_set/pull/322)
+
 3.0.3
 * Add :nullify option to :dependent functionality to orphan children rather
 than destroy them.
