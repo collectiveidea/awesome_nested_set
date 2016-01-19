@@ -70,6 +70,7 @@ You can pass various options to `acts_as_nested_set` macro. Configuration option
 * `dependent`: behavior for cascading destroy. If set to :destroy, all the child objects are destroyed alongside this object by calling their destroy method. If set to :delete_all (default), all the child objects are deleted without calling their destroy method. If set to :nullify, all child objects will become orphaned and become roots themselves.
 * `counter_cache`: adds a counter cache for the number of children. defaults to false. Example: `acts_as_nested_set :counter_cache => :children_count`
 * `order_column`: on which column to do sorting, by default it is the left_column_name. Example: `acts_as_nested_set :order_column => :position`
+* `touch`: If set to `true`, then the updated_at timestamp on the ancestors will be set to the current time whenever this object is saved or destroyed (default: false)
 
 See [CollectiveIdea::Acts::NestedSet::Model::ClassMethods](/lib/awesome_nested_set/model.rb#L26) for a list of class methods and [CollectiveIdea::Acts::NestedSet::Model](lib/awesome_nested_set/model.rb#L13) for a list of instance methods added to acts_as_nested_set models
 
