@@ -1025,30 +1025,22 @@ describe "AwesomeNestedSet" do
   end
 
   describe "counter_cache" do
+    let(:parent1) { things(:parent1) }
 
     it "should allow use of a counter cache for children" do
-      note1 = things(:parent1)
-      expect(note1.children.count).to eq(2)
+      expect(parent1.children_count).to eq(parent1.children.count)
     end
 
     it "should increment the counter cache on create" do
-      note1 = things(:parent1)
-      expect(note1.children.count).to eq(2)
-      expect(note1[:children_count]).to eq(2)
-      note1.children.create :body => 'Child 3'
-      expect(note1.children.count).to eq(3)
-      note1.reload
-      expect(note1[:children_count]).to eq(3)
+      expect {
+        parent1.children.create body: "Child 3"
+      }.to change { parent1.reload.children_count }.by(1)
     end
 
     it "should decrement the counter cache on destroy" do
-      note1 = things(:parent1)
-      expect(note1.children.count).to eq(2)
-      expect(note1[:children_count]).to eq(2)
-      note1.children.last.destroy
-      expect(note1.children.count).to eq(1)
-      note1.reload
-      expect(note1[:children_count]).to eq(1)
+      expect {
+        parent1.children.last.destroy
+      }.to change { parent1.reload.children_count }.by(-1)
     end
   end
 
