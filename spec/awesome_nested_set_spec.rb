@@ -731,6 +731,27 @@ describe "AwesomeNestedSet" do
     expect(before_text).to eq(Category.root.to_text)
   end
 
+  describe ".rebuild!" do
+    subject { Thing.rebuild! }
+    before { Thing.update_all(children_count: 0) }
+
+    context "when items have children" do
+      it "updates their counter_cache" do
+        expect { subject }.to change {
+          things(:parent1).reload.children_count }.to(2).from(0).
+          and change { things(:child_2).reload.children_count }.to(1).from(0)
+      end
+    end
+
+    context "when items do not have children" do
+      it "doesn't change their counter_cache" do
+        subject
+        expect(things(:child_1).reload.children_count).to eq(0)
+        expect(things(:child_2_1).reload.children_count).to eq(0)
+      end
+    end
+  end
+
   it "move_possible_for_sibling" do
     expect(categories(:child_2).move_possible?(categories(:child_1))).to be_truthy
   end

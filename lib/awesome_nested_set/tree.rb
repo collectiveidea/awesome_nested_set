@@ -6,7 +6,7 @@ module CollectiveIdea #:nodoc:
         attr_accessor :indices
 
         delegate :left_column_name, :right_column_name, :quoted_parent_column_full_name,
-                 :order_for_rebuild, :scope_for_rebuild,
+                 :order_for_rebuild, :scope_for_rebuild, :counter_cache_column_name,
                  :to => :model
 
         def initialize(model, validate_nodes)
@@ -23,6 +23,7 @@ module CollectiveIdea #:nodoc:
             # setup index for this scope
             indices[scope_for_rebuild.call(root_node)] ||= 0
             set_left_and_rights(root_node)
+            reset_counter_cache(root_node)
           end
         end
 
@@ -56,6 +57,15 @@ module CollectiveIdea #:nodoc:
 
         def set_right!(node)
           node[right_column_name] = increment_indice!(node)
+        end
+
+        def reset_counter_cache(node)
+          return unless counter_cache_column_name
+          node.class.reset_counters(node.id, :children)
+
+          node.children.each do |child|
+            reset_counter_cache(child)
+          end
         end
       end
     end
