@@ -105,8 +105,20 @@ module CollectiveIdea #:nodoc:
                 self.reload_nested_set
 
                 Move.new(target, position, self).move
+
+                update_counter_cache(target, position, self) if self.acts_as_nested_set_options[:counter_cache] && !@in_saving_callback
               end
               after_move_to(target, position)
+            end
+          end
+
+          def update_counter_cache target, position, instance
+            self.class.decrement_counter self.acts_as_nested_set_options[:counter_cache], instance.parent.id if instance.parent
+            case position
+            when :child
+              self.class.increment_counter self.acts_as_nested_set_options[:counter_cache], target.id
+            when :left, :right
+              self.class.increment_counter self.acts_as_nested_set_options[:counter_cache], target.parent.id if target.parent
             end
           end
 
