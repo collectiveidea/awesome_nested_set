@@ -232,6 +232,20 @@ module CollectiveIdea #:nodoc:
           end
         end
 
+        def update_counter_cache
+          return unless acts_as_nested_set_options[:counter_cache]
+
+          # Decrease the counter for all old parents
+          if old_parent = self.parent
+            self.class.decrement_counter(acts_as_nested_set_options[:counter_cache], old_parent)
+          end
+
+          # Increase the counter for all new parents
+          if new_parent = self.reload.parent
+            self.class.increment_counter(acts_as_nested_set_options[:counter_cache], new_parent)
+          end
+        end
+
         def set_default_left_and_right
           # adds the new node to the right of all existing nodes
           self[left_column_name] = right_most_bound + 1

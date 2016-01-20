@@ -1026,6 +1026,9 @@ describe "AwesomeNestedSet" do
 
   describe "counter_cache" do
     let(:parent1) { things(:parent1) }
+    let(:child_1) { things(:child_1) }
+    let(:child_2) { things(:child_2) }
+    let(:child_2_1) { things(:child_2_1) }
 
     it "should allow use of a counter cache for children" do
       expect(parent1.children_count).to eq(parent1.children.count)
@@ -1041,6 +1044,38 @@ describe "AwesomeNestedSet" do
       expect {
         parent1.children.last.destroy
       }.to change { parent1.reload.children_count }.by(-1)
+    end
+
+    context "when moving a grandchild to the root" do
+      subject { child_2_1.move_to_root }
+
+      it "should decrement the counter cache of its parent" do
+        expect { subject }.to change { child_2.reload.children_count }.by(-1)
+      end
+    end
+
+    context "when moving within a node" do
+      subject { child_1.move_to_right_of(child_2) }
+
+      it "should not update any values" do
+        expect { subject }.to_not change { parent1.reload.children_count }
+      end
+    end
+
+    context "when a child moves to another node" do
+      let(:old_parent) { things(:child_2) }
+      let(:child) { things(:child_2_1) }
+      let!(:new_parent) { Thing.create(body: "New Parent") }
+
+      subject { child.move_to_child_of(new_parent) }
+
+      it "should decrement the counter cache of its parent" do
+        expect { subject }.to change { old_parent.reload.children_count }.by(-1)
+      end
+
+      it "should increment the counter cache of its new parent" do
+        expect { subject }.to change { new_parent.reload.children_count }.by(1)
+      end
     end
   end
 
