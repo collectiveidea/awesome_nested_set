@@ -44,7 +44,7 @@ describe "AwesomeNestedSet" do
       expect(Default.depth_column_name).to eq('depth')
       expect(Default.new.depth_column_name).to eq('depth')
       expect(RenamedColumns.depth_column_name).to eq('pitch')
-      expect(RenamedColumns.depth_column_name).to eq('pitch')
+      expect(RenamedColumns.new.depth_column_name).to eq('pitch')
     end
 
     it "should have parent_column_name" do
