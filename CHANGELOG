@@ -1,3 +1,6 @@
+3.0.5
+* Fix .all_roots_valid? method when model is ordered by default
+
 3.0.4
 * Reuse the current model's connection when available [Tim Bugai] [#322](https://github.com/collectiveidea/awesome_nested_set/pull/322)
 

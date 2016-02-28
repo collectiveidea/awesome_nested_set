@@ -41,8 +41,10 @@ module CollectiveIdea
           end
 
           def each_root_valid?(roots_to_validate)
+            left_column = acts_as_nested_set_options[:left_column]
+            reordered_roots = roots_reordered_by_column(roots_to_validate, left_column)
             left = right = 0
-            roots_to_validate.all? do |root|
+            reordered_roots.all? do |root|
               (root.left > left && root.right > right).tap do
                 left = root.left
                 right = root.right
@@ -57,12 +59,21 @@ module CollectiveIdea
             }
           end
 
+          def roots_reordered_by_column(roots_to_reorder, column)
+            if roots_to_reorder.respond_to?(:reorder) # ActiveRecord's relation
+              roots_to_reorder.reorder(column)
+            elsif roots_to_reorder.respond_to?(:sort) # Array
+              roots_to_reorder.sort { |a, b| a.send(column) <=> b.send(column) }
+            else
+              roots_to_reorder
+            end
+          end
+
           def scope_string
             Array(acts_as_nested_set_options[:scope]).map do |c|
               connection.quote_column_name(c)
             end.push(nil).join(", ")
           end
-
         end
       end
     end
