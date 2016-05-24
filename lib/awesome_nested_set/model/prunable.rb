@@ -47,7 +47,7 @@ module CollectiveIdea #:nodoc:
             elsif acts_as_nested_set_options[:dependent] == :restrict_with_error
               unless leaf?
                 record = self.class.human_attribute_name(:children).downcase
-                errors.add(:base, :"restrict_dependent_destroy.many", record: record)
+                errors.add(:base, :"restrict_dependent_destroy.#{Rails::VERSION::MAJOR < 5 ? 'many' : 'has_many'}", record: record)
                 return false
               end
               return true
