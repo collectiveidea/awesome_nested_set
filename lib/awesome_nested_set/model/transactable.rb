@@ -17,7 +17,7 @@ module CollectiveIdea #:nodoc:
             rescue CollectiveIdea::Acts::NestedSet::Move::ImpossibleMove
               raise
             rescue ActiveRecord::StatementInvalid => error
-              raise OpenTransactionsIsNotZero.new(error.message) unless connection.open_transactions.zero?
+              raise OpenTransactionsIsNotZero.new(error.message) unless self.class.connection.open_transactions.zero?
               raise unless error.message =~ /[Dd]eadlock|Lock wait timeout exceeded/
               raise DeadlockDetected.new(error.message) unless retry_count < 10
               retry_count += 1
