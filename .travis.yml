@@ -12,9 +12,8 @@ rvm:
   - 2.2
   - 2.1
   - 2.0.0
-  - 1.9.3
   - rbx-2
-  - jruby-19mode
+  - jruby-9.1.1.0
 gemfile:
   - gemfiles/rails_4.0.gemfile
   - gemfiles/rails_4.1.gemfile
