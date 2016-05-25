@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
   s.summary = %q{An awesome nested set implementation for Active Record}
   s.license = %q{MIT}
 
-  s.required_ruby_version = ">= 1.9.3"
+  s.required_ruby_version = '>= 2.0.0'
 
   s.add_runtime_dependency 'activerecord', '>= 4.0.0', '< 5'
 
