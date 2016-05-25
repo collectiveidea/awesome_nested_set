@@ -31,6 +31,10 @@ module CollectiveIdea #:nodoc:
           Array(acts_as_nested_set_options[:scope])
         end
 
+        def counter_cache_column_name
+          acts_as_nested_set_options[:counter_cache]
+        end
+
         def quoted_left_column_name
           model_connection.quote_column_name(left_column_name)
         end

@@ -46,7 +46,7 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :lft, :integer
     t.column :rgt, :integer
     t.column :depth, :integer
-    t.column :children_count, :integer
+    t.column :children_count, :integer, null: false, default: 0
   end
 
   create_table :brokens, :force => true do |t|

@@ -17,7 +17,7 @@ child_2:
   parent_id: 1
   lft: 4
   rgt: 7
-  children_count: 0
+  children_count: 1
 child_2_1:
   id: 4
   body: Child 2.1
