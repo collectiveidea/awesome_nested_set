@@ -15,7 +15,6 @@ rvm:
   - rbx-2
   - jruby-9.1.1.0
 gemfile:
-  - gemfiles/rails_4.0.gemfile
   - gemfiles/rails_4.1.gemfile
   - gemfiles/rails_4.2.gemfile
 notifications:
