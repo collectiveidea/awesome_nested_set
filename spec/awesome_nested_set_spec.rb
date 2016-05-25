@@ -1286,6 +1286,7 @@ describe "AwesomeNestedSet" do
         expect(leaf.destroy).to eq(leaf)
       end
     end
+
     describe "model with default_scope" do
       it "should have correct #lft & #rgt" do
         parent = DefaultScopedModel.find(6)
@@ -1297,6 +1298,19 @@ describe "AwesomeNestedSet" do
         DefaultScopedModel.unscoped do
           expect(children.is_descendant_of?(parent.reload)).to be true
         end
+      end
+
+      it "is .all_roots_valid? even when default_scope has custom order" do
+        class DefaultScopedModel; default_scope -> { order(rgt: :desc) }; end
+        expect(DefaultScopedModel.all_roots_valid?).to be_truthy
+      end
+
+      it "is .all_roots_valid? even when uses multi scope" do
+        class DefaultScopedModel
+          acts_as_nested_set :scope => [:id]
+          default_scope -> { order(rgt: :desc) }
+        end
+        expect(DefaultScopedModel.all_roots_valid?).to be_truthy
       end
     end
   end
