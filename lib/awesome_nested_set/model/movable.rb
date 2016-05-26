@@ -46,7 +46,7 @@ module CollectiveIdea #:nodoc:
             elsif node.children.count == index
               move_to_right_of(node.children.last)
             else
-              my_position = node.children.index(self)
+              my_position = node.children.to_a.index(self)
               if my_position && my_position < index
                 # e.g. if self is at position 0 and we want to move self to position 1 then self
                 # needs to move to the *right* of the node at position 1. That's because the node
