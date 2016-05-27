@@ -1,10 +1,7 @@
 3.1.0
 * Ensure that nested_set queries respect the model's default_scope. [oesgalha](https://github.com/oesgalha)
-
-3.0.5
-* Fix .all_roots_valid? method when model is ordered by default
-
-3.0.4
+* Add Rails 5 support [Krzysztof Rybka](https://github.com/krzysiek1507)
+* Fix .all_roots_valid? method when model is ordered by default [Adam Hodowany](https://github.com/hodak)
 * Reuse the current model's connection when available [Tim Bugai] [#322](https://github.com/collectiveidea/awesome_nested_set/pull/322)
 
 3.0.3
