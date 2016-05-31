@@ -719,6 +719,16 @@ describe "User", :type => :model do
     expect(User.valid?).to be_truthy
   end
 
+  it 'creates user when clause where provided' do
+    parent = User.first
+
+    expect do
+      User.where(name: "Chris-#{Time.current.to_f}").first_or_create! do |user|
+        user.parent = parent
+      end
+    end.to change { User.count }.by 1
+  end
+
   def check_structure(entries, structure)
     structure = structure.dup
     User.each_with_level(entries) do |user, level|
