@@ -1,4 +1,7 @@
 3.1.0
+* Fix a reloading bug when using default scope [Krzysztof Rybka](https://github.com/krzysiek1507)
+
+3.1.0
 * Ensure that nested_set queries respect the model's default_scope. [oesgalha](https://github.com/oesgalha)
 * Add Rails 5 support [Krzysztof Rybka](https://github.com/krzysiek1507)
 * Fix .all_roots_valid? method when model is ordered by default [Adam Hodowany](https://github.com/hodak)
