@@ -26,7 +26,7 @@ gem 'awesome_nested_set'
 To make use of `awesome_nested_set` your model needs to have 3 fields:
 `lft`, `rgt`, and `parent_id`. The names of these fields are configurable.
 You can also have optional fields: `depth` and `children_count`. These fields are configurable.
-Note that the `childrent_count` column must have `null: false` and `default: 0` to
+Note that the `children_count` column must have `null: false` and `default: 0` to
 function properly.
 
 ```ruby
