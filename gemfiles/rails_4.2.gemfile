@@ -2,9 +2,6 @@
 
 source "https://rubygems.org"
 
-gem "pry"
-gem "pry-nav"
-gem "appraisal"
 gem "rails", "~> 4.2.0"
 
 platforms :jruby do
