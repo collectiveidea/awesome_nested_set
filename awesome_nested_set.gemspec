@@ -19,7 +19,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'activerecord', '>= 4.0.0', '< 5.1'
 
-  s.add_development_dependency 'rspec-rails', '3.5.0.beta3'
+  s.add_development_dependency 'rspec-rails', '~> 3.5.0'
   s.add_development_dependency 'rake', '~> 10'
   s.add_development_dependency 'combustion', '>= 0.5.2'
   s.add_development_dependency 'database_cleaner'
