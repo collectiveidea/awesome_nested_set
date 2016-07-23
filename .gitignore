@@ -7,3 +7,5 @@ pkg
 Gemfile.lock
 gemfiles/*.lock
 .bundle
+.idea
+.ruby-version
