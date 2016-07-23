@@ -19,9 +19,3 @@ end
 # Add Oracle Adapters
 # gem 'ruby-oci8'
 # gem 'activerecord-oracle_enhanced-adapter'
-
-# Debuggers
-gem 'pry'
-gem 'pry-nav'
-
-gem "appraisal"
