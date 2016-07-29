@@ -1,3 +1,12 @@
+if ENV['CI']=='true'
+  require 'simplecov'
+  SimpleCov.start do
+    add_filter 'spec/'
+  end
+  require 'codecov'
+  SimpleCov.formatter = SimpleCov::Formatter::Codecov
+end
+
 plugin_test_dir = File.dirname(__FILE__)
 
 require 'rubygems'
