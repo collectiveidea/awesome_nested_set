@@ -231,10 +231,6 @@ Example usage:
 
 See [CollectiveIdea::Acts::NestedSet::Helper](lib/awesome_nested_set/helper.rb) for more information about the helpers.
 
-## References
-
-You can learn more about nested sets at: http://threebit.net/tutorials/nestedset/tutorial1.html
-
 ## How to contribute
 
 Please see the ['Contributing' document](CONTRIBUTING.md).
