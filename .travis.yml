@@ -12,7 +12,6 @@ rvm:
   - 2.2.5
   - 2.1.10
   - 2.0.0
-  - rbx
   - jruby-9.1.1.0
 gemfile:
   - gemfiles/rails_4.0.gemfile
@@ -25,12 +24,10 @@ matrix:
       gemfile: gemfiles/rails_5.0.gemfile
     - rvm: 2.0.0
       gemfile: gemfiles/rails_5.0.gemfile
-    - rvm: rbx
-      gemfile: gemfiles/rails_5.0.gemfile
     - rvm: jruby-9.1.1.0
       gemfile: gemfiles/rails_5.0.gemfile
 notifications:
   webhooks:
     urls:
-      - http://buildlight.collectiveidea.com/
+      - https://buildlight.collectiveidea.com/
     on_start: always
