@@ -101,7 +101,7 @@ module CollectiveIdea #:nodoc:
           :polymorphic => acts_as_nested_set_options[:polymorphic],
           :touch => acts_as_nested_set_options[:touch]
         }
-        options[:optional] = true if Rails::VERSION::MAJOR >= 5
+        options[:optional] = true if ActiveRecord::VERSION::MAJOR >= 5
         belongs_to :parent, options
       end
 
