@@ -92,13 +92,17 @@ module CollectiveIdea #:nodoc:
       end
 
       def acts_as_nested_set_relate_parent!
-        belongs_to :parent, :class_name => self.base_class.to_s,
-                            :foreign_key => parent_column_name,
-                            :primary_key => primary_column_name,
-                            :counter_cache => acts_as_nested_set_options[:counter_cache],
-                            :inverse_of => (:children unless acts_as_nested_set_options[:polymorphic]),
-                            :polymorphic => acts_as_nested_set_options[:polymorphic],
-                            :touch => acts_as_nested_set_options[:touch]
+        options = {
+          :class_name => self.base_class.to_s,
+          :foreign_key => parent_column_name,
+          :primary_key => primary_column_name,
+          :counter_cache => acts_as_nested_set_options[:counter_cache],
+          :inverse_of => (:children unless acts_as_nested_set_options[:polymorphic]),
+          :polymorphic => acts_as_nested_set_options[:polymorphic],
+          :touch => acts_as_nested_set_options[:touch]
+        }
+        options[:optional] = true if ActiveRecord::VERSION::MAJOR >= 5
+        belongs_to :parent, options
       end
 
       def acts_as_nested_set_default_options

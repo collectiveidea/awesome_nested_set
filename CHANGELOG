@@ -1,3 +1,6 @@
+3.1.2
+* Make belongs_to relation optional again [Jan Matusz](https://marahin.pl/)
+
 3.1.1
 * Fix a reloading bug when using default scope [Krzysztof Rybka](https://github.com/krzysiek1507)
 
