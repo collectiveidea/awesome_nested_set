@@ -135,7 +135,7 @@ class Category < ActiveRecord::Base
 end
 ```
 
-## Protecting attributes from mass assignment
+## Protecting attributes from mass assignment (for Rails < 4)
 
 It's generally best to "whitelist" the attributes that can be used in mass assignment:
 
