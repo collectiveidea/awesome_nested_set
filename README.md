@@ -213,6 +213,8 @@ Coming from acts_as_tree or another system where you only have a parent_id? No p
 Category.rebuild!
 ```
 
+Note: If your project is already on production and your table contains data, run this command to populate lft and rgt columns.
+
 Your tree will be converted to a valid nested set. Awesome!
 
 Note: You can use `Category.rebuild!(false)` to skip model validations when performing the rebuild.
