@@ -40,7 +40,13 @@ class Category < ActiveRecord::Base
   cattr_accessor :test_allows_move
   @@test_allows_move = true
   def custom_before_move
-    @@test_allows_move
+    if !@@test_allows_move
+      if Rails::VERSION::MAJOR < 5
+        false
+      else
+        throw :abort
+      end
+    end
   end
 
   def to_s
@@ -117,7 +123,13 @@ class User < ActiveRecord::Base
   cattr_accessor :test_allows_move
   @@test_allows_move = true
   def custom_before_move
-    @@test_allows_move
+    if !@@test_allows_move
+      if Rails::VERSION::MAJOR < 5
+        false
+      else
+        throw :abort
+      end
+    end
   end
 
   def to_s
