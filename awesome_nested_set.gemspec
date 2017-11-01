@@ -17,8 +17,6 @@ Gem::Specification.new do |s|
 
   s.required_ruby_version = '>= 2.0.0'
 
-  s.add_runtime_dependency 'activerecord', '>= 4.0.0', '< 5.1'
-
   s.add_development_dependency 'appraisal'
   s.add_development_dependency 'pry'
   s.add_development_dependency 'pry-nav'
