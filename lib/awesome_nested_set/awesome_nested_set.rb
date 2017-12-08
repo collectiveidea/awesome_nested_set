@@ -5,7 +5,7 @@ module CollectiveIdea #:nodoc:
   module Acts #:nodoc:
     module NestedSet #:nodoc:
 
-      # This acts provides Nested Set functionality. Nested Set is a smart way to implement
+      # This provides Nested Set functionality. Nested Set is a smart way to implement
       # an _ordered_ tree, with the added feature that you can select the children and all of their
       # descendants with a single query. The drawback is that insertion or move need some complex
       # sql queries. But everything is done here by this module!
@@ -15,8 +15,8 @@ module CollectiveIdea #:nodoc:
       #
       # == API
       #
-      # Methods names are aligned with acts_as_tree as much as possible to make replacment from one
-      # by another easier.
+      # Methods names are aligned with acts_as_tree as much as possible to make transition from one
+      # to another easier.
       #
       #   item.children.create(:name => "child1")
       #
