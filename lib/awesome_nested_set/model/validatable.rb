@@ -20,7 +20,7 @@ module CollectiveIdea
               select("#{scope_string}#{column}, COUNT(#{column}) as _count").
                 group("#{scope_string}#{column}", quoted_primary_key_column_full_name).
                 having("COUNT(#{column}) > 1").
-                order(quoted_primary_key_column_full_name).
+                order(primary_column_name => :asc).
                 first.nil?
             end
           end
