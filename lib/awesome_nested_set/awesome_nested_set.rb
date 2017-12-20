@@ -87,7 +87,7 @@ module CollectiveIdea #:nodoc:
           ) if acts_as_nested_set_options[ar_callback]
         end
 
-        has_many :children, -> { order(quoted_order_column_full_name) },
+        has_many :children, -> { order(order_column => :asc) },
                  has_many_children_options
       end
 
