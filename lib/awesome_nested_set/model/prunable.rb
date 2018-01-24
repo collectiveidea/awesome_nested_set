@@ -52,7 +52,7 @@ module CollectiveIdea #:nodoc:
               end
               return true
              elsif acts_as_nested_set_options[:dependent] == :nullify
-               descendants.update_all("#{parent_column_name}": nil)
+               descendants.update_all(parent_column_name => nil)
              else
               descendants.delete_all
             end
