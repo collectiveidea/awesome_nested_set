@@ -1,3 +1,9 @@
+3.1.4
+* Add support for Rails 5.2 [John Hawthorn](https://github.com/jhawthorn) and [marocchino](https://github.com/marocchino)
+
+3.1.3
+* Add support for Rails 5.1 [John Hawthorn](https://github.com/jhawthorn)
+
 3.1.2
 * Make belongs_to relation optional again [Jan Matusz](https://marahin.pl/)
 
