@@ -178,6 +178,7 @@ class AddNestedToCategories < ActiveRecord::Migration
     add_column :categories, :children_count, :integer
 
     # This is necessary to update :lft and :rgt columns
+    Category.reset_column_information
     Category.rebuild!
   end
 
