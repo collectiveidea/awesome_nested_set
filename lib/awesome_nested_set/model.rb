@@ -95,6 +95,23 @@ module CollectiveIdea #:nodoc:
           def roots
             nested_set_scope.children_of nil
           end
+          
+          # Returns a collection including all of its children and nested children by mutil-parents
+          def descendants_of_parents(objects)
+            conditions = objects.map do |object|
+              "(lft > #{object.lft} AND lft < #{object.rgt})"
+            end
+            nested_set_scope.where(conditions.join(" OR "))
+          end
+          
+          # Returns a collection including itself and all of its children and nested children by mutil-parents
+          def self_and_descendants_of_parents(objects)
+            conditions = objects.map do |object|
+              "(lft >= #{object.lft} AND lft < #{object.rgt})"
+            end
+            nested_set_scope.where(conditions.join(" OR "))
+          end
+
         end # end class methods
 
         # Any instance method that returns a collection makes use of Rails 2.1's named_scope (which is bundled for Rails 2.0), so it can be treated as a finder.
