@@ -106,6 +106,7 @@ module CollectiveIdea #:nodoc:
 
                 Move.new(target, position, self).move
                 update_counter_cache
+                touch_old_and_new_ancestors
               end
               after_move_to(target, position)
             end

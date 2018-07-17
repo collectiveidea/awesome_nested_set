@@ -1,3 +1,6 @@
+3.1.5
+* Only update :updated_at column for old and new parents [Stefan Staub](https://github.com/stestaub)
+
 3.1.4
 * Add support for Rails 5.2 [John Hawthorn](https://github.com/jhawthorn) and [marocchino](https://github.com/marocchino)
 

@@ -232,6 +232,19 @@ module CollectiveIdea #:nodoc:
           end
         end
 
+        def touch_old_and_new_ancestors
+          return unless self.respond_to?(:updated_at)
+          # touch old parent and its ancestors
+          if old_parent = self.parent
+            old_parent.self_and_ancestors.update_all(updated_at: Time.now.utc)
+          end
+
+          # touch new parent and its ancestors
+          if new_parent = self.reload.parent
+            new_parent.self_and_ancestors.update_all(updated_at: Time.now.utc)
+          end
+        end
+
         def update_counter_cache
           return unless acts_as_nested_set_options[:counter_cache]
 

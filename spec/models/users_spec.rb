@@ -858,4 +858,29 @@ describe "User", :type => :model do
       end
     end
   end
+
+  describe 'touch timestamps' do
+    let(:affected_user) { users(:child_1) }
+    let(:unrelated_user) { users(:child_2) }
+    let(:original_updated_date) { 1.day.ago }
+
+    before do
+      unrelated_user.update_column(:updated_at, original_updated_date)
+      affected_user.update_column(:updated_at, original_updated_date)
+      User.test_allows_move = true
+    end
+
+    it 'does not affect right tree' do
+      affected_user.children.create!(name: 'child_1_1')
+      unrelated_user.reload
+      expect(unrelated_user.updated_at.to_i).to eq original_updated_date.to_i
+    end
+
+    it 'updates parents' do
+      affected_user.children.create!(name: 'child_1_1')
+      affected_user.reload
+      expect(affected_user.updated_at.to_i).to eq Time.now.to_i
+    end
+
+  end
 end

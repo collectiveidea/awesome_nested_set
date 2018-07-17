@@ -50,18 +50,12 @@ module CollectiveIdea #:nodoc:
                         case_condition_for_direction(:quoted_right_column_name) +
                         case_condition_for_parent
 
-          # We want the record to be 'touched' if it timestamps.
-          if @instance.respond_to?(:updated_at)
-            _conditions << ", updated_at = :timestamp"
-          end
-
           [
             _conditions,
             {
               :a => a, :b => b, :c => c, :d => d,
               :primary_id => instance.primary_id,
-              :new_parent_id => new_parent_id,
-              :timestamp => Time.now.utc
+              :new_parent_id => new_parent_id
             }
           ]
         end
