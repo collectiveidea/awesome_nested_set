@@ -124,6 +124,10 @@ describe "AwesomeNestedSet" do
     it "scoped_appends_id" do
       expect(ScopedCategory.acts_as_nested_set_options[:scope]).to eq(:organization_id)
     end
+
+    it "sets as column if specified" do
+      expect(ScopedColumnCategory.acts_as_nested_set_options[:scope]).to eq(:organization)
+    end
   end
 
   describe "hierarchical structure" do

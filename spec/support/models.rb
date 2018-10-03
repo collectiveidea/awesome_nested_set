@@ -18,6 +18,11 @@ class ScopedCategory < ActiveRecord::Base
   acts_as_nested_set :scope => :organization
 end
 
+class ScopedColumnCategory < ActiveRecord::Base
+  self.table_name = 'categories'
+  acts_as_nested_set :scope => {:column_name => :organization}
+end
+
 class OrderedCategory < ActiveRecord::Base
   self.table_name = 'categories'
   acts_as_nested_set :order_column => 'name'

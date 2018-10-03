@@ -125,6 +125,10 @@ module CollectiveIdea #:nodoc:
         if options[:scope].is_a?(Symbol) && options[:scope].to_s !~ /_id$/
           options[:scope] = "#{options[:scope]}_id".intern
         end
+        
+        if options[:scope].is_a?(Hash) && options[:scope][:column_name]
+          options[:scope] = options[:scope][:column_name]
+        end
 
         class_attribute :acts_as_nested_set_options
         self.acts_as_nested_set_options = options
