@@ -1,3 +1,6 @@
+3.1.5
+* Add support for a custom column name that doesn't have a suffix with `_id`
+
 3.1.4
 * Add support for Rails 5.2 [John Hawthorn](https://github.com/jhawthorn) and [marocchino](https://github.com/marocchino)
 
