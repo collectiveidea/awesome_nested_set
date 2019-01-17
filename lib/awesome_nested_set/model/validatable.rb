@@ -71,7 +71,7 @@ module CollectiveIdea
 
           def scope_string
             Array(acts_as_nested_set_options[:scope]).map do |c|
-              connection.quote_column_name(c)
+              "#{quoted_table_name}.#{connection.quote_column_name(c)}"
             end.push(nil).join(", ")
           end
         end

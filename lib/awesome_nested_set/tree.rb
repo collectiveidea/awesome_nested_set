@@ -43,12 +43,14 @@ module CollectiveIdea #:nodoc:
         end
 
         def node_children(node)
-          model.where(["#{quoted_parent_column_full_name} = ? #{scope_for_rebuild.call(node)}", node.primary_id]).
+          # default_scope with order may break database queries so we do all operation without default order scope
+          model.unscope(:order).where(["#{quoted_parent_column_full_name} = ? #{scope_for_rebuild.call(node)}", node.primary_id]).
                 order(order_for_rebuild)
         end
 
         def root_nodes
-          model.where("#{quoted_parent_column_full_name} IS NULL").order(order_for_rebuild)
+          # default_scope with order may break database queries so we do all operation without default order scope
+          model.unscope(:order).where("#{quoted_parent_column_full_name} IS NULL").order(order_for_rebuild)
         end
 
         def set_left!(node)

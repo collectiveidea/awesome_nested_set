@@ -10,10 +10,7 @@ module CollectiveIdea
           # Rebuilds the left & rights if unset or invalid.
           # Also very useful for converting from acts_as_tree.
           def rebuild!(validate_nodes = true)
-            # default_scope with order may break database queries so we do all operation without scope
-            unscoped do
-              Tree.new(self, validate_nodes).rebuild!
-            end
+            Tree.new(self, validate_nodes).rebuild!
           end
 
           def scope_for_rebuild
@@ -24,7 +21,7 @@ module CollectiveIdea
                 scope_column_names.inject("") {|str, column_name|
                   column_value = node.send(column_name)
                   cond = column_value.nil? ? "IS NULL" : "= #{connection.quote(column_value)}"
-                  str << "AND #{connection.quote_column_name(column_name)} #{cond} "
+                  str << "AND #{quoted_table_name}.#{connection.quote_column_name(column_name)} #{cond} "
                 }
               }
             end
