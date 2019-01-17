@@ -1,3 +1,6 @@
+3.1.5
+* Allow order_for_rebuild to reference an associated table
+
 3.1.4
 * Add support for Rails 5.2 [John Hawthorn](https://github.com/jhawthorn) and [marocchino](https://github.com/marocchino)
 

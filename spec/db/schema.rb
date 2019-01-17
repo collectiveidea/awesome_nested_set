@@ -99,4 +99,12 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :depth, :integer
     t.column :organization_id, :integer
   end
+
+  create_table :categories_things, :force => true do |t|
+    t.column :category_id, :integer
+    t.column :thing_id, :integer
+    t.column :parent_id, :integer
+    t.column :lft, :integer
+    t.column :rgt, :integer
+  end
 end

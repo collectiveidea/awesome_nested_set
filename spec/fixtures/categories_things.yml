@@ -1,0 +1,24 @@
+top_level:
+  id: 1
+  category_id: 1
+  thing_id: 1
+  lft: 1
+  rgt: 10
+child_1:
+  id: 2
+  category_id: 1
+  thing_id: 2
+  lft: 2
+  rgt: 3
+child_2:
+  id: 3
+  category_id: 2
+  thing_id: 3
+  lft: 4
+  rgt: 7
+child_3:
+  id: 5
+  category_id: 2
+  thing_id: 4
+  lft: 8
+  rgt: 9

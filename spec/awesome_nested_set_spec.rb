@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe "AwesomeNestedSet" do
   before(:all) do
-    self.class.fixtures :categories, :departments, :notes, :things, :brokens, :users, :default_scoped_models
+    self.class.fixtures :categories, :departments, :notes, :things, :brokens, :users, :default_scoped_models, :categories_things
   end
 
   describe "defaults" do
@@ -748,6 +748,19 @@ describe "AwesomeNestedSet" do
         subject
         expect(things(:child_1).reload.children_count).to eq(0)
         expect(things(:child_2_1).reload.children_count).to eq(0)
+      end
+    end
+
+    context "when order_for_rebuild references an associated table" do
+      it "orders nested_set model by associated table order" do
+        CategoriesThing.rebuild!
+        category_things_1 = CategoriesThing.where(category_id: 1).order(:lft)
+        category_things_2 = CategoriesThing.where(category_id: 2).order(:lft)
+
+        [category_things_1, category_things_2].each do |ct|
+          bodies = ct.map{ |c| c.thing.body }
+          expect(bodies).to eq(bodies.sort)
+        end
       end
     end
   end

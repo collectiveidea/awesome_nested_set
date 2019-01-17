@@ -66,6 +66,18 @@ class Thing < ActiveRecord::Base
   acts_as_nested_set :counter_cache => 'children_count'
 end
 
+class CategoriesThing < ActiveRecord::Base
+  belongs_to :category
+  belongs_to :thing
+
+  acts_as_nested_set scope: [:category_id]
+  default_scope { joins(:thing) }
+
+  def self.order_for_rebuild
+    'things.body desc'
+  end
+end
+
 class DefaultWithCallbacks < ActiveRecord::Base
 
   self.table_name = 'categories'
