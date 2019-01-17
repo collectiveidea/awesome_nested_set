@@ -71,10 +71,10 @@ class CategoriesThing < ActiveRecord::Base
   belongs_to :thing
 
   acts_as_nested_set scope: [:category_id]
-  default_scope { joins(:thing) }
+  default_scope { includes(:thing) }
 
   def self.order_for_rebuild
-    'things.body desc'
+    'things.body asc'
   end
 end
 
