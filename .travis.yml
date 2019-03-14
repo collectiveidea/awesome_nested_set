@@ -16,6 +16,12 @@ gemfile:
   - gemfiles/rails_5.1.gemfile
   - gemfiles/rails_5.2.gemfile
 matrix:
+  include:
+    - rvm: 2.6.1
+      gemfile: gemfiles/rails_5.2.gemfile
+      env: DB=mariadb
+      addons:
+        mariadb: '10.4'
   exclude:
     - rvm: 2.6.1
       gemfile: gemfiles/rails_4.2.gemfile
