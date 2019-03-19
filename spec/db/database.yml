@@ -18,6 +18,12 @@ mysql:
   username: root
   password:
   database: awesome_nested_set_plugin_test
+mariadb:
+  adapter: <%= defined?(JRUBY_VERSION) ? "jdbcmysql" : "mysql2" %>
+  host: localhost
+  username: root
+  password:
+  database: awesome_nested_set_plugin_test
 ## Add DB Configuration to run Oracle tests
 oracle:
   adapter: oracle_enhanced
