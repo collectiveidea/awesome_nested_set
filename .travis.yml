@@ -24,6 +24,8 @@ matrix:
       addons:
         mariadb: '10.4'
   exclude:
+    - rvm: 2.7.0-preview1
+    - gemfiles/rails_4.2.gemfile
     - rvm: 2.6.3
       gemfile: gemfiles/rails_4.2.gemfile
 notifications:
