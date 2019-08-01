@@ -30,3 +30,5 @@ notifications:
     urls:
       - https://buildlight.collectiveidea.com/
     on_start: always
+services:
+  - mysql
