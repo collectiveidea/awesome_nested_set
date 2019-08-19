@@ -25,8 +25,13 @@ matrix:
       env: DB=mariadb
       addons:
         mariadb: '10.4'
+      before_install:
+        - sudo systemctl stop mysql
+        - sudo mysqld_safe --skip-grant-tables &
 notifications:
   webhooks:
     urls:
       - https://buildlight.collectiveidea.com/
     on_start: always
+services:
+  - mysql

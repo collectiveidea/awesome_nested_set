@@ -1192,12 +1192,12 @@ describe "AwesomeNestedSet" do
 
   describe 'specifying custom sort column' do
     it "should sort by the default sort column" do
-      expect(Category.order_column).to eq('lft')
+      expect(Category.order_column_name).to eq('lft')
     end
 
     it "should sort by custom sort column" do
       expect(OrderedCategory.acts_as_nested_set_options[:order_column]).to eq('name')
-      expect(OrderedCategory.order_column).to eq('name')
+      expect(OrderedCategory.order_column_name).to eq('name')
     end
   end
 
