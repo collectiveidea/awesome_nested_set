@@ -1,3 +1,7 @@
+Unreleased version
+* Fix deprecation warning "Passing a range to `#in` is deprecated".
+* [Compare to 3.2.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.2.0...master)
+
 3.2.0
 * Add support for Rails 6.0 [Stefan Andersen](https://github.com/stfnndrsn) and [Damian Legawiec](https://github.com/damianlegawiec) and [Jonathan Tapia](https://github.com/jtapia) and [Alex](https://github.com/a-ta-ta)
 * [Compare to 3.1.4](https://github.com/collectiveidea/awesome_nested_set/compare/v3.1.4...v3.2.0)
