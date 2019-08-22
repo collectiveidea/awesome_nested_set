@@ -41,9 +41,21 @@ module CollectiveIdea #:nodoc:
         delegate :base_class, :to => :instance_class, :prefix => :instance
 
         def where_statement(left_bound, right_bound)
-          instance_arel_table[left_column_name].in(left_bound..right_bound).
-            or(instance_arel_table[right_column_name].in(left_bound..right_bound))
+          instance_arel_table[left_column_name].between(left_bound..right_bound).
+            or(instance_arel_table[right_column_name].between(left_bound..right_bound))
         end
+
+        # Before Arel 6, there was 'in' method, which was replaced
+        # with 'between' in Arel 6 and now gives deprecation warnings
+        # in verbose mode. This is patch to support rails 4.0 (Arel 4)
+        # and 4.1 (Arel 5).
+        module LegacyWhereStatementExt
+          def where_statement(left_bound, right_bound)
+            instance_arel_table[left_column_name].in(left_bound..right_bound).
+            or(instance_arel_table[right_column_name].in(left_bound..right_bound))
+          end
+        end
+        prepend LegacyWhereStatementExt unless Arel::Predications.method_defined?(:between)
 
         def conditions(a, b, c, d)
           _conditions = case_condition_for_direction(:quoted_left_column_name) +
