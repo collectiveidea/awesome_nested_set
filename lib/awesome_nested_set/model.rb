@@ -52,7 +52,7 @@ module CollectiveIdea #:nodoc:
 
           # Iterates over tree elements and determines the current level in the tree.
           # Only accepts default ordering, odering by an other column than lft
-          # does not work. This method is much more efficent than calling level
+          # does not work. This method is much more efficient than calling level
           # because it doesn't require any additional database queries.
           #
           # Example:
@@ -79,7 +79,7 @@ module CollectiveIdea #:nodoc:
           end
 
           def nested_set_scope(options = {})
-            options = {:order => { order_column => :asc }}.merge(options)
+            options = {:order => { order_column_name => :asc }}.merge(options)
 
             where(options[:conditions]).order(options.delete(:order))
           end
