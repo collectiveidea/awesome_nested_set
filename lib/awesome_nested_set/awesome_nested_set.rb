@@ -98,9 +98,9 @@ module CollectiveIdea #:nodoc:
           :primary_key => primary_column_name,
           :counter_cache => acts_as_nested_set_options[:counter_cache],
           :inverse_of => (:children unless acts_as_nested_set_options[:polymorphic]),
-          :polymorphic => acts_as_nested_set_options[:polymorphic],
           :touch => acts_as_nested_set_options[:touch]
         }
+        options[:polymorphic] = true if acts_as_nested_set_options[:polymorphic]
         options[:optional] = true if ActiveRecord::VERSION::MAJOR >= 5
         belongs_to :parent, options
       end
