@@ -723,7 +723,9 @@ describe "User", :type => :model do
     parent = User.first
 
     expect do
-      User.where(name: "Chris-#{Time.current.to_f}").first_or_create! do |user|
+      condition = "Chris-#{Time.current.to_f}'"
+
+      (User.find_by(name: condition) || User.create!(name: condition)).tap do |user|
         user.parent = parent
       end
     end.to change { User.count }.by 1
