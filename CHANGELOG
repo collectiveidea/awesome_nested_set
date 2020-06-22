@@ -1,6 +1,10 @@
 Unreleased version
-* Fix deprecation warning "Passing a range to `#in` is deprecated".
-* [Compare to 3.2.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.2.0...master)
+* [Compare to 3.2.1](https://github.com/collectiveidea/awesome_nested_set/compare/v3.2.1...master)
+
+3.2.1
+* Don't reload in after_save callback. [Petrik de Heus](https://github.com/p8)
+* Fix deprecation warning "Passing a range to `#in` is deprecated". [Konstantin Mochalov](https://github.com/kolen)
+* [Compare to 3.2.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.2.0...v3.2.1)
 
 3.2.0
 * Add support for Rails 6.0 [Stefan Andersen](https://github.com/stfnndrsn) and [Damian Legawiec](https://github.com/damianlegawiec) and [Jonathan Tapia](https://github.com/jtapia) and [Alex](https://github.com/a-ta-ta)

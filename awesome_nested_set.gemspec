@@ -27,4 +27,9 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'pry-nav'
   s.add_development_dependency 'rake', '~> 10'
   s.add_development_dependency 'rspec-rails', '~> 3.8.0'
+
+  s.cert_chain = [File.expand_path('certs/parndt.pem', __dir__)]
+  if $PROGRAM_NAME =~ /gem\z/ && ARGV.include?('build') && ARGV.include?(__FILE__)
+    s.signing_key = File.expand_path('~/.ssh/gem-private_key.pem')
+  end
 end
