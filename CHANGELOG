@@ -3,6 +3,7 @@ Unreleased version
   (Messages of the form "DEPRECATION WARNING: Class level methods will no longer inherit scoping from ...")
 * Fix ruby 2.7 keyword parameters deprecation warning
 * [Compare to 3.2.1](https://github.com/collectiveidea/awesome_nested_set/compare/v3.2.1...master)
+* Fix Ruby 2.7 warning "warning: Using the last argument as keyword parameters is deprecated; maybe ** should be added to the call"
 
 3.2.1
 * Don't reload in after_save callback. [Petrik de Heus](https://github.com/p8)
