@@ -62,6 +62,7 @@ module CollectiveIdea #:nodoc:
       end
 
       private
+
       def acts_as_nested_set_define_callbacks!
         # on creation, set automatically lft and rgt to the end of the tree
         before_create  :set_default_left_and_right
