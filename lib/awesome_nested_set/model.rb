@@ -79,9 +79,13 @@ module CollectiveIdea #:nodoc:
           end
 
           def nested_set_scope(options = {})
-            options = {:order => { order_column_name => :asc }}.merge(options)
+            order = scope_order_from_options(options)
+            default_scoped.where(options[:conditions]).order(order)
+          end
 
-            where(options[:conditions]).order(options.delete(:order))
+          def nested_set_scope_without_default_scope(options = {})
+            order = scope_order_from_options(options)
+            unscoped.where(options[:conditions]).order(order)
           end
 
           def primary_key_scope(id)
@@ -94,6 +98,12 @@ module CollectiveIdea #:nodoc:
 
           def roots
             nested_set_scope.children_of nil
+          end
+
+          private
+
+          def scope_order_from_options(options)
+            options[:order] || { order_column_name => :asc }
           end
         end # end class methods
 
@@ -139,11 +149,7 @@ module CollectiveIdea #:nodoc:
         # performs finds on the base ActiveRecord class, using the :scope
         # declared in the acts_as_nested_set declaration.
         def nested_set_scope(options = {})
-          if (scopes = Array(acts_as_nested_set_options[:scope])).any?
-            options[:conditions] = scopes.inject({}) do |conditions,attr|
-              conditions.merge attr => self[attr]
-            end
-          end
+          add_scope_conditions_to_options(options)
 
           self.class.base_class.nested_set_scope options
         end
@@ -153,10 +159,10 @@ module CollectiveIdea #:nodoc:
         # Only activerecord callbacks need unscoped model to handle the nested set records
         # And class level `nested_set_scope` seems just for query `root` `child` .. etc
         # I think we don't have to provide unscoped `nested_set_scope` in class level.
-        def nested_set_scope_without_default_scope(*args)
-          self.class.base_class.unscoped do
-            nested_set_scope(*args)
-          end
+        def nested_set_scope_without_default_scope(options = {})
+          add_scope_conditions_to_options(options)
+
+          self.class.base_class.nested_set_scope_without_default_scope options
         end
 
         def to_text
@@ -166,6 +172,13 @@ module CollectiveIdea #:nodoc:
         end
 
         protected
+
+        def add_scope_conditions_to_options(options)
+          scopes = scope_column_names
+          return if scopes.empty?
+
+          options[:conditions] = scopes.to_h { |attr| [attr, self[attr] ] }
+        end
 
         def without_self(scope)
           return scope if new_record?
