@@ -1,4 +1,6 @@
 Unreleased version
+* Update for compatibility with Rails 6.1 which no longer inherits scoping
+  (Messages of the form "DEPRECATION WARNING: Class level methods will no longer inherit scoping from ...")
 * [Compare to 3.2.1](https://github.com/collectiveidea/awesome_nested_set/compare/v3.2.1...master)
 
 3.2.1
