@@ -177,7 +177,7 @@ module CollectiveIdea #:nodoc:
           scopes = scope_column_names
           return if scopes.empty?
 
-          options[:conditions] = scopes.to_h { |attr| [attr, self[attr] ] }
+          options[:conditions] = scopes.map { |attr| [attr, self[attr] ] }.to_h
         end
 
         def without_self(scope)
