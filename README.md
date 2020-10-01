@@ -6,7 +6,8 @@
 Awesome Nested Set is an implementation of the nested set pattern for ActiveRecord models.
 It is a replacement for acts_as_nested_set and BetterNestedSet, but more awesome.
 
-Version 3.1 supports Rails 5 & 4. Version 2 supports Rails 3. Gem versions prior to 2.0 support Rails 2.
+Version 3.2 supports Rails 6, 3.1 supports Rails 5 & 4. Version 2 supports Rails 3. 
+Gem versions prior to 2.0 support Rails 2.
 
 ## What makes this so awesome?
 
@@ -65,6 +66,7 @@ Run `rake rdoc` to generate the API docs and see [CollectiveIdea::Acts::NestedSe
 You can pass various options to `acts_as_nested_set` macro. Configuration options are:
 
 * `parent_column`: specifies the column name to use for keeping the position integer (default: parent_id)
+* `primary_column`: specifies the column name to use as the inverse of the parent column (default: id)
 * `left_column`: column name for left boundary data (default: lft)
 * `right_column`: column name for right boundary data (default: rgt)
 * `depth_column`: column name for the depth data default (default: depth)

@@ -25,8 +25,8 @@ module CollectiveIdea #:nodoc:
       #
       # * +:parent_column+ - specifies the column name to use for keeping the position integer (default: parent_id)
       # * +:primary_column+ - specifies the column name to use as the inverse of the parent column (default: id)
-      # * +:left_column+ - column name for left boundry data, default "lft"
-      # * +:right_column+ - column name for right boundry data, default "rgt"
+      # * +:left_column+ - column name for left boundary data, default "lft"
+      # * +:right_column+ - column name for right boundary data, default "rgt"
       # * +:depth_column+ - column name for the depth data, default "depth"
       # * +:scope+ - restricts what is to be considered a list. Given a symbol, it'll attach "_id"
       #   (if it hasn't been already) and use that as the foreign key restriction. You
@@ -87,7 +87,7 @@ module CollectiveIdea #:nodoc:
           ) if acts_as_nested_set_options[ar_callback]
         end
 
-        has_many :children, -> { order(order_column => :asc) },
+        has_many :children, -> { order(order_column_name => :asc) },
                  has_many_children_options
       end
 
