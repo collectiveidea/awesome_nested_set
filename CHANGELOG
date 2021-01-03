@@ -1,8 +1,12 @@
 Unreleased version
+
+* [Compare to 3.3.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.3.0...master)
+
+3.3.0
 * Update for compatibility with Rails 6.1 which no longer inherits scoping
-  (Messages of the form "DEPRECATION WARNING: Class level methods will no longer inherit scoping from ...")
-* Fix ruby 2.7 keyword parameters deprecation warning
-* [Compare to 3.2.1](https://github.com/collectiveidea/awesome_nested_set/compare/v3.2.1...master)
+  (Messages of the form "DEPRECATION WARNING: Class level methods will no longer inherit scoping from ...") [Marc Rohloff](https://github.com/marcrohloff)
+* Fix ruby 2.7 keyword parameters deprecation warning [Krisdigital](https://github.com/krisdigital)
+* [Compare to 3.2.1](https://github.com/collectiveidea/awesome_nested_set/compare/v3.2.1...v3.3.0)
 
 3.2.1
 * Don't reload in after_save callback. [Petrik de Heus](https://github.com/p8)
