@@ -1,5 +1,6 @@
 Unreleased version
 
+* Add belongs_to :polymorphic key option only when used [Filippo Liverani](https://github.com/filippoliverani)
 * [Compare to 3.3.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.3.0...master)
 
 3.3.0
