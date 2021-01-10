@@ -80,12 +80,7 @@ module CollectiveIdea #:nodoc:
 
           def nested_set_scope(options = {})
             order = scope_order_from_options(options)
-            default_scoped.where(options[:conditions]).order(order)
-          end
-
-          def nested_set_scope_without_default_scope(options = {})
-            order = scope_order_from_options(options)
-            unscoped.where(options[:conditions]).order(order)
+            where(options[:conditions]).order(order)
           end
 
           def primary_key_scope(id)
@@ -151,7 +146,7 @@ module CollectiveIdea #:nodoc:
         def nested_set_scope(options = {})
           add_scope_conditions_to_options(options)
 
-          self.class.base_class.nested_set_scope options
+          self.class.base_class.default_scoped.nested_set_scope options
         end
 
         # Separate an other `nested_set_scope` for unscoped model
@@ -162,7 +157,7 @@ module CollectiveIdea #:nodoc:
         def nested_set_scope_without_default_scope(options = {})
           add_scope_conditions_to_options(options)
 
-          self.class.base_class.nested_set_scope_without_default_scope options
+          self.class.base_class.unscoped.nested_set_scope options
         end
 
         def to_text

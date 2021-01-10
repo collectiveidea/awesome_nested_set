@@ -96,7 +96,7 @@ module CollectiveIdea #:nodoc:
 
         def lock_nodes_between!(left_bound, right_bound)
           # select the rows in the model between a and d, and apply a lock
-          instance_base_class.nested_set_scope.
+          instance_base_class.default_scoped.nested_set_scope.
                               right_of(left_bound).left_of_right_side(right_bound).
                               select(primary_column_name).
                               lock(true)

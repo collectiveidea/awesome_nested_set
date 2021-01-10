@@ -140,6 +140,12 @@ describe "AwesomeNestedSet" do
       expect(Category.root).to eq(categories(:top_level))
     end
 
+    it "root_class_method with scope" do
+      categories(:top_level).update_attribute :organization_id, 999999999
+      expect(ScopedCategory.where(organization_id: 999999999).root.id).to eq(categories(:top_level).id)
+      expect(ScopedCategory.where(organization_id: 1).root).to be_nil
+    end
+
     it "root" do
       expect(categories(:child_3).root).to eq(categories(:top_level))
     end
