@@ -1,5 +1,6 @@
 Unreleased version
 
+* Keep current scope when calling `roots` [Petrik de Heus](https://github.com/p8)
 * [Compare to 3.3.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.3.1...master)
 
 3.3.1
