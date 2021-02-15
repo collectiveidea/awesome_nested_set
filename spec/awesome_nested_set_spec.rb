@@ -1104,6 +1104,27 @@ describe "AwesomeNestedSet" do
         expect { subject }.to change { new_parent.reload.children_count }.by(1)
       end
     end
+
+    context "when class is an STI" do
+      let(:sti_subclass1) { Subclass1.create(name: "Subclass1") }
+      let(:sti_subclass2) { Subclass2.create(name: "Subclass2") }
+      let(:sti_subclass3) { Subclass2.create(name: "Subclass3") }
+
+      # https://github.com/collectiveidea/awesome_nested_set/issues/415
+      it 'should update counter cache of a parent' do
+        sti_subclass2.move_to_child_of sti_subclass1
+
+        sti_subclass1.reload
+        expect(sti_subclass1.children_count).to be 1
+
+        sti_subclass2.move_to_child_of sti_subclass3
+
+        sti_subclass1.reload
+        sti_subclass3.reload
+        expect(sti_subclass1.children_count).to be 0
+        expect(sti_subclass3.children_count).to be 1
+      end
+    end
   end
 
   describe "association callbacks on children" do
