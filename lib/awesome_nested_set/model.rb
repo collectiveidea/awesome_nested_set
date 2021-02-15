@@ -244,12 +244,12 @@ module CollectiveIdea #:nodoc:
 
           # Decrease the counter for all old parents
           if old_parent = self.parent
-            self.class.decrement_counter(acts_as_nested_set_options[:counter_cache], old_parent)
+            old_parent.class.decrement_counter(acts_as_nested_set_options[:counter_cache], old_parent)
           end
 
           # Increase the counter for all new parents
           if new_parent = self.reload.parent
-            self.class.increment_counter(acts_as_nested_set_options[:counter_cache], new_parent)
+            new_parent.class.increment_counter(acts_as_nested_set_options[:counter_cache], new_parent)
           end
         end
 
