@@ -88,6 +88,7 @@ ActiveRecord::Schema.define(:version => 0) do
     t.column :parent_id, :integer
     t.column :lft, :integer
     t.column :rgt, :integer
+    t.column :children_count, :integer, null: false, default: 0
   end
 
   create_table :users, :force => true do |t|

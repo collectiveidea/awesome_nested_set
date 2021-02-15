@@ -155,7 +155,7 @@ class ScopedUser < ActiveRecord::Base
 end
 
 class Superclass < ActiveRecord::Base
-  acts_as_nested_set
+  acts_as_nested_set counter_cache: :children_count
   self.table_name = 'single_table_inheritance'
 end
 
