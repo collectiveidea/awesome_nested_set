@@ -1,8 +1,11 @@
 Unreleased version
 
+* [Compare to 3.4.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.4.0...master)
+
+3.4.0
 * Keep current scope when calling `roots` [Petrik de Heus](https://github.com/p8)
 * STI record now can update counter cache correctly [Issei Murasawa](http://github.com/issei-m)
-* [Compare to 3.3.0](https://github.com/collectiveidea/awesome_nested_set/compare/v3.3.1...master)
+* [Compare to 3.3.1](https://github.com/collectiveidea/awesome_nested_set/compare/v3.3.1...master)
 
 3.3.1
 * Add belongs_to :polymorphic key option only when used [Filippo Liverani](https://github.com/filippoliverani)
