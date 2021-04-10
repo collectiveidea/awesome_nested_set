@@ -16,16 +16,10 @@ jobs:
       matrix:
         ruby: ['2.6', '2.7', '3.0']
         gemfile:
-          - rails_5_0
-          - rails_5_1
           - rails_5_2
           - rails_6_0
           - rails_6_1
         exclude:
-          - ruby: '3.0'
-            gemfile: rails_5_0
-          - ruby: '3.0'
-            gemfile: rails_5_1
           - ruby: '3.0'
             gemfile: rails_5_2
 
@@ -58,16 +52,10 @@ jobs:
       matrix:
         ruby: ['2.6', '2.7', '3.0']
         gemfile:
-          - rails_5_0
-          - rails_5_1
           - rails_5_2
           - rails_6_0
           - rails_6_1
         exclude:
-          - ruby: '3.0'
-            gemfile: rails_5_0
-          - ruby: '3.0'
-            gemfile: rails_5_1
           - ruby: '3.0'
             gemfile: rails_5_2
 
@@ -110,16 +98,10 @@ jobs:
       matrix:
         ruby: ['2.6', '2.7', '3.0']
         gemfile:
-          - rails_5_0
-          - rails_5_1
           - rails_5_2
           - rails_6_0
           - rails_6_1
         exclude:
-          - ruby: '3.0'
-            gemfile: rails_5_0
-          - ruby: '3.0'
-            gemfile: rails_5_1
           - ruby: '3.0'
             gemfile: rails_5_2
 
