@@ -1,0 +1,119 @@
+---
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - '*'
+  push:
+    branches:
+      - master
+jobs:
+  # SQLITE
+  sqlite:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ['2.5', '2.6', '2.7']
+        gemfile:
+          - rails_4.2
+          - rails_5.0
+          - rails_5.1
+          - rails_6.0
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+      BUNDLE_PATH_RELATIVE_TO_CWD: true
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Run tests
+        env:
+          RAILS_ENV: test
+        run: |
+          bundle exec rspec spec
+
+
+  # MYSQL
+  mysql:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ['2.5', '2.6', '2.7']
+        gemfile:
+          - rails_4.2
+          - rails_5.0
+          - rails_5.1
+          - rails_6.0
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+      BUNDLE_PATH_RELATIVE_TO_CWD: true
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: password
+          MSQL_DATABASE: test
+        ports: ['3306:3306']
+        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Run tests
+        env:
+          DATABASE_URL: mysql2://root:password@127.0.0.1:3306/test
+          RAILS_ENV: test
+        run: |
+          bundle exec rspec spec
+
+
+  # POSTGRES
+  postgres:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby: ['2.5', '2.6', '2.7']
+        gemfile:
+          - rails_4.2
+          - rails_5.0
+          - rails_5.1
+          - rails_6.0
+    env:
+      BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
+      BUNDLE_PATH_RELATIVE_TO_CWD: true
+
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: test
+        ports: ['5432:5432']
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgres://postgres:password@localhost:5432/test
+          RAILS_ENV: test
+        run: |
+          bundle exec rspec spec
