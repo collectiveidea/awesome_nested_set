@@ -12,15 +12,21 @@ postgresql:
   username: postgres
   password: postgres
   min_messages: warning
+  <% if ENV['CI'] %>
+  url: postgres://postgres:postgres@127.0.0.1:5432
+  <% end %>
 mysql:
   adapter: <%= defined?(JRUBY_VERSION) ? "jdbcmysql" : "mysql2" %>
-  host: localhost
+  host: <%= ENV['CI'] ? '127.0.0.1' : 'localhost' %>
   username: root
   password:
   database: awesome_nested_set_plugin_test
+  <% if ENV['CI'] %>
+  port: 3306
+  <% end %>
 mariadb:
   adapter: <%= defined?(JRUBY_VERSION) ? "jdbcmysql" : "mysql2" %>
-  host: localhost
+  host: <%= ENV['CI'] ? '127.0.0.1' : 'localhost' %>
   username: root
   password:
   database: awesome_nested_set_plugin_test

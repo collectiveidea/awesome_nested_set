@@ -72,10 +72,14 @@ jobs:
       mysql:
         image: mysql:8
         env:
-          MYSQL_ROOT_PASSWORD: password
-          MSQL_DATABASE: test
+          MYSQL_ALLOW_EMPTY_PASSWORD: yes
+          MSQL_DATABASE: awesome_nested_set_plugin_test
         ports: ['3306:3306']
-        options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
     steps:
       - uses: actions/checkout@v2
@@ -87,8 +91,9 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: mysql2://root:password@127.0.0.1:3306/test
+          DATABASE_URL: mysql2://root@127.0.0.1:3306/awesome_nested_set_plugin_test
           RAILS_ENV: test
+          DB: mysql
         run: |
           bundle exec rspec spec
 
@@ -120,9 +125,14 @@ jobs:
         image: postgres:12
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: test
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: awesome_nested_set_plugin_test
         ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - uses: actions/checkout@v2
@@ -134,7 +144,8 @@ jobs:
 
       - name: Run tests
         env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/test
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/awesome_nested_set_plugin_test
           RAILS_ENV: test
+          DB: postgresql
         run: |
           bundle exec rspec spec
