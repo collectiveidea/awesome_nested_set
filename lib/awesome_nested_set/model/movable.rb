@@ -39,6 +39,35 @@ module CollectiveIdea #:nodoc:
             move_to node, :child
           end
 
+          # Calls .move_to_child_with_index if the parent node is passed as an
+          # argument, else it calls .move_to_root_with_index and sorts at root level.
+          def move_with_index(index, node = nil)
+            if node.nil?
+              move_to_root_with_index(index)
+            else
+              move_to_child_with_index(node, index)
+            end
+          end
+
+          # Move the node to the root with specify index, or just re-order with specify
+          # index if node is already at root level.
+          def move_to_root_with_index(index)
+            # If we are already at level 0 the item should be root? => true
+            # and so we can skip moving the item to root.
+            move_to_root unless level == 0 && root?
+
+            # Sort the positioning of the item
+            # at root level based on its siblings.
+            my_position = siblings.to_a.index(self)
+            if my_position && my_position < index
+              move_to_right_of(siblings[index])
+            elsif my_position && my_position == index
+              # do nothing. already there.
+            else
+              move_to_left_of(siblings[index])
+            end
+          end
+
           # Move the node to the child of another node with specify index
           def move_to_child_with_index(node, index)
             if node.children.empty?
