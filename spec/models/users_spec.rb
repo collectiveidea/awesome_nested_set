@@ -200,7 +200,7 @@ describe "User", :type => :model do
 
   it "children" do
     user = users(:top_level)
-    user.children.each {|c| expect(user.uuid).to eq(c.parent_uuid) }
+    user.children.each { |c| expect(user.uuid).to eq(c.parent_uuid) }
   end
 
   it "order_of_children" do
@@ -349,6 +349,79 @@ describe "User", :type => :model do
     expect(User.valid?).to be_truthy
   end
 
+  describe "#move_to_root_with_index" do
+    it "move to a node without child" do
+      users(:child_1).move_to_root_with_index(0)
+      users(:child_3).move_to_root_with_index(1)
+      expect(users(:child_1).parent_uuid).to eq(nil)
+      expect(users(:child_1).left).to eq(1)
+      expect(users(:child_1).right).to eq(2)
+      expect(users(:child_3).left).to eq(3)
+      expect(users(:child_3).right).to eq(4)
+      expect(User.valid?).to be_truthy
+    end
+
+    it "move to a node to the left of another root node" do
+      users(:child_1).move_to_root_with_index(0)
+      users(:child_2).move_to_root_with_index(1)
+      users(:child_3).move_to_root_with_index(2)
+
+      expect(users(:child_1).parent_uuid).to eq(nil)
+      expect(users(:child_2).parent_uuid).to eq(nil)
+      expect(users(:child_3).parent_uuid).to eq(nil)
+
+      expect(users(:child_1).left).to eq(1)
+      expect(users(:child_1).right).to eq(2)
+      expect(users(:child_2).left).to eq(3)
+      expect(users(:child_2).right).to eq(6)
+      expect(users(:child_3).left).to eq(7)
+      expect(users(:child_3).right).to eq(8)
+
+      users(:child_3).move_to_root_with_index(0)
+
+      users(:child_1).reload
+      users(:child_2).reload
+      users(:child_3).reload
+
+      expect(users(:child_3).left).to eq(1)
+      expect(users(:child_3).right).to eq(2)
+    end
+
+    it "move to a node to the right or root node" do
+      users(:child_1).move_to_root_with_index(0)
+      users(:child_2).move_to_root_with_index(1)
+      users(:child_3).move_to_root_with_index(2)
+
+      users(:child_1).reload
+      users(:child_2).reload
+      users(:child_3).reload
+
+      expect(users(:child_1).parent_uuid).to eq(nil)
+      expect(users(:child_2).parent_uuid).to eq(nil)
+      expect(users(:child_3).parent_uuid).to eq(nil)
+
+      expect(users(:child_1).left).to eq(1)
+      expect(users(:child_1).right).to eq(2)
+      expect(users(:child_2).left).to eq(3)
+      expect(users(:child_2).right).to eq(6)
+      expect(users(:child_3).left).to eq(7)
+      expect(users(:child_3).right).to eq(8)
+
+      users(:child_1).move_to_root_with_index(1)
+
+      users(:child_1).reload
+      users(:child_2).reload
+      users(:child_3).reload
+
+      expect(users(:child_1).left).to eq(5)
+      expect(users(:child_1).right).to eq(6)
+      expect(users(:child_2).left).to eq(1)
+      expect(users(:child_2).right).to eq(4)
+      expect(users(:child_3).left).to eq(7)
+      expect(users(:child_3).right).to eq(8)
+    end
+  end
+
   describe "#move_to_child_with_index" do
     it "move to a node without child" do
       users(:child_1).move_to_child_with_index(users(:child_3), 0)
@@ -383,7 +456,6 @@ describe "User", :type => :model do
       expect(users(:child_2).left).to eq(2)
       expect(users(:child_2).right).to eq(7)
     end
-
   end
 
   it "move_to_child_of_appends_to_end" do
