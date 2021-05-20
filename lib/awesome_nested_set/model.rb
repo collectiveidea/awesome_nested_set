@@ -98,7 +98,7 @@ module CollectiveIdea #:nodoc:
           private
 
           def scope_order_from_options(options)
-            options.fetch(:order, { order_column_name => :asc })
+            options.fetch(:order, order_column_name)
           end
         end # end class methods
 
