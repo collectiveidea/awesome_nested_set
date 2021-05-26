@@ -97,7 +97,7 @@ module CollectiveIdea #:nodoc:
         def lock_nodes_between!(left_bound, right_bound)
           # select the rows in the model between a and d, and apply a lock
           instance_base_class.right_of(left_bound).left_of_right_side(right_bound).
-                              select(primary_column_name).lock(true)
+                              select(primary_column_name).lock(true).to_a
         end
 
         def root
