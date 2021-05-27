@@ -96,12 +96,12 @@ module CollectiveIdea #:nodoc:
 
         def lock_nodes_between!(left_bound, right_bound)
           # select the rows in the model between a and d, and apply a lock
-          if Rails::VERSION::MAJOR < 6 ||  Rails::VERSION::MAJOR == 6 &&  Rails::VERSION::MINOR == 0
+          if Rails::VERSION::MAJOR < 6 || Rails::VERSION::MAJOR == 6 &&  Rails::VERSION::MINOR == 0
             instance_base_class.right_of(left_bound).left_of_right_side(right_bound).
                                 select(primary_column_name).
                                 lock(true).to_a
           else
-            instance_base_class.default_scoped.nested_set_scope.
+            instance_base_class.default_scoped.
                                 right_of(left_bound).left_of_right_side(right_bound).
                                 select(primary_column_name).
                                 lock(true).to_a

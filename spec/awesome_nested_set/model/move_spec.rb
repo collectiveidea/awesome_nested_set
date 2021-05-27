@@ -10,10 +10,46 @@ describe "AwesomeNestedSet" do
   end
 
   describe "move" do
+    it 'move_left' do
+      parent = User.first
+
+      sql = case User.connection.adapter_name.downcase
+      when /postgres/
+        'SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2 FOR UPDATE'
+      when /mysql/
+        'SELECT `users`.* FROM `users` WHERE `users`.`id` = 1 LIMIT 1 FOR UPDATE'
+      end
+
+      assert_sql(sql) do
+        users(:child_2).move_left
+      end
+    end
+
     it 'lock_nodes_between sql' do
       parent = User.first
 
-      sql = 'SELECT "users"."uuid" FROM "users" WHERE "users"."name" = ? AND "users"."lft" >= 10 AND "users"."rgt" <= 14'
+      sql = case User.connection.adapter_name.downcase
+      when /postgres/i
+        'SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2 FOR UPDATE'
+      when /mysql/i
+        'SELECT `users`.* FROM `users` WHERE `users`.`id` = 1 LIMIT 1 FOR UPDATE'
+      end
+
+      assert_sql(sql) do
+        User.create!(name: "Chris-#{Time.current.to_f}", parent: parent)
+      end
+    end
+
+    it 'lock_nodes_between sql' do
+      parent = User.first
+
+      sql = case User.connection.adapter_name.downcase
+      when /postgres/
+        'SELECT "users".* FROM "users" WHERE "users"."id" = $1 LIMIT $2 FOR UPDATE'
+      when /mysql/i
+        'SELECT `users`.* FROM `users` WHERE `users`.`id` = 1 LIMIT 1 FOR UPDATE'
+      end
+
       assert_sql(sql) do
         User.where(name: "Chris-#{Time.current.to_f}").first_or_create! do |user|
           user.parent = parent
@@ -25,7 +61,13 @@ describe "AwesomeNestedSet" do
   describe "scoping" do
     it 'scoped sql' do
 
-      sql = 'SELECT "categories".* FROM "categories" WHERE "categories"."organization_id" = ? AND "categories"."parent_id" IS NULL ORDER BY "categories"."lft" ASC LIMIT ?'
+      sql = case User.connection.adapter_name
+      when /postgres/i
+        'SELECT "categories".* FROM "categories" WHERE "categories"."organization_id" = $1 AND "categories"."parent_id" IS NULL ORDER BY "categories"."lft" ASC LIMIT $2'
+      when /mysql/i
+        'SELECT `categories`.* FROM `categories` WHERE `categories`.`organization_id` = 1 AND `categories`.`parent_id` IS NULL ORDER BY `categories`.`lft` ASC LIMIT 1'
+      end
+
       assert_sql(sql) do
         ScopedCategory.where(organization_id: 1).root
       end
@@ -43,7 +85,7 @@ describe "AwesomeNestedSet" do
     capture_sql { yield }
   ensure
     failed_patterns = []
-    patterns_to_match.each do |pattern|
+    patterns_to_match.compact.each do |pattern|
       failed_patterns << pattern unless SQLCounter.log_all.any? { |sql| pattern === sql }
     end
     assert failed_patterns.empty?, "Query pattern(s) #{failed_patterns.map(&:strip).join(', ')} not found.#{SQLCounter.log.size == 0 ? '' : "\nQueries:\n#{SQLCounter.log.map(&:inspect).join("\n")}"}"
@@ -69,3 +111,4 @@ describe "AwesomeNestedSet" do
   ActiveSupport::Notifications.subscribe("sql.active_record", SQLCounter.new)
 
 end
+
