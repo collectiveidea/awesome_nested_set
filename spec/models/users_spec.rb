@@ -34,7 +34,7 @@ describe "User", :type => :model do
     end
 
     it "leaves_class_method" do
-      expect(User.where("#{User.right_column_name} - #{User.left_column_name} = 1").to_a).to eq(User.leaves.to_a)
+      expect(User.where("#{User.right_column_name} - #{User.left_column_name} = 1").to_a.sort_by(&:id)).to eq(User.leaves.to_a)
       expect(User.leaves.count).to eq(4)
       expect(User.leaves).to include(users(:child_1))
       expect(User.leaves).to include(users(:child_2_1))
