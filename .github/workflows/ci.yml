@@ -19,14 +19,14 @@ jobs:
           - rails_5_2
           - rails_6_0
           - rails_6_1
-          - rails_master
+          - rails_main
         exclude:
           - ruby: '3.0'
             gemfile: rails_5_2
 
           # Rails 7 requires Ruby 2.7 or higher
           - ruby: '2.6'
-            gemfile: rails_master
+            gemfile: rails_main
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -56,14 +56,14 @@ jobs:
           - rails_5_2
           - rails_6_0
           - rails_6_1
-          - rails_master
+          - rails_main
         exclude:
           - ruby: '3.0'
             gemfile: rails_5_2
 
           # Rails 7 requires Ruby 2.7 or higher
           - ruby: '2.6'
-            gemfile: rails_master
+            gemfile: rails_main
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -108,14 +108,14 @@ jobs:
           - rails_5_2
           - rails_6_0
           - rails_6_1
-          - rails_master
+          - rails_main
         exclude:
           - ruby: '3.0'
             gemfile: rails_5_2
 
           # Rails 7 requires Ruby 2.7 or higher
           - ruby: '2.6'
-            gemfile: rails_master
+            gemfile: rails_main
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
