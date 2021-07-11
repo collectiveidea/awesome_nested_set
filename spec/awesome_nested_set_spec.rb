@@ -1225,6 +1225,15 @@ describe "AwesomeNestedSet" do
     it "should sort by custom sort column" do
       expect(OrderedCategory.acts_as_nested_set_options[:order_column]).to eq('name')
       expect(OrderedCategory.order_column_name).to eq('name')
+      expect(OrderedCategory.first.children.explain).to include('ORDER BY name')
+    end
+
+    it "should sort by custom hash sort" do
+      expect(HashOrderedCategory.acts_as_nested_set_options[:order_column]).to eq({ :name => :desc })
+      expect(HashOrderedCategory.order_column_name).to eq({ :name => :desc })
+      expect(HashOrderedCategory.first.children.explain).to include(
+        "ORDER BY #{HashOrderedCategory.quoted_table_name}.#{HashOrderedCategory.connection.quote_column_name(:name)} DESC"
+      )
     end
   end
 

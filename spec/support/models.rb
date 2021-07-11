@@ -23,6 +23,11 @@ class OrderedCategory < ActiveRecord::Base
   acts_as_nested_set :order_column => 'name'
 end
 
+class HashOrderedCategory < ActiveRecord::Base
+  self.table_name = 'categories'
+  acts_as_nested_set :order_column => { :name => :desc }
+end
+
 class RenamedColumns < ActiveRecord::Base
   acts_as_nested_set :parent_column => 'mother_id',
                      :left_column => 'red',
