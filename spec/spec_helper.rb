@@ -15,7 +15,7 @@ ActiveRecord::Base.establish_connection((ENV["DB"] ||= "sqlite3mem").to_sym)
 ActiveRecord::Migration.verbose = false
 
 require 'combustion/database'
-Combustion::Database.create_database(ActiveRecord::Base.configurations[ENV["DB"]])
+Combustion::Database.create_database(ActiveRecord::Base.configurations[ENV["DB"]].stringify_keys)
 load(File.join(plugin_test_dir, "db", "schema.rb"))
 
 require 'awesome_nested_set'
