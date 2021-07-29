@@ -192,14 +192,13 @@ module CollectiveIdea #:nodoc:
         def right_most_node
           @right_most_node ||= nested_set_scope_without_default_scope(
             :order => {right_column_name => :desc}
-          ).first
+          ).lock!.first
         end
 
         def right_most_bound
           @right_most_bound ||= begin
             return 0 if right_most_node.nil?
 
-            right_most_node.lock!
             right_most_node[right_column_name] || 0
           end
         end
