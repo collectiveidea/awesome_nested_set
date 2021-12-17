@@ -19,6 +19,7 @@ jobs:
           - rails_5_2
           - rails_6_0
           - rails_6_1
+          - rails_7_0
           - rails_main
         exclude:
           - ruby: '3.0'
@@ -56,6 +57,7 @@ jobs:
           - rails_5_2
           - rails_6_0
           - rails_6_1
+          - rails_7_0
           - rails_main
         exclude:
           - ruby: '3.0'
@@ -108,6 +110,7 @@ jobs:
           - rails_5_2
           - rails_6_0
           - rails_6_1
+          - rails_7_0
           - rails_main
         exclude:
           - ruby: '3.0'
