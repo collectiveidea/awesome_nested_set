@@ -9,6 +9,7 @@ on:
     branches:
       - master
 jobs:
+
   # SQLITE
   sqlite:
     runs-on: ubuntu-latest
@@ -27,7 +28,7 @@ jobs:
 
           # Rails 7 requires Ruby 2.7 or higher
           - ruby: '2.6'
-            gemfile: rails_main
+            gemfile: [ rails_main, rails_7_0 ]
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -65,7 +66,7 @@ jobs:
 
           # Rails 7 requires Ruby 2.7 or higher
           - ruby: '2.6'
-            gemfile: rails_main
+            gemfile: [ rails_main, rails_7_0 ]
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -118,7 +119,7 @@ jobs:
 
           # Rails 7 requires Ruby 2.7 or higher
           - ruby: '2.6'
-            gemfile: rails_main
+            gemfile: [ rails_main, rails_7_0 ]
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
