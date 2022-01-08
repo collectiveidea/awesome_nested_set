@@ -10,12 +10,15 @@ ActiveRecord::Base.logger = Logger.new(plugin_test_dir + "/debug.log")
 
 require 'yaml'
 require 'erb'
-ActiveRecord::Base.configurations = YAML::load(ERB.new(IO.read(plugin_test_dir + "/db/database.yml")).result)
+db_config = YAML::load(ERB.new(IO.read(plugin_test_dir + "/db/database.yml")).result)
+ActiveRecord::Base.configurations = db_config
 ActiveRecord::Base.establish_connection((ENV["DB"] ||= "sqlite3mem").to_sym)
 ActiveRecord::Migration.verbose = false
 
-require 'combustion/database'
-Combustion::Database.create_database(ActiveRecord::Base.configurations[ENV["DB"]].stringify_keys)
+unless /sqlite/ === ENV['DB']
+  ActiveRecord::Tasks::DatabaseTasks.create db_config[ENV['DB']]
+end
+
 load(File.join(plugin_test_dir, "db", "schema.rb"))
 
 require 'awesome_nested_set'
@@ -33,7 +36,7 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
   config.after(:suite) do
     unless /sqlite/ === ENV['DB']
-      Combustion::Database.drop_database(ActiveRecord::Base.configurations[ENV['DB']])
+      ActiveRecord::Tasks::DatabaseTasks.drop db_config[ENV['DB']]
     end
   end
 end
