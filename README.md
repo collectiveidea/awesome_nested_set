@@ -43,7 +43,8 @@ class CreateCategories < ActiveRecord::Migration
       t.integer :depth, null: false, default: 0
       t.integer :children_count, null: false, default: 0
       t.timestamps
-   end
+    end
+  end
 end
 ```
 
