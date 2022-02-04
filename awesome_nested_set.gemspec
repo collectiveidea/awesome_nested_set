@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.email = 'info@collectiveidea.com'
   s.extra_rdoc_files = %w[README.md]
   s.files = Dir.glob('lib/**/*') + %w[MIT-LICENSE README.md CHANGELOG]
-  s.homepage = 'http://github.com/collectiveidea/awesome_nested_set'
+  s.homepage = 'https://github.com/collectiveidea/awesome_nested_set'
   s.rdoc_options = ['--main', 'README.md', '--inline-source', '--line-numbers']
   s.require_paths = ['lib']
   s.summary = 'An awesome nested set implementation for Active Record'
