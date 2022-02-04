@@ -490,14 +490,14 @@ describe "User", :type => :model do
     assert_equal node1, node2.parent
     assert_equal 1, node1.children.count
 
-    node3.move_to_ordered_child_of(node1, "name", true) # acending
+    node3.move_to_ordered_child_of(node1, "name", true) # ascending
 
     expect(node3.parent).to eq(node1)
     expect(node1.children.count).to be(2)
     expect(node1.children[0].name).to eq(node2.name)
     expect(node1.children[1].name).to eq(node3.name)
 
-    node3.move_to_ordered_child_of(node1, "name", false) # decending
+    node3.move_to_ordered_child_of(node1, "name", false) # descending
     node1.reload
 
     expect(node3.parent).to eq(node1)

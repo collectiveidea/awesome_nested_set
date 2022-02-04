@@ -668,14 +668,14 @@ describe "AwesomeNestedSet" do
     assert_equal node1, node2.parent
     assert_equal 1, node1.children.count
 
-    node3.move_to_ordered_child_of(node1, "name", true) # acending
+    node3.move_to_ordered_child_of(node1, "name", true) # ascending
 
     assert_equal node1, node3.parent
     assert_equal 2, node1.children.count
     assert_equal node2.name, node1.children[0].name
     assert_equal node3.name, node1.children[1].name
 
-    node3.move_to_ordered_child_of(node1, "name", false) # decending
+    node3.move_to_ordered_child_of(node1, "name", false) # descending
     node1.reload
 
     expect(node3.parent).to eq(node1)

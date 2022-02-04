@@ -12,8 +12,8 @@ module CollectiveIdea #:nodoc:
         #
         # == Params
         #  * +class_or_item+ - Class name or top level times
-        #  * +mover+ - The item that is being move, used to exlude impossible moves
-        #  * +&block+ - a block that will be used to display: { |item| ... item.name }
+        #  * +mover+ - The item that is being move, used to exclude impossible moves
+        #  * +&block+ - a block that will be used to display: { |item| ... item.name }
         #
         # == Usage
         #
