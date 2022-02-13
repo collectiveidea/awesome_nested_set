@@ -1,6 +1,6 @@
 # Awesome Nested Set
 
-[![CI](https://github.com/collectiveidea/awesome_nested_set/actions/workflows/ci.yml/badge.svg)](https://github.com/collectiveidea/awesome_nested_set/actions/workflows/ci.yml) [![Code Climate](https://codeclimate.com/github/collectiveidea/awesome_nested_set.svg)](https://codeclimate.com/github/collectiveidea/awesome_nested_set) [![Security](https://hakiri.io/github/collectiveidea/awesome_nested_set/master.svg)](https://hakiri.io/github/collectiveidea/awesome_nested_set/master)
+[![CI](https://github.com/collectiveidea/awesome_nested_set/actions/workflows/ci.yml/badge.svg)](https://github.com/collectiveidea/awesome_nested_set/actions/workflows/ci.yml) [![Code Climate](https://codeclimate.com/github/collectiveidea/awesome_nested_set.svg)](https://codeclimate.com/github/collectiveidea/awesome_nested_set)
 
 
 Awesome Nested Set is an implementation of the nested set pattern for ActiveRecord models.
