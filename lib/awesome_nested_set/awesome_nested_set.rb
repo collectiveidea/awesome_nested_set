@@ -132,13 +132,18 @@ module CollectiveIdea #:nodoc:
 
       def acts_as_nested_set_prevent_assignment_to_reserved_columns!
         # no assignment to structure fields
-        [left_column_name, right_column_name].each do |column|
+        [left_column_name, right_column_name, depth_column_name].each do |column|
           module_eval <<-"end_eval", __FILE__, __LINE__
             def #{column}=(x)
               raise ActiveRecord::ActiveRecordError, "Unauthorized assignment to #{column}: it's an internal field handled by acts_as_nested_set code, use move_to_* methods instead."
             end
           end_eval
         end
+        module_eval <<-"end_eval", __FILE__, __LINE__
+          def #{depth_column_name}=(x)
+            write_attribute(:#{depth_column_name}, x)
+          end
+        end_eval
       end
     end
   end
