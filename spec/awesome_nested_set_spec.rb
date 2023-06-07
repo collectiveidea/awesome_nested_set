@@ -715,10 +715,9 @@ describe "AwesomeNestedSet" do
   end
 
   it "valid_with_missing_intermediate_node" do
-    # Even though child_2_1 will still exist, it is a sign of a sloppy delete, not an invalid tree.
     expect(Category.valid?).to be_truthy
     Category.delete(categories(:child_2).id)
-    expect(Category.valid?).to be_truthy
+    expect(Category.valid?).to be_falsey
   end
 
   it "valid_with_overlapping_and_rights" do

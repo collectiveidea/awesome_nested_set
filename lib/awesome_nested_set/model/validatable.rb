@@ -7,7 +7,10 @@ module CollectiveIdea
         module Validatable
 
           def valid?
-            left_and_rights_valid? && no_duplicates_for_columns? && all_roots_valid?
+            left_and_rights_valid? &&
+              no_duplicates_for_columns? &&
+              all_roots_valid? &&
+              left_and_right_within_range?
           end
 
           def left_and_rights_valid?
@@ -49,6 +52,15 @@ module CollectiveIdea
                 left = root.left
                 right = root.right
               end
+            end
+          end
+
+          def left_and_right_within_range?
+            [quoted_left_column_full_name, quoted_right_column_full_name].all? do |column|
+              select("#{scope_string.chomp(", ")}").
+              group("#{scope_string.chomp(", ")}").
+              having("MAX(#{column}) > (COUNT(*) * 2)").
+              count.zero?
             end
           end
 

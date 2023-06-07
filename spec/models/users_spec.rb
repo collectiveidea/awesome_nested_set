@@ -537,10 +537,9 @@ describe "User", :type => :model do
   end
 
   it "valid_with_missing_intermediate_node" do
-    # Even though child_2_1 will still exist, it is a sign of a sloppy delete, not an invalid tree.
     expect(User.valid?).to be_truthy
     User.where(uuid: users(:child_2).uuid).delete_all
-    expect(User.valid?).to be_truthy
+    expect(User.valid?).to be_falsey
   end
 
   it "valid_with_overlapping_and_rights" do
