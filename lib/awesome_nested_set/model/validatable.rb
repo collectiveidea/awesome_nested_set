@@ -56,12 +56,10 @@ module CollectiveIdea
           end
 
           def left_and_right_within_range?
-            [quoted_left_column_full_name, quoted_right_column_full_name].all? do |column|
-              select("#{scope_string.chomp(", ")}").
-              group("#{scope_string.chomp(", ")}").
-              having("MAX(#{column}) > (COUNT(*) * 2)").
+            max_node_value = count * 2
+            select("#{scope_string.chomp(", ")}").
+              where("#{quoted_left_column_full_name} > :max_node_value OR #{quoted_right_column_full_name} > :max_node_value", max_node_value: max_node_value).
               count.zero?
-            end
           end
 
           private
