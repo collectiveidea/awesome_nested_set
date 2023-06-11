@@ -107,13 +107,13 @@ module CollectiveIdea #:nodoc:
                 Move.new(target, position, self).move
                 update_counter_cache
               end
-              after_move_to(target, position)
+              after_move_to(target)
             end
           end
 
           protected
 
-          def after_move_to(target, position)
+          def after_move_to(target)
             target.reload_nested_set if target
             self.set_depth_for_self_and_descendants!
             self.reload_nested_set
