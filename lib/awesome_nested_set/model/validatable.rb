@@ -59,7 +59,7 @@ module CollectiveIdea
             max_node_value = count * 2
             select("#{scope_string.chomp(", ")}").
               where("#{quoted_left_column_full_name} > :max_node_value OR #{quoted_right_column_full_name} > :max_node_value", max_node_value: max_node_value).
-              count.zero?
+              first.nil?
           end
 
           private
