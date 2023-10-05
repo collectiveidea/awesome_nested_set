@@ -1,5 +1,9 @@
 Unreleased version
 
+3.6.0
+* Support Rails 7.1 [Harshal Bhakta](https://github.com/harshalbhakta)
+* Improve ImpossibleMove error message [AlejandroFernandesAntunes](https://github.com/AlejandroFernandesAntunes)
+
 3.5.0
 * Support Rails 7.0.0 [Peter Berkenbosch](https://github.com/peterberkenbosch) and [Andrew Hampton](https://github.com/andrewhampton)
 * Make `order_column` option more flexible by removing explicit `=> :asc` [Regis Millet](https://github.com/Kulgar)
