@@ -129,7 +129,9 @@ module CollectiveIdea #:nodoc:
 
         def prevent_impossible_move
           if !root && !instance.move_possible?(target)
-            raise ImpossibleMove, "Impossible move, target node cannot be inside moved tree."
+            error_msg = "Impossible move, target node (#{target.class.name},ID: #{target.id}) 
+              cannot be inside moved tree (#{instance.class.name},ID: #{instance.id})."
+            raise ImpossibleMove, error_msg
           end
         end
 
