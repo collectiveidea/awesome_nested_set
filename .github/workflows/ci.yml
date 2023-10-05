@@ -20,6 +20,7 @@ jobs:
           - rails_6_0
           - rails_6_1
           - rails_7_0
+          - rails_7_1
           - rails_main
         exclude:
           - ruby: '3.2'
@@ -40,6 +41,9 @@ jobs:
 
           - ruby: '2.6'
             gemfile: rails_7_0
+
+          - ruby: '2.6'
+            gemfile: rails_7_1
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -70,6 +74,7 @@ jobs:
           - rails_6_0
           - rails_6_1
           - rails_7_0
+          - rails_7_1
           - rails_main
         exclude:
           - ruby: '3.2'
@@ -90,6 +95,9 @@ jobs:
 
           - ruby: '2.6'
             gemfile: rails_7_0
+            
+          - ruby: '2.6'
+            gemfile: rails_7_1
     env:
       BUNDLE_GEMFILE: ${{ github.workspace }}/gemfiles/${{ matrix.gemfile }}.gemfile
       BUNDLE_PATH_RELATIVE_TO_CWD: true
@@ -135,6 +143,7 @@ jobs:
           - rails_6_0
           - rails_6_1
           - rails_7_0
+          - rails_7_1
           - rails_main
         exclude:
           - ruby: '3.2'
@@ -152,6 +161,9 @@ jobs:
           # Rails 7 requires Ruby 2.7 or higher
           - ruby: '2.6'
             gemfile: rails_7_0
+          
+          - ruby: '2.6'
+            gemfile: rails_7_1
 
           - ruby: '2.6'
             gemfile: rails_main
