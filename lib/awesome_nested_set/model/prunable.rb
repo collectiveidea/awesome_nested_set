@@ -35,9 +35,14 @@ module CollectiveIdea #:nodoc:
             end
           end
 
+          # Use reverse to delete from deepest child to parent in order to respect any possible foreign keys
+          def decendants_to_destroy_in_order
+            descendants.reverse
+          end
+
           def destroy_or_delete_descendants
             if acts_as_nested_set_options[:dependent] == :destroy
-              descendants.each do |model|
+              decendants_to_destroy_in_order.each do |model|
                 model.skip_before_destroy = true
                 model.destroy
               end
