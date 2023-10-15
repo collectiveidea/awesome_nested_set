@@ -652,6 +652,19 @@ describe "User", :type => :model do
     expect(User.valid?).to be_truthy
   end
 
+  it "destroys in the right order to respect foreign keys" do
+    User.acts_as_nested_set_options[:dependent] = :destroy
+
+    expect(users(:top_level).decendants_to_destroy_in_order).to eq [
+      users(:child_3),
+      users(:child_2_1),
+      users(:child_2),
+      users(:child_1)
+    ]
+    expect(users(:top_level)).to receive(:decendants_to_destroy_in_order).once.and_call_original
+    expect { users(:top_level).destroy! }.to change(User, :count).by(-5)
+  end
+
   it "assigning_parent_uuid_on_create" do
     user = User.create!(:name => "Child", :parent_uuid => users(:child_2).uuid)
     expect(users(:child_2)).to eq(user.parent)
