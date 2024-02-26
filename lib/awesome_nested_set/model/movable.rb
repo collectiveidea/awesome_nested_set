@@ -41,7 +41,17 @@ module CollectiveIdea #:nodoc:
 
           # Move the node to the child of another node with specify index
           def move_to_child_with_index(node, index)
-            if node.children.empty?
+            if node == :root
+              move_to_root
+              my_position = self_and_siblings.index(self)
+              if my_position < index
+                move_to_right_of(self_and_siblings[index])
+              elsif my_position && my_position == index
+                # do nothing. already there.
+              else
+                move_to_left_of(self_and_siblings[index])
+              end
+            elsif node.children.empty?
               move_to_child_of(node)
             elsif node.children.count == index
               move_to_right_of(node.children.last)

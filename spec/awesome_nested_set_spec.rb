@@ -562,6 +562,13 @@ describe "AwesomeNestedSet" do
       expect(categories(:child_1).left).to eq(2)
       expect(categories(:child_1).right).to eq(3)
     end
+
+    it "move to top level with specified index" do
+      categories(:child_1).move_to_child_with_index(:root, 1)
+      expect(categories(:child_1).parent_id).to be_nil
+      expect(categories(:child_1).left).to eq(9)
+      expect(categories(:child_1).right).to eq(10)
+    end
   end
 
   it "move_to_child_of_appends_to_end" do
