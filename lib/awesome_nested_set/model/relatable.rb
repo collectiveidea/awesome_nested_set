@@ -93,6 +93,10 @@ module CollectiveIdea
             end
           end
 
+          def roots
+            nested_set_scope.where(parent_id: nil)
+          end
+
           protected
 
           def compute_level

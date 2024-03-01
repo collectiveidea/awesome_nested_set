@@ -136,6 +136,10 @@ describe "AwesomeNestedSet" do
       end
     end
 
+    it "roots" do
+      expect(categories(:child_3).roots).to eq([categories(:top_level), categories(:top_level_2)])
+    end
+
     it "root_class_method" do
       expect(Category.root).to eq(categories(:top_level))
     end

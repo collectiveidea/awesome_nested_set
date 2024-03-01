@@ -45,11 +45,7 @@ module CollectiveIdea #:nodoc:
 
           # Move the node to the child of another node with specify index
           def move_to_child_with_index(node, index)
-            if node == :root
-              siblings = nested_set_scope.where(parent_id: nil)
-            else
-              siblings = node.children
-            end
+            siblings = node == :root ? roots : node.children
             if siblings.empty?
               move_to_child_of(node)
             elsif siblings.count == index
