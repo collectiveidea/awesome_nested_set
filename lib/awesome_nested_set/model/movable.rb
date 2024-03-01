@@ -36,7 +36,11 @@ module CollectiveIdea #:nodoc:
 
           # Move the node to the child of another node
           def move_to_child_of(node)
-            move_to node, :child
+            if node == :root
+              move_to_root
+            else
+              move_to node, :child
+            end
           end
 
           # Move the node to the child of another node with specify index
@@ -47,11 +51,7 @@ module CollectiveIdea #:nodoc:
               siblings = node.children
             end
             if siblings.empty?
-              if node == :root
-                move_to_root
-              else
-                move_to_child_of(node)
-              end
+              move_to_child_of(node)
             elsif siblings.count == index
               move_to_right_of(siblings.last)
             else

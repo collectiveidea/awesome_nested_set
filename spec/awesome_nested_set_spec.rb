@@ -510,6 +510,16 @@ describe "AwesomeNestedSet" do
     expect(Category.valid?).to be_truthy
   end
 
+  it "move_to_child_of :root" do
+    categories(:child_2).move_to_child_of(:root)
+    expect(categories(:child_2).parent).to be_nil
+    expect(categories(:child_2).level).to eq(0)
+    expect(categories(:child_2_1).level).to eq(1)
+    expect(categories(:child_2).left).to eq(9)
+    expect(categories(:child_2).right).to eq(12)
+    expect(Category.valid?).to be_truthy
+  end
+
   describe "#move_to_child_with_index" do
     it "move to a node without child" do
       categories(:child_1).move_to_child_with_index(categories(:child_3), 0)
