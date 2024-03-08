@@ -36,26 +36,31 @@ module CollectiveIdea #:nodoc:
 
           # Move the node to the child of another node
           def move_to_child_of(node)
-            move_to node, :child
+            if node == :root
+              move_to_root
+            else
+              move_to node, :child
+            end
           end
 
           # Move the node to the child of another node with specify index
           def move_to_child_with_index(node, index)
-            if node.children.empty?
+            siblings = node == :root ? roots : node.children
+            if siblings.empty?
               move_to_child_of(node)
-            elsif node.children.count == index
-              move_to_right_of(node.children.last)
+            elsif siblings.count == index
+              move_to_right_of(siblings.last)
             else
-              my_position = node.children.to_a.index(self)
+              my_position = siblings.index(self)
               if my_position && my_position < index
                 # e.g. if self is at position 0 and we want to move self to position 1 then self
                 # needs to move to the *right* of the node at position 1. That's because the node
                 # that is currently at position 1 will be at position 0 after the move completes.
-                move_to_right_of(node.children[index])
+                move_to_right_of(siblings[index])
               elsif my_position && my_position == index
                 # do nothing. already there.
               else
-                move_to_left_of(node.children[index])
+                move_to_left_of(siblings[index])
               end
             end
           end

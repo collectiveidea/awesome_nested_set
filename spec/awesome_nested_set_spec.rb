@@ -136,6 +136,10 @@ describe "AwesomeNestedSet" do
       end
     end
 
+    it "roots" do
+      expect(categories(:child_3).roots).to eq([categories(:top_level), categories(:top_level_2)])
+    end
+
     it "root_class_method" do
       expect(Category.root).to eq(categories(:top_level))
     end
@@ -510,6 +514,16 @@ describe "AwesomeNestedSet" do
     expect(Category.valid?).to be_truthy
   end
 
+  it "move_to_child_of :root" do
+    categories(:child_2).move_to_child_of(:root)
+    expect(categories(:child_2).parent).to be_nil
+    expect(categories(:child_2).level).to eq(0)
+    expect(categories(:child_2_1).level).to eq(1)
+    expect(categories(:child_2).left).to eq(9)
+    expect(categories(:child_2).right).to eq(12)
+    expect(Category.valid?).to be_truthy
+  end
+
   describe "#move_to_child_with_index" do
     it "move to a node without child" do
       categories(:child_1).move_to_child_with_index(categories(:child_3), 0)
@@ -561,6 +575,13 @@ describe "AwesomeNestedSet" do
       expect(categories(:child_1).parent_id).to eq(categories(:top_level).id)
       expect(categories(:child_1).left).to eq(2)
       expect(categories(:child_1).right).to eq(3)
+    end
+
+    it "move to top level with specified index" do
+      categories(:child_1).move_to_child_with_index(:root, 1)
+      expect(categories(:child_1).parent_id).to be_nil
+      expect(categories(:child_1).left).to eq(9)
+      expect(categories(:child_1).right).to eq(10)
     end
   end
 
