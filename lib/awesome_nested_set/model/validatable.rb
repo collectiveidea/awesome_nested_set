@@ -7,7 +7,10 @@ module CollectiveIdea
         module Validatable
 
           def valid?
-            left_and_rights_valid? && no_duplicates_for_columns? && all_roots_valid?
+            left_and_rights_valid? &&
+              no_duplicates_for_columns? &&
+              all_roots_valid? &&
+              left_and_right_within_range?
           end
 
           def left_and_rights_valid?
@@ -50,6 +53,13 @@ module CollectiveIdea
                 right = root.right
               end
             end
+          end
+
+          def left_and_right_within_range?
+            max_node_value = count * 2
+            !select("#{scope_string.chomp(", ")}").
+              where("#{quoted_left_column_full_name} > :max_node_value OR #{quoted_right_column_full_name} > :max_node_value", max_node_value: max_node_value).
+              exists?
           end
 
           private
