@@ -11,7 +11,7 @@ module CollectiveIdea #:nodoc:
         # You can pass a block receiving an item and returning the string displayed in the select.
         #
         # == Params
-        #  * +class_or_item+ - Class name or top level times
+        #  * +class_or_items+ - Class name or top level items
         #  * +mover+ - The item that is being move, used to exclude impossible moves
         #  * +&block+ - a block that will be used to display: { |item| ... item.name }
         #
@@ -21,12 +21,12 @@ module CollectiveIdea #:nodoc:
         #       "#{'–' * i.level} #{i.name}"
         #     }) %>
         #
-        def nested_set_options(class_or_item, mover = nil)
-          if class_or_item.is_a? Array
-            items = class_or_item.reject { |e| !e.root? }
+        def nested_set_options(class_or_items, mover = nil)
+          if class_or_items.is_a? Array
+            items = class_or_items.reject { |e| !e.root? }
           else
-            class_or_item = class_or_item.roots if class_or_item.respond_to?(:scope)
-            items = Array(class_or_item)
+            class_or_items = class_or_items.roots if class_or_items.respond_to?(:scope)
+            items = Array(class_or_items)
           end
           result = []
           items.each do |root|
