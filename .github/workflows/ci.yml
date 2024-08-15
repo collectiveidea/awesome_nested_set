@@ -36,7 +36,7 @@ jobs:
           - ruby: '3.0'
             gemfile: rails_5_2
 
-          # Rails 8 requires Ruby 3.1 or higher
+          # Rails 7.2 requires Ruby 3.1 or higher
           - ruby: '2.6'
             gemfile: rails_main
 
