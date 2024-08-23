@@ -13,5 +13,5 @@ end
 
 appraise "rails-main" do
   gem "rails", github: "rails/rails", branch: "main"
-  gem "rspec-rails", "~> 6.1"
+  gem "rspec-rails", "~> 6.0.2"
 end
