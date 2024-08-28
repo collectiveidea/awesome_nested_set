@@ -1,6 +1,9 @@
 Unreleased version
+
+3.7.0
 * Teach #move_to_child_of and #move_to_child_with_index to accept :root as a parameter [Micah Geisel](https://github.com/botandrose)
 * Add #roots method [Micah Geisel](https://github.com/botandrose)
+* Support Rails 7.2 [Ahmed A. Ibrahim](https://github.com/AhmedAliIbrahim)
 
 3.6.0
 * Support Rails 7.1 [Harshal Bhakta](https://github.com/harshalbhakta)
