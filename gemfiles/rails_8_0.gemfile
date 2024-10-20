@@ -2,14 +2,10 @@
 
 source "https://rubygems.org"
 
-gem "rails", "~> 7.0.0"
-gem "base64"
-gem "bigdecimal"
-gem "drb"
-gem "mutex_m"
+gem "rails", "~> 8.0.0.rc1"
 
 platforms :ruby do
-  gem "sqlite3", "~> 1.4"
+  gem "sqlite3"
   gem "mysql2", "< 1.0.0"
   gem "pg", "< 2.0.0"
 end
