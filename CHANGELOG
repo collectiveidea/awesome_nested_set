@@ -1,5 +1,9 @@
 Unreleased version
 
+3.8.0 
+* Support Rails 8.0 [Takuya N](https://github.com/collectiveidea/awesome_nested_set/pull/487)
+* Enable Rubygems Trusted Publishing
+
 3.7.0
 * Teach #move_to_child_of and #move_to_child_with_index to accept :root as a parameter [Micah Geisel](https://github.com/botandrose)
 * Add #roots method [Micah Geisel](https://github.com/botandrose)
