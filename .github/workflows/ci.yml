@@ -2,12 +2,11 @@
 name: CI
 
 on:
-  pull_request:
-    branches:
-      - '*'
   push:
     branches:
-      - master
+      - main
+  pull_request:
+
 jobs:
   # SQLITE
   sqlite:
@@ -101,7 +100,7 @@ jobs:
       BUNDLE_PATH_RELATIVE_TO_CWD: true
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
@@ -115,7 +114,7 @@ jobs:
           bundle exec rspec spec
 
 
-  # MYSQL
+  # MySQL
   mysql:
     runs-on: ubuntu-latest
     strategy:
@@ -220,7 +219,7 @@ jobs:
           --health-retries=3
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
@@ -236,7 +235,7 @@ jobs:
           bundle exec rspec spec
 
 
-  # POSTGRES
+  # Postgres
   postgres:
     runs-on: ubuntu-latest
     strategy:
@@ -328,7 +327,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -341,7 +340,7 @@ jobs:
           --health-retries 5
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
       - name: Set up Ruby ${{ matrix.ruby }}
         uses: ruby/setup-ruby@v1
         with:
