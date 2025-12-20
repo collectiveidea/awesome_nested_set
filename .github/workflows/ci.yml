@@ -64,6 +64,15 @@ jobs:
           - ruby: '3.0'
             gemfile: rails_5_2
 
+          - ruby: '2.7'
+            gemfile: rails_5_2
+
+          - ruby: '3.1'
+            gemfile: rails_6_0
+
+          - ruby: '3.0'
+            gemfile: rails_6_0
+
           - ruby: '2.6'
             gemfile: rails_7_0
 
@@ -128,7 +137,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', 'head']
+        ruby: ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', 'head']
         gemfile:
           - rails_5_2
           - rails_6_0
@@ -146,6 +155,15 @@ jobs:
             gemfile: rails_6_0
 
           - ruby: 'head'
+            gemfile: rails_5_2
+
+          - ruby: '3.4'
+            gemfile: rails_6_1
+
+          - ruby: '3.4'
+            gemfile: rails_6_0
+
+          - ruby: '3.4'
             gemfile: rails_5_2
 
           - ruby: '3.3'
@@ -168,6 +186,15 @@ jobs:
 
           - ruby: '3.0'
             gemfile: rails_5_2
+
+          - ruby: '2.7'
+            gemfile: rails_5_2
+
+          - ruby: '3.1'
+            gemfile: rails_6_0
+
+          - ruby: '3.0'
+            gemfile: rails_6_0
 
           - ruby: '2.6'
             gemfile: rails_7_0
@@ -248,7 +275,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ruby: ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', 'head']
+        ruby: ['2.6', '2.7', '3.0', '3.1', '3.2', '3.3', '3.4', 'head']
         gemfile:
           - rails_5_2
           - rails_6_0
@@ -266,6 +293,15 @@ jobs:
             gemfile: rails_6_0
 
           - ruby: 'head'
+            gemfile: rails_5_2
+
+          - ruby: '3.4'
+            gemfile: rails_6_1
+
+          - ruby: '3.4'
+            gemfile: rails_6_0
+
+          - ruby: '3.4'
             gemfile: rails_5_2
 
           - ruby: '3.3'
@@ -288,6 +324,15 @@ jobs:
 
           - ruby: '3.0'
             gemfile: rails_5_2
+
+          - ruby: '2.7'
+            gemfile: rails_5_2
+
+          - ruby: '3.1'
+            gemfile: rails_6_0
+
+          - ruby: '3.0'
+            gemfile: rails_6_0
 
           - ruby: '2.6'
             gemfile: rails_7_0
