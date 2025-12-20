@@ -24,7 +24,6 @@ jobs:
           - rails_7_2
           - rails_8_0
           - rails_8_1
-          - rails_main
         exclude:
           - ruby: 'head'
             gemfile: rails_6_1
@@ -55,19 +54,6 @@ jobs:
 
           - ruby: '3.0'
             gemfile: rails_5_2
-
-          # Rails 8.1 requires Ruby 3.2 or higher
-          - ruby: '2.6'
-            gemfile: rails_main
-
-          - ruby: '2.7'
-            gemfile: rails_main
-
-          - ruby: '3.0'
-            gemfile: rails_main
-
-          - ruby: '3.1'
-            gemfile: rails_main
 
           - ruby: '2.6'
             gemfile: rails_7_0
@@ -140,7 +126,6 @@ jobs:
           - rails_7_2
           - rails_8_0
           - rails_8_1
-          - rails_main
         exclude:
           - ruby: 'head'
             gemfile: rails_6_1
@@ -172,19 +157,6 @@ jobs:
           - ruby: '3.0'
             gemfile: rails_5_2
 
-          # Rails 8.1 requires Ruby 3.2 or higher
-          - ruby: '2.6'
-            gemfile: rails_main
-
-          - ruby: '2.7'
-            gemfile: rails_main
-
-          - ruby: '3.0'
-            gemfile: rails_main
-
-          - ruby: '3.1'
-            gemfile: rails_main
-
           - ruby: '2.6'
             gemfile: rails_7_0
 
@@ -193,7 +165,7 @@ jobs:
 
           - ruby: '2.6'
             gemfile: rails_7_2
-          
+
           - ruby: '2.7'
             gemfile: rails_7_2
 
@@ -267,7 +239,7 @@ jobs:
           - rails_7_1
           - rails_7_2
           - rails_8_0
-          - rails_main
+          - rails_8_1
         exclude:
           - ruby: 'head'
             gemfile: rails_6_1
@@ -298,19 +270,6 @@ jobs:
 
           - ruby: '3.0'
             gemfile: rails_5_2
-
-          # Rails 8.1 requires Ruby 3.2 or higher
-          - ruby: '2.6'
-            gemfile: rails_main
-
-          - ruby: '2.7'
-            gemfile: rails_main
-
-          - ruby: '3.0'
-            gemfile: rails_main
-
-          - ruby: '3.1'
-            gemfile: rails_main
 
           - ruby: '2.6'
             gemfile: rails_7_0

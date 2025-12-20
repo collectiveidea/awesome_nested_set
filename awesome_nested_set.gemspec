@@ -22,8 +22,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency 'appraisal'
   s.add_development_dependency 'database_cleaner'
-  s.add_development_dependency 'pry'
-  s.add_development_dependency 'pry-nav'
   s.add_development_dependency 'rake', '~> 13'
   s.add_development_dependency 'rspec-rails', '>= 4.0.0', '< 8.0'
 end
