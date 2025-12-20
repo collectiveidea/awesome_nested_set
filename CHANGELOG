@@ -1,6 +1,9 @@
 Unreleased version
 
-3.8.0 
+3.9.0
+* Support Rails 8.1 [Ulisses Caon](https://github.com/collectiveidea/awesome_nested_set/pull/495)
+
+3.8.0
 * Support Rails 8.0 [Takuya N](https://github.com/collectiveidea/awesome_nested_set/pull/487)
 * Enable Rubygems Trusted Publishing
 
