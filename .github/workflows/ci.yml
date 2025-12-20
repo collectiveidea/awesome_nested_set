@@ -2,12 +2,11 @@
 name: CI
 
 on:
-  pull_request:
-    branches:
-      - '*'
   push:
     branches:
-      - master
+      - main
+  pull_request:
+
 jobs:
   # SQLITE
   sqlite:
@@ -24,7 +23,6 @@ jobs:
           - rails_7_1
           - rails_7_2
           - rails_8_0
-          - rails_main
         exclude:
           - ruby: 'head'
             gemfile: rails_6_1
@@ -55,19 +53,6 @@ jobs:
 
           - ruby: '3.0'
             gemfile: rails_5_2
-
-          # Rails 8.1 requires Ruby 3.2 or higher
-          - ruby: '2.6'
-            gemfile: rails_main
-
-          - ruby: '2.7'
-            gemfile: rails_main
-
-          - ruby: '3.0'
-            gemfile: rails_main
-
-          - ruby: '3.1'
-            gemfile: rails_main
 
           - ruby: '2.6'
             gemfile: rails_7_0
@@ -115,7 +100,7 @@ jobs:
           bundle exec rspec spec
 
 
-  # MYSQL
+  # MySQL
   mysql:
     runs-on: ubuntu-latest
     strategy:
@@ -130,7 +115,6 @@ jobs:
           - rails_7_1
           - rails_7_2
           - rails_8_0
-          - rails_main
         exclude:
           - ruby: 'head'
             gemfile: rails_6_1
@@ -162,19 +146,6 @@ jobs:
           - ruby: '3.0'
             gemfile: rails_5_2
 
-          # Rails 8.1 requires Ruby 3.2 or higher
-          - ruby: '2.6'
-            gemfile: rails_main
-
-          - ruby: '2.7'
-            gemfile: rails_main
-
-          - ruby: '3.0'
-            gemfile: rails_main
-
-          - ruby: '3.1'
-            gemfile: rails_main
-
           - ruby: '2.6'
             gemfile: rails_7_0
 
@@ -183,7 +154,7 @@ jobs:
 
           - ruby: '2.6'
             gemfile: rails_7_2
-          
+
           - ruby: '2.7'
             gemfile: rails_7_2
 
@@ -236,7 +207,7 @@ jobs:
           bundle exec rspec spec
 
 
-  # POSTGRES
+  # Postgres
   postgres:
     runs-on: ubuntu-latest
     strategy:
@@ -251,7 +222,6 @@ jobs:
           - rails_7_1
           - rails_7_2
           - rails_8_0
-          - rails_main
         exclude:
           - ruby: 'head'
             gemfile: rails_6_1
@@ -282,19 +252,6 @@ jobs:
 
           - ruby: '3.0'
             gemfile: rails_5_2
-
-          # Rails 8.1 requires Ruby 3.2 or higher
-          - ruby: '2.6'
-            gemfile: rails_main
-
-          - ruby: '2.7'
-            gemfile: rails_main
-
-          - ruby: '3.0'
-            gemfile: rails_main
-
-          - ruby: '3.1'
-            gemfile: rails_main
 
           - ruby: '2.6'
             gemfile: rails_7_0
@@ -328,7 +285,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12
+        image: postgres:18
         env:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
