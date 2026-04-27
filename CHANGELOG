@@ -1,4 +1,5 @@
 Unreleased version
+* Fix Rails 7.1 deprecation warning for singular fixture_path in test config
 
 3.9.0
 * Support Rails 8.1 [Ulisses Caon](https://github.com/collectiveidea/awesome_nested_set/pull/495)
