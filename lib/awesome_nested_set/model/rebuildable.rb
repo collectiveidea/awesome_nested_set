@@ -21,11 +21,11 @@ module CollectiveIdea
 
             if acts_as_nested_set_options[:scope]
               scope = proc {|node|
-                scope_column_names.inject("") {|str, column_name|
+                scope_column_names.map {|column_name|
                   column_value = node.send(column_name)
                   cond = column_value.nil? ? "IS NULL" : "= #{connection.quote(column_value)}"
-                  str << "AND #{connection.quote_column_name(column_name)} #{cond} "
-                }
+                  "AND #{connection.quote_column_name(column_name)} #{cond} "
+                }.join
               }
             end
             scope
